@@ -41,5 +41,7 @@ export interface ContentItem {
   resource_url: string;
   thumbnail_url?: string;
   created_at?: string;
+  is_free_preview?: boolean;
+  preview_clicks?: number;
 }
 

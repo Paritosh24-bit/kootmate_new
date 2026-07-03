@@ -30,11 +30,17 @@ CREATE TABLE IF NOT EXISTS users (
   google_id TEXT DEFAULT '',
   role TEXT DEFAULT 'student',
   avatar_url TEXT DEFAULT '',
+  phone_number TEXT DEFAULT '',
+  school_name TEXT DEFAULT '',
+  dob TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Safe patch for users who already created the 'users' table without the 'role' column:
+-- Safe patch for users who already created the 'users' table without the extra columns:
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'student';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS school_name TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS dob TEXT DEFAULT '';
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;

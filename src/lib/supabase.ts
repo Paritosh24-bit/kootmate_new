@@ -21,6 +21,27 @@ export const getSupabase = () => {
   return supabaseInstance;
 };
 
+// Helper to determine if a registered user account is expired based on its registration date
+export function isAccountExpired(createdAtString?: string): boolean {
+  if (!createdAtString) return false;
+  const created = new Date(createdAtString);
+  if (isNaN(created.getTime())) return false;
+  
+  const createdYear = created.getFullYear();
+  // Expiration date for this account is March 31st of the appropriate year
+  let expiryYear = createdYear;
+  const march31ThisYear = new Date(createdYear, 2, 31, 23, 59, 59, 999); // Month 2 is March
+  
+  if (created > march31ThisYear) {
+    expiryYear = createdYear + 1;
+  }
+  
+  const expirationDate = new Date(expiryYear, 2, 31, 23, 59, 59, 999);
+  const now = new Date();
+  
+  return now > expirationDate;
+}
+
 export interface UserProfile {
   name: string;
   email: string;
@@ -170,6 +191,13 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
           localStorage.setItem('kootmate_supabase_table_error', 'true');
         }
       } else if (data) {
+        if (isAccountExpired(data.created_at)) {
+          return {
+            success: false,
+            message: 'This account expired on March 31st as per the annual policy. Please register a new account to continue.'
+          };
+        }
+
         localStorage.removeItem('kootmate_supabase_table_error');
         const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
         const isUserAdmin = data.role === 'admin' || data.email.toLowerCase() === 'admin@company.com' || adminEmails.includes(data.email.toLowerCase());
@@ -184,6 +212,9 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
             googleId: data.google_id || '',
             avatarUrl: data.avatar_url || '',
             role: data.role || 'student',
+            schoolName: data.school_name || '',
+            phoneNumber: data.phone_number || '',
+            dob: data.dob || '',
             isAdmin: isUserAdmin
           },
           message: 'Authenticated securely from real-time Supabase remote database!' 
@@ -197,6 +228,13 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
     const matched = localUsers.find((u: any) => u.email.toLowerCase() === targetEmail && u.password === password);
 
     if (matched) {
+      if (isAccountExpired(matched.createdAt)) {
+        return {
+          success: false,
+          message: 'This account expired on March 31st as per the annual policy. Please register a new account to continue.'
+        };
+      }
+
       const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
       const isUserAdmin = matched.role === 'admin' || matched.email.toLowerCase() === 'admin@company.com' || adminEmails.includes(matched.email.toLowerCase());
 
@@ -210,6 +248,9 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
           googleId: matched.googleId || '',
           avatarUrl: matched.avatarUrl || '',
           role: matched.role || 'student',
+          schoolName: matched.schoolName || '',
+          phoneNumber: matched.phoneNumber || '',
+          dob: matched.dob || '',
           isAdmin: isUserAdmin
         },
         message: 'Successfully signed in!'
@@ -256,7 +297,16 @@ export async function dbRegisterOrLoginGoogleUser(profile: GoogleUserProfile): P
     let matched = localUsers.find((u: any) => u.email.toLowerCase() === profile.email.toLowerCase() || u.googleId === profile.googleId);
     
     let isNew = false;
-    if (!matched) {
+    // If matched but expired, reset it to treat it as a new registration for the new year
+    if (matched && isAccountExpired(matched.createdAt)) {
+      console.log(`[Google OAuth] Overwriting expired local account for ${profile.email}`);
+      isNew = true;
+      matched.createdAt = new Date().toISOString();
+      matched.name = profile.name;
+      matched.avatarUrl = profile.picture || matched.avatarUrl;
+      matched.selectedBoard = profile.selectedBoard || matched.selectedBoard || 'cbse';
+      localStorage.setItem('kootmate_users', JSON.stringify(localUsers));
+    } else if (!matched) {
       isNew = true;
       matched = {
         name: profile.name,
@@ -277,7 +327,7 @@ export async function dbRegisterOrLoginGoogleUser(profile: GoogleUserProfile): P
       localStorage.setItem('kootmate_users', JSON.stringify(localUsers));
     }
 
-    // Perform fine-tuned Supabase insert if active
+    // Perform fine-tuned Supabase insert or overwrite if active
     const supabase = getSupabase();
     if (supabase) {
       try {
@@ -296,7 +346,22 @@ export async function dbRegisterOrLoginGoogleUser(profile: GoogleUserProfile): P
           localStorage.removeItem('kootmate_supabase_table_error');
         }
 
-        if (!dbUser && !fetchError) {
+        if (dbUser) {
+          // Check if database user is expired. If so, update their created_at to reset their cycle!
+          if (isAccountExpired(dbUser.created_at)) {
+            console.log(`[Google OAuth] Resetting expired Supabase account for ${profile.email}`);
+            isNew = true;
+            await supabase
+              .from('users')
+              .update({
+                name: profile.name,
+                avatar_url: profile.picture || dbUser.avatar_url,
+                selected_board: profile.selectedBoard || dbUser.selected_board || 'cbse',
+                created_at: new Date().toISOString() // RESET creation timestamp to now!
+              })
+              .eq('email', profile.email.toLowerCase());
+          }
+        } else if (!fetchError) {
           const { error: insertError } = await supabase
             .from('users')
             .insert([
@@ -387,11 +452,17 @@ CREATE TABLE IF NOT EXISTS users (
   google_id TEXT DEFAULT '',
   role TEXT DEFAULT 'student',
   avatar_url TEXT DEFAULT '',
+  phone_number TEXT DEFAULT '',
+  school_name TEXT DEFAULT '',
+  dob TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Safe patch for users who already created the 'users' table without the 'role' column:
+-- Safe patch for users who already created the 'users' table without the extra columns:
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'student';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS school_name TEXT DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS dob TEXT DEFAULT '';
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;

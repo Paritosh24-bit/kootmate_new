@@ -412,12 +412,23 @@ export default function AdminCMS() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => {
-                setEditingContent(null);
+                setEditingContent({ is_free_preview: true } as any);
                 setShowAddForm(true);
               }}
               className="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-md hover:scale-[1.01]"
             >
-              <PlusCircle className="w-4.5 h-4.5 text-neutral-950" />
+              <Sparkles className="w-4.5 h-4.5 text-neutral-950" />
+              Add Free Preview Material
+            </button>
+
+            <button
+              onClick={() => {
+                setEditingContent(null);
+                setShowAddForm(true);
+              }}
+              className="px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-black text-xs uppercase tracking-wider rounded-xl border border-white/25 transition-all cursor-pointer flex items-center gap-1.5 shadow-md hover:scale-[1.01]"
+            >
+              <PlusCircle className="w-4.5 h-4.5 text-white" />
               Upload New Material File
             </button>
           </div>

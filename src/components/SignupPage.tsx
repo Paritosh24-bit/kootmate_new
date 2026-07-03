@@ -28,6 +28,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
   const [password, setPassword] = useState('');
   const [coupon, setCoupon] = useState('');
   const [schoolName, setSchoolName] = useState('');
+  const [phone, setPhone] = useState('');
   const [dob, setDob] = useState('');
   const [selectedBoardChoice, setSelectedBoardChoice] = useState<'cbse' | 'ssc'>('cbse');
   const [selectedRole, setSelectedRole] = useState<'student' | 'teacher'>('student');
@@ -55,6 +56,10 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
     }
     if (!password || password.length < 4) {
       setErrorMsg('Please create a password of at least 4 characters.');
+      return;
+    }
+    if (!phone.trim()) {
+      setErrorMsg('Phone number is required and must be filled.');
       return;
     }
 
@@ -112,6 +117,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
           password: password, // safe password created by the user during signup
           role: selectedRole,
           school_name: schoolName,
+          phone_number: phone,
           dob: dob
         }),
       });
@@ -133,6 +139,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
             selectedBoard: selectedBoardChoice,
             role: selectedRole,
             schoolName: schoolName,
+            phoneNumber: phone,
             dob: dob,
             createdAt: new Date().toISOString()
           });
@@ -145,8 +152,10 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
         setTimeout(() => {
           const finalUser = { 
             ...res.user, 
+            selectedBoard: selectedBoardChoice,
             role: selectedRole,
             schoolName: schoolName,
+            phoneNumber: phone,
             dob: dob
           };
           onLoginSuccess(finalUser);
@@ -297,6 +306,25 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
 
               <div>
                 <label className="block text-xs font-black uppercase tracking-wider text-black mb-1.5">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                    <span className="text-sm font-bold pl-0.5">📞</span>
+                  </div>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Enter your phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="block w-full pl-11 pr-4 py-3 border border-neutral-250 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-white font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-black mb-1.5">
                   Class 10 Syllabus Board
                 </label>
                 <div className="grid grid-cols-2 gap-3" id="signup-board-selector">
@@ -329,7 +357,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
                 <>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-wider text-black mb-1.5">
-                      School Name
+                      School Name (Optional)
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
@@ -337,8 +365,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
                       </div>
                       <input
                         type="text"
-                        required
-                        placeholder="Enter your school name (e.g. Cleverly Academy)"
+                        placeholder="Enter your school name (optional)"
                         value={schoolName}
                         onChange={(e) => setSchoolName(e.target.value)}
                         className="block w-full pl-11 pr-4 py-3 border border-neutral-250 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-white font-semibold"
@@ -365,30 +392,6 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
                   </div>
                 </>
               )}
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-black mb-1.5">
-                  Coupon or Referral Code (Optional)
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
-                    <Gift className="w-5 h-5" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="OFFER2026 or Referral Code"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value.toUpperCase())}
-                    className="block w-full pl-11 pr-4 py-3 border border-neutral-250 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-white font-semibold"
-                  />
-                </div>
-                {isCouponApplied && (
-                  <p className="mt-1.5 text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    <span>Coupon registered successfully! Your rewards will activate on login.</span>
-                  </p>
-                )}
-              </div>
 
               <button
                 type="submit"

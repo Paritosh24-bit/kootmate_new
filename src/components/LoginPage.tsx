@@ -59,14 +59,10 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
           finalUser.role = 'teacher';
         } else if (finalUser.email === 'student@cleverly.com') {
           finalUser.role = 'student';
-          finalUser.schoolName = schoolName || "St. Xavier's High School";
-          finalUser.dob = dob || '2011-05-15';
+          finalUser.schoolName = finalUser.schoolName || "St. Xavier's High School";
+          finalUser.dob = finalUser.dob || '2011-05-15';
         } else if (finalUser.email !== 'admin@company.com') {
-          finalUser.role = loginRole;
-          if (loginRole === 'student') {
-            finalUser.schoolName = schoolName;
-            finalUser.dob = dob;
-          }
+          finalUser.role = finalUser.role || loginRole;
         }
 
         setSuccessMsg(res.message || 'Access granted! Loading your Cleverly Companion...');
@@ -270,49 +266,6 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
                 />
               </div>
             </div>
-
-            {loginRole === 'student' && (
-              <>
-                <div>
-                  <label htmlFor="login-school-input" className="block text-xs font-black uppercase tracking-wider text-neutral-800 mb-1.5">
-                    School Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
-                      <GraduationCap className="w-5 h-5" />
-                    </div>
-                    <input
-                      id="login-school-input"
-                      type="text"
-                      required
-                      placeholder="Enter your school name (e.g. Cleverly Academy)"
-                      value={schoolName}
-                      onChange={(e) => setSchoolName(e.target.value)}
-                      className="block w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-white font-semibold"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="login-dob-input" className="block text-xs font-black uppercase tracking-wider text-neutral-800 mb-1.5">
-                    Date of Birth
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
-                      <Calendar className="w-5 h-5" />
-                    </div>
-                    <input
-                      id="login-dob-input"
-                      type="date"
-                      required
-                      value={dob}
-                      onChange={(e) => setDob(e.target.value)}
-                      className="block w-full pl-11 pr-4 py-3 border-2 border-slate-200 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-white font-semibold cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
 
             {/* Action Verify Login Button */}
             <button

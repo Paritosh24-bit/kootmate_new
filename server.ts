@@ -124,6 +124,27 @@ app.use(express.json());
     `);
   });
 
+  // Helper to check if an account is expired based on its registration date
+  function isAccountExpired(createdAtString?: string): boolean {
+    if (!createdAtString) return false;
+    const created = new Date(createdAtString);
+    if (isNaN(created.getTime())) return false;
+    
+    const createdYear = created.getFullYear();
+    // Expiration date for this account is March 31st of the appropriate year
+    let expiryYear = createdYear;
+    const march31ThisYear = new Date(createdYear, 2, 31, 23, 59, 59, 999); // Month 2 is March
+    
+    if (created > march31ThisYear) {
+      expiryYear = createdYear + 1;
+    }
+    
+    const expirationDate = new Date(expiryYear, 2, 31, 23, 59, 59, 999);
+    const now = new Date();
+    
+    return now > expirationDate;
+  }
+
   // Global OTP memory store to support temporary, highly secure 5-minute expiries
   const otpStore = new Map<string, { otp: string; expiresAt: Date }>();
 
@@ -371,7 +392,7 @@ app.use(express.json());
   // Dedicated API to verify secure 6-digit OTP codes and register or sign in students
   app.post("/api/verify-otp", async (req, res) => {
     try {
-      const { email, otp, name, referral_code, selected_board, password } = req.body;
+      const { email, otp, name, referral_code, selected_board, password, phone_number, role, school_name, dob } = req.body;
       if (!email || !otp) {
         return res.status(400).json({ success: false, error: "Email and OTP parameters are required." });
       }
@@ -407,36 +428,83 @@ app.use(express.json());
           const supabase = createClient(vUrl, vKey);
 
           const { data: userRecord, error: findError } = await supabase
-            .from("users")
-            .select("*")
-            .eq("email", searchEmail)
-            .maybeSingle();
+             .from("users")
+             .select("*")
+             .eq("email", searchEmail)
+             .maybeSingle();
 
           if (findError) {
             console.error("[Email OTP Store] Supabase fetch error:", findError.message);
           }
 
           if (userRecord) {
-            let updatedBoard = userRecord.selected_board || "cbse";
-            if (selected_board && selected_board !== userRecord.selected_board) {
-              updatedBoard = selected_board;
-              const { error: updateError } = await supabase
-                .from("users")
-                .update({ selected_board: selected_board })
-                .eq("email", searchEmail);
-              if (updateError) {
-                console.error("[Email OTP Store] Supabase board update error:", updateError.message);
-              }
-            }
+            if (isAccountExpired(userRecord.created_at)) {
+              console.log(`[Email OTP Store] Overwriting expired account for ${searchEmail}`);
+              isNewAccount = true;
+              const newNameValue = name || "Learner Companion";
+              const newBoardValue = selected_board || "cbse";
+              const newReferralValue = referral_code || "";
+              const newPasswordValue = password || "";
 
-            profileUser = {
-              name: userRecord.name,
-              email: userRecord.email,
-              couponCode: userRecord.referral_code || "",
-              selectedBoard: updatedBoard,
-              googleId: userRecord.google_id || "",
-              avatarUrl: userRecord.avatar_url || "",
-            };
+              const { data: newUserRecord, error: insertError } = await supabase
+                .from("users")
+                .update({
+                  name: newNameValue,
+                  referral_code: newReferralValue,
+                  password: newPasswordValue,
+                  selected_board: newBoardValue,
+                  phone_number: phone_number || "",
+                  role: role || "student",
+                  school_name: school_name || "",
+                  dob: dob || "",
+                  created_at: new Date().toISOString()
+                })
+                .eq("email", searchEmail)
+                .select()
+                .maybeSingle();
+
+              if (insertError) {
+                console.error("[Email OTP Store] Supabase overwrite user error:", insertError.message);
+              }
+
+              profileUser = {
+                name: newUserRecord?.name || newNameValue,
+                email: searchEmail,
+                couponCode: newUserRecord?.referral_code || newReferralValue,
+                selectedBoard: newUserRecord?.selected_board || newBoardValue,
+                role: newUserRecord?.role || role || "student",
+                schoolName: newUserRecord?.school_name || school_name || "",
+                phoneNumber: newUserRecord?.phone_number || phone_number || "",
+                dob: newUserRecord?.dob || dob || "",
+                googleId: "",
+                avatarUrl: "",
+              };
+            } else {
+              let updatedBoard = userRecord.selected_board || "cbse";
+              if (selected_board && selected_board !== userRecord.selected_board) {
+                updatedBoard = selected_board;
+                const { error: updateError } = await supabase
+                  .from("users")
+                  .update({ selected_board: selected_board })
+                  .eq("email", searchEmail);
+                if (updateError) {
+                  console.error("[Email OTP Store] Supabase board update error:", updateError.message);
+                }
+              }
+
+              profileUser = {
+                name: userRecord.name,
+                email: userRecord.email,
+                couponCode: userRecord.referral_code || "",
+                selectedBoard: updatedBoard,
+                role: userRecord.role || "student",
+                schoolName: userRecord.school_name || "",
+                phoneNumber: userRecord.phone_number || "",
+                dob: userRecord.dob || "",
+                googleId: userRecord.google_id || "",
+                avatarUrl: userRecord.avatar_url || "",
+              };
+            }
           } else {
             // New user, register automatically!
             isNewAccount = true;
@@ -454,6 +522,10 @@ app.use(express.json());
                   referral_code: newReferralValue,
                   password: newPasswordValue,
                   selected_board: newBoardValue,
+                  phone_number: phone_number || "",
+                  role: role || "student",
+                  school_name: school_name || "",
+                  dob: dob || "",
                   created_at: new Date().toISOString()
                 }
               ])
@@ -469,6 +541,10 @@ app.use(express.json());
               email: searchEmail,
               couponCode: newUserRecord?.referral_code || newReferralValue,
               selectedBoard: newUserRecord?.selected_board || newBoardValue,
+              role: newUserRecord?.role || role || "student",
+              schoolName: newUserRecord?.school_name || school_name || "",
+              phoneNumber: newUserRecord?.phone_number || phone_number || "",
+              dob: newUserRecord?.dob || dob || "",
               googleId: "",
               avatarUrl: "",
             };
@@ -918,7 +994,7 @@ app.use(express.json());
   // POST /api/content - Create content metadata row
   app.post("/api/content", async (req, res) => {
     try {
-      const { board, subject, chapter, title, description, content_type, resource_url, thumbnail_url } = req.body;
+      const { board, subject, chapter, title, description, content_type, resource_url, thumbnail_url, is_free_preview } = req.body;
       if (!board || !subject || !chapter || !title || !content_type || !resource_url) {
         return res.status(400).json({ success: false, error: "Properties missing in the content record payload." });
       }
@@ -932,6 +1008,8 @@ app.use(express.json());
         content_type: content_type.toLowerCase(),
         resource_url,
         thumbnail_url: thumbnail_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+        is_free_preview: !!is_free_preview,
+        preview_clicks: 0,
         created_at: new Date().toISOString()
       };
 
@@ -975,6 +1053,50 @@ app.use(express.json());
     } catch (err: any) {
       console.error("[POST_API_CONTENT_ERROR]:", err);
       return res.status(500).json({ success: false, error: err.message || "Failed to create content item structure." });
+    }
+  });
+
+  // POST /api/content/:id/click - Increment free preview clicks
+  app.post("/api/content/:id/click", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const supabase = getServerSupabase();
+      let updatedInSupabase = false;
+      let returnedData = null;
+
+      if (supabase) {
+        try {
+          const dbId = isNaN(Number(id)) ? id : Number(id);
+          // First fetch current record to get the click count
+          const { data: record, error: getErr } = await supabase.from("content_items").select("preview_clicks").eq("id", dbId).maybeSingle();
+          if (!getErr && record) {
+            const currentClicks = Number(record.preview_clicks || 0);
+            const { data, error } = await supabase.from("content_items").update({ preview_clicks: currentClicks + 1 }).eq("id", dbId).select();
+            if (!error && data) {
+              updatedInSupabase = true;
+              returnedData = data?.[0];
+            }
+          }
+        } catch (dbErr: any) {
+          console.warn("[CLICK_DB_EXCEPTION]: fallback to local:", dbErr);
+        }
+      }
+
+      // Sync and fallback local storage
+      const items = await readLocalContentItems();
+      const idx = items.findIndex((x: any) => String(x.id) === String(id));
+      if (idx !== -1) {
+        items[idx].preview_clicks = Number(items[idx].preview_clicks || 0) + 1;
+        await writeLocalContentItems(items);
+        if (!updatedInSupabase) {
+          returnedData = items[idx];
+        }
+      }
+
+      return res.json({ success: true, data: returnedData });
+    } catch (err: any) {
+      console.error("[CLICK_API_ERROR]:", err);
+      return res.status(500).json({ success: false, error: err.message });
     }
   });
 

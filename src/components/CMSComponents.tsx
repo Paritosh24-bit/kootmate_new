@@ -363,7 +363,7 @@ export function PDFViewer({ url, title, onClose }: PDFViewerProps) {
   const [pdfDoc, setPdfDoc] = useState<any>(null);
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
-  const [scale, setScale] = useState(1.2);
+  const [scale, setScale] = useState(1.0);
   const [rotation, setRotation] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -801,6 +801,17 @@ export function ContentCard({
 
   const styleConfig = getIcon();
 
+  const logPreviewClick = async () => {
+    if (item.is_free_preview && item.id) {
+      try {
+        await fetch(`/api/content/${item.id}/click`, { method: "POST" });
+        console.log(`[Click Tracker] Registered free preview click for item: ${item.id}`);
+      } catch (err) {
+        console.error("Failed to log preview click:", err);
+      }
+    }
+  };
+
   return (
     <div className="bg-white not-dark:bg-neutral-900 border border-neutral-200 not-dark:border-neutral-800 rounded-3xl p-5 shadow-xs flex flex-col justify-between hover:shadow-lg transition-all duration-200 h-64 group relative overflow-hidden">
       
@@ -817,6 +828,11 @@ export function ContentCard({
             <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black uppercase tracking-widest bg-zinc-100 not-dark:bg-neutral-950 text-neutral-500 border border-neutral-200 not-dark:border-neutral-800">
               {item.board}
             </span>
+            {item.is_free_preview && (
+              <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-amber-500 text-neutral-950 border border-amber-600">
+                ★ Free Preview
+              </span>
+            )}
           </div>
 
           {/* Admin Management controls */}
@@ -864,9 +880,16 @@ export function ContentCard({
 
       {/* Button action area */}
       <div className="pt-3 border-t border-neutral-100 not-dark:border-neutral-800 flex items-center justify-between mt-auto">
-        <span className="text-[9px] font-mono text-neutral-400 font-bold">
-          {item.created_at ? new Date(item.created_at).toLocaleDateString() : "Active Unit"}
-        </span>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-mono text-neutral-400 font-bold">
+            {item.created_at ? new Date(item.created_at).toLocaleDateString() : "Active Unit"}
+          </span>
+          {isAdmin && item.is_free_preview && (
+            <span className="text-[9px] font-black uppercase text-amber-600 tracking-wider">
+              ★ {item.preview_clicks || 0} clicks
+            </span>
+          )}
+        </div>
 
         {/* Trigger content activation buttons */}
         {item.content_type === "mindmap" && (
@@ -874,6 +897,7 @@ export function ContentCard({
             href={item.resource_url}
             target="_blank"
             rel="noreferrer"
+            onClick={logPreviewClick}
             className="flex items-center gap-1 px-3 py-1.5 bg-violet-50 hover:bg-violet-100 text-violet-600 font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-violet-100/50"
           >
             <span>Open Mind Map</span>
@@ -886,6 +910,7 @@ export function ContentCard({
             href={item.resource_url}
             target="_blank"
             rel="noreferrer"
+            onClick={logPreviewClick}
             className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-emerald-100/50"
           >
             <span>Launch Game</span>
@@ -895,7 +920,10 @@ export function ContentCard({
 
         {item.content_type === "pdf" && (
           <button
-            onClick={() => onOpenPDF ? onOpenPDF(item.resource_url, item.title) : window.open(item.resource_url, "_blank")}
+            onClick={() => {
+              logPreviewClick();
+              onOpenPDF ? onOpenPDF(item.resource_url, item.title) : window.open(item.resource_url, "_blank");
+            }}
             className="flex items-center gap-1 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-red-100/50"
           >
             <span>Read PDF Notes</span>
@@ -905,7 +933,10 @@ export function ContentCard({
 
         {item.content_type === "audio" && (
           <button
-            onClick={() => onPlayAudio ? onPlayAudio(item.resource_url, item.title, item.chapter) : window.open(item.resource_url, "_blank")}
+            onClick={() => {
+              logPreviewClick();
+              onPlayAudio ? onPlayAudio(item.resource_url, item.title, item.chapter) : window.open(item.resource_url, "_blank");
+            }}
             className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-[#5c3beb] font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-indigo-100/50"
           >
             <span>Play Podcast</span>
@@ -1137,6 +1168,7 @@ export function AdminContentForm({
   const [contentType, setContentType] = useState(initialValues?.content_type || "pdf");
   const [resourceUrl, setResourceUrl] = useState(initialValues?.resource_url || "");
   const [thumbnailUrl, setThumbnailUrl] = useState(initialValues?.thumbnail_url || "");
+  const [isFreePreview, setIsFreePreview] = useState(initialValues?.is_free_preview || false);
 
   // Upload handling states
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -1166,12 +1198,22 @@ export function AdminContentForm({
       setSstDiscipline(matchedSst);
 
       // Now set the chapter
-      setChapter(initialValues.chapter || "");
+      if (initialValues.chapter) {
+        setChapter(initialValues.chapter);
+      } else {
+        const boardLessons = PRE_ENTERED_LESSONS[initialBoard] || PRE_ENTERED_LESSONS["CBSE"];
+        const subjectLessons = boardLessons[matchedSubject] || [];
+        const lessons = matchedSubject === "Social Studies" && matchedSst
+          ? (subjectLessons as Record<string, string[]>)[matchedSst] || []
+          : subjectLessons as string[];
+        setChapter(lessons[0] || "");
+      }
       setTitle(initialValues.title || "");
       setDescription(initialValues.description || "");
       setContentType(initialValues.content_type || "pdf");
       setResourceUrl(initialValues.resource_url || "");
       setThumbnailUrl(initialValues.thumbnail_url || "");
+      setIsFreePreview(!!initialValues.is_free_preview);
       
       setUploadFile(null);
       setUploadStatus("idle");
@@ -1191,6 +1233,7 @@ export function AdminContentForm({
       setContentType("pdf");
       setResourceUrl("");
       setThumbnailUrl("");
+      setIsFreePreview(false);
     }
   }, [initialValues]);
 
@@ -1374,6 +1417,7 @@ export function AdminContentForm({
         content_type: contentType,
         resource_url: finalUrl,
         thumbnail_url: thumbnailUrl.trim(),
+        is_free_preview: isFreePreview,
         id: initialValues?.id
       });
     } catch (e) {
@@ -1517,6 +1561,25 @@ export function AdminContentForm({
           onChange={(e) => setDescription(e.target.value)}
           className="w-full px-4 py-3 border-2 border-indigo-200 bg-white text-zinc-900 font-extrabold text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-transparent transition-all shadow-sm resize-none placeholder-zinc-400 leading-relaxed"
         />
+      </div>
+
+      {/* Free Preview Toggle */}
+      <div className="flex items-center gap-3 p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl">
+        <input
+          type="checkbox"
+          id="is-free-preview-checkbox"
+          checked={isFreePreview}
+          onChange={(e) => setIsFreePreview(e.target.checked)}
+          className="w-5 h-5 accent-amber-600 rounded cursor-pointer border-2 border-amber-300"
+        />
+        <div className="space-y-0.5">
+          <label htmlFor="is-free-preview-checkbox" className="text-xs font-black uppercase text-amber-950 tracking-wider cursor-pointer">
+            ★ Mark as Free Preview Material
+          </label>
+          <p className="text-[11px] text-amber-800 font-bold leading-normal">
+            Marking this option enables this material to appear on the landing page's "Free Preview" click widgets. It will be completely non-downloadable for users.
+          </p>
+        </div>
       </div>
 
       {/* CONDITIONAL MEDIA FIELDS */}

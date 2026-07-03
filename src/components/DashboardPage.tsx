@@ -1401,7 +1401,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                   >
                     <Gamepad2 className={`w-5 h-5 ${activeCategoryTab === 'games' ? 'text-white' : 'text-rose-500'}`} />
                     <div className="flex-1">
-                      <span className="block leading-none">Interactive Games</span>
+                      <span className="block leading-none">Back and Forth</span>
                       <span className={`text-[9px] block mt-0.5 ${activeCategoryTab === 'games' ? 'text-rose-200' : 'text-neutral-500 dark:text-neutral-400'}`}>Play formula challenges</span>
                     </div>
                   </button>
@@ -1479,7 +1479,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                         {activeCategoryTab === 'infographics' && 'No Infographics available yet'}
                         {activeCategoryTab === 'audio' && 'Audio Lessons are preparing'}
                         {activeCategoryTab === 'question_bank' && 'Question Banks are being prepared'}
-                        {activeCategoryTab === 'games' && 'Interactive games coming soon'}
+                        {activeCategoryTab === 'games' && 'Back and Forth coming soon'}
                       </h4>
 
                       <p className="max-w-md mx-auto text-xs sm:text-sm text-neutral-900 mb-8 font-extrabold leading-relaxed">
@@ -1487,7 +1487,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                         {activeCategoryTab === 'infographics' && `We are processing high-definition visual memory posters representing timelines, geographical mapping vectors, and civics schemas.`}
                         {activeCategoryTab === 'audio' && `Engaging, standard voice-over scripts are in deep recording sessions, preparing podcasts for your class chapters.`}
                         {activeCategoryTab === 'question_bank' && `We are organizing comprehensive high-priority Class 10 question banks, including previous year questions and challenging test items.`}
-                        {activeCategoryTab === 'games' && `Formula-racer and equation-matching puzzle games are being programmed for ${selectedSubject.name}. Stay tuned for fun activities!`}
+                        {activeCategoryTab === 'games' && `Formula-racer, equation-matching and dynamic challenge modes are being programmed for ${selectedSubject.name}. Stay tuned for Back and Forth games!`}
                       </p>
 
                       {/* Empty state interactive utility forms to verify intent & functionality */}
