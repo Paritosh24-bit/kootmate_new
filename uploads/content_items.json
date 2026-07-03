@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1782121889857,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Chemical Reactions and Equations",
+    "title": "Mindmap",
+    "description": "",
+    "content_type": "mindmap",
+    "resource_url": "https://chem-map-bloom.lovable.app/",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T09:51:29.503Z"
+  },
+  {
+    "id": 1782122036605,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Chemical Reactions and Equations",
+    "title": "mindmap",
+    "description": "",
+    "content_type": "mindmap",
+    "resource_url": "https://chem-map-bloom.lovable.app/",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T09:53:56.428Z"
+  },
+  {
+    "id": 1782122286230,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Chemical Reactions and Equations",
+    "title": "mindmap",
+    "description": "",
+    "content_type": "mindmap",
+    "resource_url": "https://chem-map-bloom.lovable.app/",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T09:58:06.048Z"
+  },
+  {
+    "id": 1782123329681,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Chemical Reactions and Equations",
+    "title": "mindmqp",
+    "description": "",
+    "content_type": "mindmap",
+    "resource_url": "https://chem-map-bloom.lovable.app/",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T10:15:29.500Z"
+  },
+  {
+    "id": 1782123690985,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Chemical Reactions and Equations",
+    "title": "sdvf",
+    "description": "",
+    "content_type": "pdf",
+    "resource_url": "https://kootmate-content.e919105d6b0d81f6ecf5f7ae83c1992d.r2.cloudflarestorage.com/class10/cbse/science/chemicalreactionsandequations/sdvf.pdf",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T10:21:30.817Z"
+  },
+  {
+    "id": 1782125458228,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Heredity",
+    "title": "pdf file",
+    "description": "",
+    "content_type": "pdf",
+    "resource_url": "https://pub-935788bb329c42bd9d37c92f09ca9d69.r2.dev/class10/cbse/science/heredity/pdf_file.pdf",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T10:50:57.851Z"
+  },
+  {
+    "id": 1782125673500,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Light - Reflection and Refraction",
+    "title": "vbn",
+    "description": "",
+    "content_type": "pdf",
+    "resource_url": "https://pub-935788bb329c42bd9d37c92f09ca9d69.r2.dev/class10/cbse/science/lightreflectionandrefraction/vbn.pdf",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T10:54:33.176Z"
+  },
+  {
+    "id": 1782126650864,
+    "board": "CBSE",
+    "subject": "Science",
+    "chapter": "Ch1",
+    "title": "Test",
+    "description": "",
+    "content_type": "mindmap",
+    "resource_url": "https://example.com",
+    "thumbnail_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop",
+    "created_at": "2026-06-22T11:10:50.532Z"
+  }
+]

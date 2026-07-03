@@ -1,0 +1,6 @@
+{
+  "name": "Cleverly",
+  "description": "Cleverly is a 5-in-1 complete revision toolkit for Class 10 students supporting CBSE and SSC boards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
