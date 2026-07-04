@@ -202,7 +202,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
       desc: 'High-density summary sheets, charts, and infographics designed to deliver massive chapter value in under 5 minutes.',
       icon: BookOpen,
       bgLight: 'bg-purple-50 border-purple-200 text-purple-700',
-      tag: '⚡ Cheat Sheets'
+      tag: '⚡ Infographics'
     },
     {
       id: 'audio',
@@ -220,7 +220,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
       desc: 'The ultimate question bank! The 13 toughest questions for every chapter, complete with detailed secure PDFs and answers.',
       icon: Trophy,
       bgLight: 'bg-emerald-50 border-emerald-200 text-emerald-700',
-      tag: '🏆 Elite Practice'
+      tag: '🏆 Long Answers - Elite Practice'
     },
   ];
 
@@ -232,7 +232,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
     desc: 'Formulas, definitions, and active recall exercises designed for students who want to test their memory retention daily.',
     icon: Compass,
     bgLight: 'bg-amber-50 border-amber-200 text-amber-700',
-    tag: '🧠 Active Recall'
+    tag: '🧠 Flashcards - Active Recall'
   };
 
   // 13 Toughest Questions for Chapter 1
