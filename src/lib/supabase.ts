@@ -65,8 +65,15 @@ export async function dbRegisterUser(profile: UserProfile): Promise<{ success: b
     const localUsers = JSON.parse(localUsersStr);
     
     // Check local duplicate
-    if (localUsers.some((u: any) => u.email.toLowerCase() === profile.email.toLowerCase())) {
-      return { success: false, message: 'An account with this email address already exists.' };
+    const existingLocalIdx = localUsers.findIndex((u: any) => u.email.toLowerCase() === profile.email.toLowerCase());
+    if (existingLocalIdx !== -1) {
+      const existingUser = localUsers[existingLocalIdx];
+      if (isAccountExpired(existingUser.createdAt)) {
+        // Expired! Overwrite or remove old one
+        localUsers.splice(existingLocalIdx, 1);
+      } else {
+        return { success: false, message: 'An account with this email address already exists.' };
+      }
     }
 
     localUsers.push({
@@ -91,28 +98,59 @@ export async function dbRegisterUser(profile: UserProfile): Promise<{ success: b
     // 2. Perform live Supabase sync if credentials are set up
     const supabase = getSupabase();
     if (supabase) {
-      const { data, error } = await supabase
+      // Check if email already exists in Supabase
+      const { data: dbUser, error: checkError } = await supabase
         .from('users')
-        .insert([
-          {
-            name: profile.name,
-            email: profile.email.toLowerCase(),
-            password: profile.password || '',
-            referral_code: profile.coupon_code || '',
-            selected_board: profile.selected_board || 'cbse',
-            created_at: new Date().toISOString(),
-            role: profile.role || 'student'
-          }
-        ]);
+        .select('*')
+        .eq('email', profile.email.toLowerCase())
+        .maybeSingle();
 
-      if (error) {
-        console.error('Supabase write error:', error.message);
-        if (error.message && (error.message.includes('public.users') || error.message.includes('relation "users" does not exist') || error.message.includes('schema cache'))) {
+      let writeError = null;
+
+      if (dbUser) {
+        if (isAccountExpired(dbUser.created_at)) {
+          // Reset expired Supabase account
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({
+              name: profile.name,
+              password: profile.password || '',
+              referral_code: profile.coupon_code || '',
+              selected_board: profile.selected_board || 'cbse',
+              created_at: new Date().toISOString(),
+              role: profile.role || 'student'
+            })
+            .eq('email', profile.email.toLowerCase());
+          writeError = updateError;
+        } else {
+          return { success: false, message: 'An account with this email address already exists.' };
+        }
+      } else {
+        // Normal insert
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert([
+            {
+              name: profile.name,
+              email: profile.email.toLowerCase(),
+              password: profile.password || '',
+              referral_code: profile.coupon_code || '',
+              selected_board: profile.selected_board || 'cbse',
+              created_at: new Date().toISOString(),
+              role: profile.role || 'student'
+            }
+          ]);
+        writeError = insertError;
+      }
+
+      if (writeError) {
+        console.error('Supabase write error:', writeError.message);
+        if (writeError.message && (writeError.message.includes('public.users') || writeError.message.includes('relation "users" does not exist') || writeError.message.includes('schema cache'))) {
           localStorage.setItem('kootmate_supabase_table_error', 'true');
         }
         return { 
           success: true, 
-          message: `Local profile saved! Supabase insert status: ${error.message}` 
+          message: `Local profile saved! Supabase insert status: ${writeError.message}` 
         };
       } else {
         localStorage.removeItem('kootmate_supabase_table_error');
