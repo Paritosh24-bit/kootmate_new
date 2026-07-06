@@ -206,7 +206,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
       desc: 'High-density summary sheets, charts, and infographics designed to deliver massive chapter value in under 5 minutes.',
       icon: BookOpen,
       bgLight: 'bg-purple-50 border-purple-200 text-purple-700',
-      tag: '⚡ Cheat Sheets'
+      tag: '⚡ Infographics'
     },
     {
       id: 'audio',
@@ -224,7 +224,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
       desc: 'The ultimate question bank! The 13 toughest questions for every chapter, complete with detailed secure PDFs and answers.',
       icon: Trophy,
       bgLight: 'bg-emerald-50 border-emerald-200 text-emerald-700',
-      tag: '🏆 Elite Practice'
+      tag: '🏆 Long Answers - Elite Practice'
     },
   ];
 
@@ -236,24 +236,24 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
     desc: 'Formulas, definitions, and active recall exercises designed for students who want to test their memory retention daily.',
     icon: Compass,
     bgLight: 'bg-amber-50 border-amber-200 text-amber-700',
-    tag: '🧠 Active Recall'
+    tag: '🧠 Flashcards - Active Recall'
   };
 
   // 13 Toughest Questions for Chapter 1
   const toughestQuestions = [
-    { q: "Why should a magnesium ribbon be cleaned before burning in air?", a: "Magnesium is very reactive. When exposed to air, it forms a protective layer of magnesium carbonate on its surface which prevents further reaction. Cleaning the ribbon with sandpaper removes this oxide layer so it can burn readily with oxygen." },
-    { q: "Balance the following chemical equation: Fe + H2O → Fe3O4 + H2.", a: "The balanced equation is: 3Fe + 4H2O → Fe3O4 + 4H2." },
-    { q: "What is a balanced chemical equation? Why should chemical equations be balanced?", a: "A chemical equation in which the number of atoms of each element on both LHS (reactants) and RHS (products) are equal is called a balanced equation. It must be balanced to satisfy the Law of Conservation of Mass, which states that mass can neither be created nor destroyed in a chemical reaction." },
-    { q: "Write the balanced chemical equation for the reaction: Hydrogen + Chlorine → Hydrogen chloride.", a: "H2 + Cl2 → 2HCl" },
-    { q: "Why is respiration considered an exothermic reaction? Explain.", a: "During respiration, glucose (formed during digestion) combines with oxygen in our body cells to release carbon dioxide, water, and massive amounts of energy in the form of heat/ATP. Hence, it is an exothermic reaction. C6H12O6 + 6O2 → 6CO2 + 6H2O + Energy." },
-    { q: "Why are decomposition reactions called the opposite of combination reactions? Write equations for these reactions.", a: "In a combination reaction, two or more reactants combine to form a single product. Example: C + O2 → CO2. In a decomposition reaction, a single reactant breaks down to form two or more simpler products. Example: CaCO3 → CaO + CO2. Thus, they are chemically opposite." },
-    { q: "Write one equation each for decomposition reactions where energy is supplied in the form of heat, light or electricity.", a: "1) Heat (Thermal): CaCO3(s) + Heat → CaO(s) + CO2(g).\n2) Light (Photolytic): 2AgCl(s) + Sunlight → 2Ag(s) + Cl2(g).\n3) Electricity (Electrolytic): 2H2O(l) + Electricity → 2H2(g) + O2(g)." },
-    { q: "What is the difference between displacement and double displacement reactions? Write equations for these reactions.", a: "In a displacement reaction, a more reactive element displaces a less reactive element from its salt solution. Example: Fe(s) + CuSO4(aq) → FeSO4(aq) + Cu(s). In a double displacement reaction, two compounds exchange ions to form two new compounds. Example: Na2SO4(aq) + BaCl2(aq) → BaSO4(s) + 2NaCl(aq)." },
-    { q: "In the refining of silver, the recovery of silver from silver nitrate solution involved displacement by copper metal. Write down the reaction involved.", a: "2AgNO3(aq) + Cu(s) → Cu(NO3)2(aq) + 2Ag(s)" },
-    { q: "What do you mean by a precipitation reaction? Explain by giving examples.", a: "Any reaction in which an insoluble solid (called a precipitate) is formed that separates out from the solution is called a precipitation reaction. Example: Na2SO4(aq) + BaCl2(aq) → BaSO4(s)↓ (white precipitate) + 2NaCl(aq)." },
-    { q: "Explain the following in terms of gain or loss of oxygen with two examples each: (a) Oxidation, (b) Reduction.", a: "(a) Oxidation: Gain of oxygen during a reaction. Example: 2Cu + O2 + Heat → 2CuO (Copper is oxidized).\n(b) Reduction: Loss of oxygen during a reaction. Example: CuO + H2 + Heat → Cu + H2O (Copper oxide is reduced)." },
-    { q: "A shiny brown colored element ‘X’ on heating in air becomes black in color. Name the element ‘X’ and the black colored compound formed.", a: "The shiny brown element ‘X’ is Copper (Cu). The black colored compound formed is Copper(II) Oxide (CuO). Reaction: 2Cu + O2 + Heat → 2CuO." },
-    { q: "Why do we apply paint on iron articles? How do oil and fat containing food items get protected from rancidity?", a: "Paint forms a protective barrier that prevents moisture and air from coming into direct contact with iron, avoiding rusting.\nOil/fat foods are saved from rancidity by adding anti-oxidants, packing them in airtight containers, or flushing the packets with inert Nitrogen gas to prevent atmospheric oxidation." }
+    { q: "Why should a magnesium ribbon be cleaned before burning in air?"},
+    { q: "Balance the following chemical equation: Fe + H2O → Fe3O4 + H2."},
+    { q: "What is a balanced chemical equation? Why should chemical equations be balanced?"},
+    { q: "Write the balanced chemical equation for the reaction: Hydrogen + Chlorine → Hydrogen chloride."},
+    { q: "Why is respiration considered an exothermic reaction? Explain."},
+    { q: "Why are decomposition reactions called the opposite of combination reactions? Write equations for these reactions."},
+    { q: "Write one equation each for decomposition reactions where energy is supplied in the form of heat, light or electricity."},
+    { q: "What is the difference between displacement and double displacement reactions? Write equations for these reactions."},
+    { q: "In the refining of silver, the recovery of silver from silver nitrate solution involved displacement by copper metal. Write down the reaction involved."},
+    { q: "What do you mean by a precipitation reaction? Explain by giving examples."},
+    { q: "Explain the following in terms of gain or loss of oxygen with two examples each: (a) Oxidation, (b) Reduction."},
+    { q: "A shiny brown colored element ‘X’ on heating in air becomes black in color. Name the element ‘X’ and the black colored compound formed."},
+    { q: "Why do we apply paint on iron articles? How do oil and fat containing food items get protected from rancidity?"}
   ];
 
   // KootMate Active Recall Quiz
@@ -864,7 +864,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                               
                               {isExpanded && (
                                 <div className="p-4 bg-indigo-50/50 border-t-2 border-dashed border-black text-xs sm:text-sm font-bold text-neutral-800 leading-relaxed animate-fadeIn">
-                                  <p className="text-indigo-900 font-black mb-1">📝 Expert Verification Answer:</p>
+                                 
                                   <p className="whitespace-pre-line">{item.a}</p>
                                 </div>
                               )}
@@ -1157,7 +1157,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                       
                       {isExpanded && (
                         <div className="p-4 bg-indigo-50/50 border-t-2 border-dashed border-black text-xs sm:text-sm font-bold text-neutral-800 leading-relaxed animate-fadeIn">
-                          <p className="text-indigo-950 font-black mb-1 text-[11px] uppercase tracking-wider">📝 Expert Verified Answer:</p>
+          
                           <p className="whitespace-pre-line text-neutral-700">{item.a}</p>
                         </div>
                       )}
