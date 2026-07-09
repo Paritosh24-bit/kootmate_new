@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Layers, Award, Sparkles, ChevronRight, 
-  ArrowLeft, Compass, Loader2
+  ArrowLeft, Compass, Loader2, ChevronUp, ChevronDown, FileText
 } from 'lucide-react';
 import { 
   dbGetClasses, dbGetSubjects, dbGetChapters, 
@@ -10,6 +10,7 @@ import {
 import { ContentItem } from '../types';
 import { ContentGrid, PDFViewer, AudioPlayer } from './CMSComponents';
 import { normalizeSubjectName } from './DashboardPage';
+import { cbseQuestionsDb } from '../lib/questionsDb';
 
 interface StudentCMSProps {
   userBoard?: 'cbse' | 'ssc' | '';
@@ -38,6 +39,7 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
   // Floating readers state
   const [activeAudio, setActiveAudio] = useState<{ url: string; title: string; chapter: string } | null>(null);
   const [activePDF, setActivePDF] = useState<{ url: string; title: string } | null>(null);
+  const [expandedQuestionId, setExpandedQuestionId] = useState<number | null>(null);
 
   // Initialize and load classes/subjects/chapters directories
   const loadStudentDatabase = async () => {
@@ -103,7 +105,9 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
         }
         const data = await res.json();
         if (data.success && data.data) {
-          setContentItems(data.data);
+          // Filter out items that are marked as free preview in student login
+          const filtered = data.data.filter((item: any) => !item.is_free_preview);
+          setContentItems(filtered);
         } else {
           setContentItems([]);
         }
@@ -308,16 +312,21 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
               </p>
               
               <div className="space-y-2 text-left">
-                {visibleChapters.map((ch, idx) => (
-                  <div
-                    key={ch.id}
-                    onClick={() => setSelectedChapter(ch)}
-                    className={`p-4 rounded-2xl border text-left cursor-pointer transition-all duration-200 ${
-                      selectedChapter?.id === ch.id
-                        ? 'border-[#5c3beb] bg-indigo-50/50 shadow-sm font-black'
-                        : 'border-neutral-200 hover:border-neutral-350 bg-white'
-                    }`}
-                  >
+                {visibleChapters.map((ch, idx) => {
+                  const isChActive = selectedChapter?.id === ch.id;
+                  return (
+                    <div
+                      key={ch.id}
+                      onClick={() => {
+                        setSelectedChapter(ch);
+                        setExpandedQuestionId(null);
+                      }}
+                      className={`p-4 rounded-2xl border text-left cursor-pointer transition-all duration-200 ${
+                        isChActive
+                          ? 'border-[#5c3beb] bg-indigo-50/50 shadow-sm font-black'
+                          : 'border-neutral-200 hover:border-neutral-350 bg-white'
+                      }`}
+                    >
                     <div className="flex items-center gap-2.5">
                       <span className={`w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center shrink-0 ${
                         selectedChapter?.id === ch.id ? 'bg-[#5c3beb] text-white' : 'bg-neutral-100 text-neutral-500'
@@ -334,7 +343,8 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
 
                 {visibleChapters.length === 0 && (
                   <div className="p-8 text-center border-2 border-dashed border-neutral-150 rounded-2xl text-neutral-400 font-bold text-xs">
@@ -382,6 +392,73 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
                         onPlayAudio={(url, title, chap) => setActiveAudio({ url, title, chapter: chap })}
                         onOpenPDF={(url, title) => setActivePDF({ url, title })}
                       />
+
+                      {/* NCERT Chapter Question Bank Section */}
+                      {(() => {
+                        const hasUploadedQuestionBanks = contentItems.some(
+                          (item) => item.content_type?.toLowerCase() === "question_bank" || item.content_type?.toLowerCase() === "questionbank"
+                        );
+                        if (hasUploadedQuestionBanks) return null;
+
+                        const subName = normalizeSubjectName(selectedSubject!.subject_name);
+                        const parsedQuestions = cbseQuestionsDb[subName]?.[selectedChapter.chapter_name] || [];
+                        if (parsedQuestions.length === 0) return null;
+                        
+                        return (
+                          <div className="pt-6 border-t border-neutral-200 mt-6 space-y-4">
+                            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-150 flex items-center gap-3">
+                              <span className="p-2 rounded-xl bg-emerald-600 text-white text-xs">🏆</span>
+                              <div>
+                                <h4 className="text-xs font-black text-emerald-950 uppercase tracking-wider">
+                                  NCERT Board Question Bank: {selectedChapter.chapter_name}
+                                </h4>
+                                <p className="text-[10px] text-emerald-800 font-bold leading-none mt-1">
+                                  Core Class 10 questions with expert written solutions.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2.5">
+                              {parsedQuestions.map((item, index) => {
+                                const isExpanded = expandedQuestionId === index;
+                                const hasAnswer = !!item.a;
+                                return (
+                                  <div 
+                                    key={index} 
+                                    className={`border border-neutral-200 ${hasAnswer ? 'hover:border-emerald-400' : ''} rounded-xl overflow-hidden bg-white shadow-sm transition-all duration-200`}
+                                  >
+                                    <button
+                                      onClick={() => hasAnswer && setExpandedQuestionId(isExpanded ? null : index)}
+                                      className={`w-full p-3.5 text-left font-black text-xs flex items-center justify-between gap-3 bg-neutral-50 ${hasAnswer ? 'hover:bg-neutral-100 cursor-pointer' : 'cursor-default'} transition-all`}
+                                    >
+                                      <span className="flex items-center gap-2">
+                                        <span className="w-5 h-5 rounded-full bg-[#5c3beb] text-white font-black text-[9px] flex items-center justify-center shrink-0">
+                                          {index + 1}
+                                        </span>
+                                        <span className="text-neutral-900 font-bold leading-snug">{item.q}</span>
+                                      </span>
+                                      {hasAnswer && (isExpanded ? (
+                                        <ChevronUp className="w-3.5 h-3.5 shrink-0 text-indigo-600" />
+                                      ) : (
+                                        <ChevronDown className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
+                                      ))}
+                                    </button>
+                                    
+                                    {hasAnswer && isExpanded && (
+                                      <div className="p-4 bg-indigo-50/10 border-t border-dashed border-neutral-200 text-xs font-bold text-neutral-700 leading-relaxed animate-fadeIn">
+                                        <div className="font-mono text-[8px] text-violet-500 uppercase tracking-widest mb-1.5 font-black">
+                                          EXPERT MODEL ANSWER:
+                                        </div>
+                                        <p className="whitespace-pre-line text-neutral-600 font-medium">{item.a}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
 

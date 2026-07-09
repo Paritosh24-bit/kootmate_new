@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Layers, HelpCircle, Gamepad2, Volume2, Image, 
   ArrowLeft, Search, Award, Flame, Zap, Bell, CheckCircle, 
-  ChevronRight, LogOut, Compass, Sparkles, PlusCircle, Bookmark, FileText 
+  ChevronRight, LogOut, Compass, Sparkles, PlusCircle, Bookmark, FileText,
+  ChevronUp, ChevronDown
 } from 'lucide-react';
 import Logo from './Logo';
 import StudentCMS from './StudentCMS';
 import AdminCMS from './AdminCMS';
 import { ContentGrid, PDFViewer, AudioPlayer } from './CMSComponents';
+import { cbseQuestionsDb } from '../lib/questionsDb';
 
 export function normalizeSubjectName(rawName: string): string {
   const clean = rawName
@@ -51,6 +53,7 @@ export default function DashboardPage({ user, onLogout, isDarkMode }: DashboardP
   const [supabaseTableError, setSupabaseTableError] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
   const [companionDashboardTab, setCompanionDashboardTab] = useState<'syllabus' | 'student_cms' | 'admin_cms'>('syllabus');
+  const [expandedQuestionId, setExpandedQuestionId] = useState<number | null>(null);
 
   useEffect(() => {
     const checkError = () => {
@@ -229,7 +232,13 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Transport and Communication",
         "Tourism"
       ],
-      civics: [],
+      civics: [
+        "Working of the Constitution",
+        "The Electoral Process",
+        "Political Parties",
+        "Social and Political Movements",
+        "Challenges Faced by Indian Democracy"
+      ],
       economics: []
     }
   };
@@ -276,7 +285,9 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         }
         const data = await res.json();
         if (data.success && data.data) {
-          setContentItems(data.data);
+          // Filter out items that are marked as free preview in student login
+          const filtered = data.data.filter((item: any) => !item.is_free_preview);
+          setContentItems(filtered);
         } else {
           setContentItems([]);
         }
@@ -439,7 +450,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
       id: 'ssc-sst',
       name: 'Social Studies',
       board: 'ssc' as const,
-      desc: 'Maharashtra State Board History & Geography (excluding Political Science as per board guidelines).',
+      desc: 'Maharashtra State Board History, Geography, and Political Science revision tools.',
       lessons: [
         'Historiography: Development in the West',
         'Historiography: Indian Tradition',
@@ -460,7 +471,12 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Human Settlements",
         "Economy and Occupations",
         "Transport and Communication",
-        "Tourism"
+        "Tourism",
+        "Working of the Constitution",
+        "The Electoral Process",
+        "Political Parties",
+        "Social and Political Movements",
+        "Challenges Faced by Indian Democracy"
       ]
     }
   ];
@@ -1195,7 +1211,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                   Social Studies is split into distinct disciplines. Select a branch below to explore its chapters. Once a branch is selected, the 4 study options and lesson selector will search those units.
                 </p>
                 
-                <div className={`grid grid-cols-1 gap-3 ${selectedSubject!.board === 'cbse' ? 'sm:grid-cols-3 lg:grid-cols-3' : 'sm:grid-cols-2'}`}>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-3">
                   {(selectedSubject!.board === 'cbse'
                     ? [
                         { key: 'history', name: 'History 📜', desc: 'World wars, nationalist movements & print culture.' },
@@ -1204,7 +1220,8 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                       ]
                     : [
                         { key: 'history', name: 'History 📜', desc: 'Historiography, applied history, heritage & mass media.' },
-                        { key: 'geography', name: 'Geography 🌍', desc: 'India-Brazil comparative climate, pop & tourism.' }
+                        { key: 'geography', name: 'Geography 🌍', desc: 'India-Brazil comparative climate, pop & tourism.' },
+                        { key: 'civics', name: 'Political Science ⚖️', desc: 'Constitution, electoral process, parties & movements.' }
                       ]
                   ).map((branch) => {
                     const isActive = selectedSubSubject === branch.key;
@@ -1435,6 +1452,95 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     }
                     return false;
                   });
+
+                  if (activeCategoryTab === 'question_bank') {
+                    const subName = normalizeSubjectName(selectedSubject!.name);
+                    const hasUploadedQuestionBanks = tabFilteredItems.length > 0;
+                    const parsedQuestions = hasUploadedQuestionBanks ? [] : (cbseQuestionsDb[subName]?.[selectedLesson] || []);
+
+                    if (parsedQuestions.length > 0 || hasUploadedQuestionBanks) {
+                      return (
+                        <div className="space-y-6 text-left animate-fadeIn">
+                          {parsedQuestions.length > 0 && (
+                            <div className="space-y-4">
+                              <div className="p-5 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
+                                <span className="p-2.5 rounded-xl bg-emerald-600 text-white text-xs">🏆</span>
+                                <div>
+                                  <h4 className="text-sm font-black text-emerald-950">
+                                    NCERT Chapter Question Bank: {selectedLesson}
+                                  </h4>
+                                  <p className="text-[11px] text-emerald-800 font-bold leading-none mt-0.5">
+                                    High-priority board exam questions with detailed expert solutions.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="space-y-3">
+                                {parsedQuestions.map((item, index) => {
+                                  const isExpanded = expandedQuestionId === index;
+                                  const hasAnswer = !!item.a;
+                                  return (
+                                    <div 
+                                      key={index} 
+                                      className={`border border-neutral-200 ${hasAnswer ? 'hover:border-emerald-500' : ''} rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-250`}
+                                    >
+                                      <button
+                                        onClick={() => hasAnswer && setExpandedQuestionId(isExpanded ? null : index)}
+                                        className={`w-full p-4 text-left font-black text-xs sm:text-sm flex items-center justify-between gap-3 bg-neutral-50 ${hasAnswer ? 'hover:bg-neutral-100 cursor-pointer' : 'cursor-default'} transition-all`}
+                                      >
+                                        <span className="flex items-center gap-2.5">
+                                          <span className="w-6 h-6 rounded-full bg-[#5c3beb] text-white font-black text-[10px] flex items-center justify-center shrink-0">
+                                            {index + 1}
+                                          </span>
+                                          <span className="text-neutral-950 font-black leading-snug">{item.q}</span>
+                                        </span>
+                                        {hasAnswer && (isExpanded ? (
+                                          <ChevronUp className="w-4.5 h-4.5 shrink-0 text-indigo-600" />
+                                        ) : (
+                                          <ChevronDown className="w-4.5 h-4.5 shrink-0 text-neutral-500" />
+                                        ))}
+                                      </button>
+                                      
+                                      {hasAnswer && isExpanded && (
+                                        <div className="p-5 bg-indigo-50/20 border-t border-dashed border-neutral-250 text-xs sm:text-sm font-bold text-neutral-800 leading-relaxed animate-fadeIn">
+                                          <div className="font-mono text-[9px] text-violet-500 uppercase tracking-widest mb-2 font-black">
+                                            BOARD MODEL ANSWER:
+                                          </div>
+                                          <p className="whitespace-pre-line text-neutral-700 font-bold">{item.a}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {hasUploadedQuestionBanks && (
+                            <div className="space-y-4">
+                              <div className="p-5 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
+                                <span className="p-2.5 rounded-xl bg-emerald-600 text-white text-xs">📝</span>
+                                <div>
+                                  <h4 className="text-sm font-black text-emerald-950">
+                                    Uploaded Question Banks: {selectedLesson}
+                                  </h4>
+                                  <p className="text-[11px] text-emerald-800 font-bold leading-none mt-0.5">
+                                    Official syllabus questions and answers uploaded by your mentors.
+                                  </p>
+                                </div>
+                              </div>
+                              <ContentGrid
+                                items={tabFilteredItems}
+                                isAdmin={false}
+                                onPlayAudio={(url, title, chap) => setActiveAudio({ url, title, chapter: chap })}
+                                onOpenPDF={(url, title) => setActivePDF({ url, title })}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  }
 
                   if (tabFilteredItems.length > 0) {
                     return (

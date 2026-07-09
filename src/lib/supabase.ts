@@ -296,19 +296,64 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
     }
 
     // 3. Fallback to default developer profile bypass for seamless testing
-    if (targetEmail === 'student@kootmate.com' && password === 'password123') {
-      return {
-        success: true,
-        user: {
-          name: 'Kootmate Scholar',
-          email: 'student@kootmate.com',
-          couponCode: 'WELCOME100',
-          selectedBoard: 'cbse',
-          role: 'student',
-          isAdmin: false
-        },
-        message: 'Signed in with pre-loaded account.'
-      };
+    if (password === 'password123') {
+      if (targetEmail === 'student@kootmate.com' || targetEmail === 'student@cleverly.com') {
+        return {
+          success: true,
+          user: {
+            name: 'Paritosh Student',
+            email: targetEmail,
+            couponCode: 'WELCOME100',
+            selectedBoard: 'cbse',
+            role: 'student',
+            schoolName: "St. Xavier's High School",
+            dob: '2011-05-15',
+            isAdmin: false
+          },
+          message: 'Signed in with pre-loaded account.'
+        };
+      }
+      if (targetEmail === 'teacher@cleverly.com') {
+        return {
+          success: true,
+          user: {
+            name: 'Anjali Teacher',
+            email: 'teacher@cleverly.com',
+            selectedBoard: 'cbse',
+            role: 'teacher',
+            isAdmin: false
+          },
+          message: 'Signed in with pre-loaded account.'
+        };
+      }
+      if (targetEmail === 'ssc_student@cleverly.com') {
+        return {
+          success: true,
+          user: {
+            name: 'Paritosh SSC Student',
+            email: 'ssc_student@cleverly.com',
+            selectedBoard: 'ssc',
+            role: 'student',
+            schoolName: 'Pune High School (SSC)',
+            dob: '2010-08-20',
+            isAdmin: false
+          },
+          message: 'Signed in with pre-loaded account.'
+        };
+      }
+      if (targetEmail === 'ssc_teacher@cleverly.com') {
+        return {
+          success: true,
+          user: {
+            name: 'Anjali SSC Teacher',
+            email: 'ssc_teacher@cleverly.com',
+            selectedBoard: 'ssc',
+            role: 'teacher',
+            isAdmin: false
+          },
+          message: 'Signed in with pre-loaded account.'
+        };
+      }
     }
 
     return { success: false, message: 'Invalid email or password combination. Verify entries or Sign Up!' };

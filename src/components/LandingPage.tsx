@@ -241,19 +241,58 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
 
   // 13 Toughest Questions for Chapter 1
   const toughestQuestions = [
-    { q: "Why should a magnesium ribbon be cleaned before burning in air?"},
-    { q: "Balance the following chemical equation: Fe + H2O → Fe3O4 + H2."},
-    { q: "What is a balanced chemical equation? Why should chemical equations be balanced?"},
-    { q: "Write the balanced chemical equation for the reaction: Hydrogen + Chlorine → Hydrogen chloride."},
-    { q: "Why is respiration considered an exothermic reaction? Explain."},
-    { q: "Why are decomposition reactions called the opposite of combination reactions? Write equations for these reactions."},
-    { q: "Write one equation each for decomposition reactions where energy is supplied in the form of heat, light or electricity."},
-    { q: "What is the difference between displacement and double displacement reactions? Write equations for these reactions."},
-    { q: "In the refining of silver, the recovery of silver from silver nitrate solution involved displacement by copper metal. Write down the reaction involved."},
-    { q: "What do you mean by a precipitation reaction? Explain by giving examples."},
-    { q: "Explain the following in terms of gain or loss of oxygen with two examples each: (a) Oxidation, (b) Reduction."},
-    { q: "A shiny brown colored element ‘X’ on heating in air becomes black in color. Name the element ‘X’ and the black colored compound formed."},
-    { q: "Why do we apply paint on iron articles? How do oil and fat containing food items get protected from rancidity?"}
+    { 
+      q: "What is a chemical reaction?",
+      a: "A process in which one or more substances (reactants) are converted into one or more different substances (products) with entirely new chemical and physical properties."
+    },
+    { 
+      q: "What observations indicate that a chemical reaction has taken place?",
+      a: "The following changes help determine if a reaction has occurred: (1) Change in state, (2) Change in color, (3) Evolution of a gas, (4) Change in temperature, or (5) Formation of a precipitate."
+    },
+    { 
+      q: "What is a chemical equation?",
+      a: "A chemical equation is the symbolic representation of a chemical reaction using chemical formulas and symbols of the substances involved (reactants and products)."
+    },
+    { 
+      q: "Why should a chemical equation be balanced?",
+      a: "A chemical equation must be balanced to satisfy the Law of Conservation of Mass, which states that matter can neither be created nor destroyed in a chemical reaction. Thus, the total number of atoms of each element must be equal on both sides."
+    },
+    { 
+      q: "State the law of conservation of mass.",
+      a: "The Law of Conservation of Mass states that mass can neither be created nor destroyed in a chemical reaction. Therefore, the total mass of the reactants is always equal to the total mass of the products."
+    },
+    { 
+      q: "What is a combination reaction? Give one example from the chapter.",
+      a: "A reaction in which two or more reactants combine to form a single product is called a combination reaction.\nExample: Burning of magnesium ribbon in oxygen:\n2Mg(s) + O2(g) → 2MgO(s)"
+    },
+    { 
+      q: "What is a decomposition reaction? Name its three types.",
+      a: "A decomposition reaction is one in which a single reactant breaks down into two or more simpler products. Its three types are:\n1) Thermal decomposition (using heat)\n2) Electrolytic decomposition (using electricity)\n3) Photolytic decomposition (using light)"
+    },
+    { 
+      q: "What is a displacement reaction?",
+      a: "A chemical reaction in which a more reactive element displaces a less reactive element from its salt solution is called a displacement reaction.\nExample: Fe(s) + CuSO4(aq) → FeSO4(aq) + Cu(s)"
+    },
+    { 
+      q: "What is a double displacement reaction?",
+      a: "A reaction in which there is an exchange of ions between the reactants to form new compounds is called a double displacement reaction.\nExample: Na2SO4(aq) + BaCl2(aq) → BaSO4(s)↓ (white ppt) + 2NaCl(aq)"
+    },
+    { 
+      q: "What is oxidation? Give one example.",
+      a: "Oxidation is defined as the addition/gain of oxygen or the loss of hydrogen by a substance during a chemical reaction.\nExample: Heating copper in air to form black copper oxide:\n2Cu(s) + O2(g) → 2CuO(s)"
+    },
+    { 
+      q: "What is reduction? Give one example.",
+      a: "Reduction is defined as the loss of oxygen or the gain of hydrogen by a substance during a chemical reaction.\nExample: Hydrogen gas passed over heated copper oxide:\nCuO(s) + H2(g) → Cu(s) + H2O(g) (where CuO is reduced to Cu)"
+    },
+    { 
+      q: "Why do iron objects rust? Mention any two methods to prevent rusting.",
+      a: "Iron objects rust because they react with oxygen and moisture present in the air to form hydrated iron(III) oxide (rust).\nTwo prevention methods are:\n1) Painting or greasing the surface to block air/moisture contact.\n2) Galvanization (coating the iron object with a thin protective layer of zinc)."
+    },
+    { 
+      q: "What is rancidity? How can it be prevented?",
+      a: "Rancidity is the aerial oxidation of fats and oils present in food items, resulting in an unpleasant smell, taste, and color distortion.\nPrevention methods include:\n1) Packaging food items with inert nitrogen gas (e.g., potato chips).\n2) Storing food in airtight containers to limit oxygen contact."
+    }
   ];
 
   // KootMate Active Recall Quiz

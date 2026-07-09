@@ -783,6 +783,14 @@ export function ContentCard({
         label: "Chapter PDF Guide",
       };
     }
+    if (type === "question_bank" || type === "questionbank") {
+      return {
+        icon: <FileText className="w-5 h-5 text-emerald-600" />,
+        bg: "bg-emerald-100 not-dark:bg-emerald-950",
+        tagColor: "bg-emerald-50 text-emerald-600 not-dark:bg-emerald-950/20 not-dark:text-emerald-400",
+        label: "Question Bank",
+      };
+    }
     if (type === "audio") {
       return {
         icon: <Headphones className="w-5 h-5 text-[#5c3beb]" />,
@@ -928,6 +936,24 @@ export function ContentCard({
           >
             <span>Read PDF Notes</span>
             <Eye className="w-3 h-3 text-red-500" />
+          </button>
+        )}
+
+        {(item.content_type === "question_bank" || item.content_type === "questionbank") && (
+          <button
+            onClick={() => {
+              logPreviewClick();
+              const isPdf = item.resource_url.toLowerCase().endsWith('.pdf');
+              if (isPdf && onOpenPDF) {
+                onOpenPDF(item.resource_url, item.title);
+              } else {
+                window.open(item.resource_url, "_blank");
+              }
+            }}
+            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-emerald-100/50"
+          >
+            <span>View Questions</span>
+            <Eye className="w-3 h-3 text-emerald-500" />
           </button>
         )}
 
