@@ -1163,6 +1163,13 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
         "Economy and Occupations",
         "Transport and Communication",
         "Tourism"
+      ],
+      "Civics": [
+        "Working of the Constitution",
+        "The Electoral Process",
+        "Political Parties",
+        "Social and Political Movements",
+        "Challenges Faced by Indian Democracy"
       ]
     }
   }
@@ -1532,18 +1539,12 @@ export function AdminContentForm({
           <label className="text-xs font-black uppercase text-indigo-950 tracking-wider block">
             🏛️ Social Studies Sub-subject
           </label>
-          <div className={`grid gap-3 ${board === "CBSE" ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2"}`}>
-            {(board === "CBSE"
-              ? [
-                  { key: "History", label: "History 📜" },
-                  { key: "Geography", label: "Geography 🌍" },
-                  { key: "Civics", label: "Civics ⚖️" }
-                ]
-              : [
-                  { key: "History", label: "History 📜" },
-                  { key: "Geography", label: "Geography 🌍" }
-                ]
-            ).map((disc) => {
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+            {([
+              { key: "History", label: "History 📜" },
+              { key: "Geography", label: "Geography 🌍" },
+              { key: "Civics", label: board === "SSC" ? "Political Science ⚖️" : "Civics ⚖️" }
+            ]).map((disc) => {
               const active = sstDiscipline === disc.key;
               return (
                 <button

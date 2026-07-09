@@ -456,6 +456,154 @@ const geoCh7: QuestionItem[] = [
   { q: "How has international trade influenced India's economic growth and status in the global market?", a: "" }
 ];
 
+// Mathematics Questions (Chapters 1 to 15)
+const mathCh1: QuestionItem[] = [
+  { q: "What is the Fundamental Theorem of Arithmetic?", a: "" },
+  { q: "Prove that √5 is an irrational number.", a: "" },
+  { q: "Explain Euclid's Division Lemma.", a: "" },
+  { q: "If two positive integers a and b are written as a = x³y² and b = xy³, where x, y are prime numbers, find HCF(a, b) and LCM(a, b).", a: "" }
+];
+
+const mathCh2: QuestionItem[] = [
+  { q: "What is the relation between the zeroes and coefficients of a quadratic polynomial ax² + bx + c?", a: "" },
+  { q: "Find a quadratic polynomial, the sum and product of whose zeroes are -3 and 2 respectively.", a: "" },
+  { q: "Explain the division algorithm for polynomials.", a: "" },
+  { q: "How many zeroes can a cubic polynomial have at most?", a: "" }
+];
+
+const mathCh3: QuestionItem[] = [
+  { q: "What are the conditions for a pair of linear equations to be consistent or inconsistent?", a: "" },
+  { q: "Explain the algebraic methods of solving a pair of linear equations: substitution and elimination.", a: "" },
+  { q: "For which value of k will the equations 3x + y = 1 and (2k-1)x + (k-1)y = 2k+1 have no solution?", a: "" }
+];
+
+const mathCh4: QuestionItem[] = [
+  { q: "State the quadratic formula to find the roots of ax² + bx + c = 0.", a: "" },
+  { q: "Explain the nature of roots of a quadratic equation based on its discriminant D.", a: "" },
+  { q: "Find the roots of the quadratic equation 2x² - 7x + 3 = 0 using factorization.", a: "" }
+];
+
+const mathCh5: QuestionItem[] = [
+  { q: "What is the formula to find the n-th term (a_n) of an Arithmetic Progression?", a: "" },
+  { q: "Write the formula for the sum of the first n terms (S_n) of an AP.", a: "" },
+  { q: "Find the 11th term of the AP: -3, -1/2, 2, ...", a: "" }
+];
+
+const mathCh6: QuestionItem[] = [
+  { q: "State and prove the Basic Proportionality Theorem (Thales Theorem).", a: "" },
+  { q: "State the SSS, SAS, and AA similarity criteria for triangles.", a: "" },
+  { q: "Prove that if in two triangles, corresponding angles are equal, then their corresponding sides are in the same ratio.", a: "" }
+];
+
+const mathCh7: QuestionItem[] = [
+  { q: "State the distance formula to find the distance between points P(x₁, y₁) and Q(x₂, y₂).", a: "" },
+  { q: "What is the section formula for internal division of a line segment?", a: "" },
+  { q: "Find the coordinates of the point which divides the line segment joining (4, -3) and (8, 5) in the ratio 3:1 internally.", a: "" }
+];
+
+const mathCh8: QuestionItem[] = [
+  { q: "Define the six trigonometric ratios with respect to an acute angle in a right-angled triangle.", a: "" },
+  { q: "State the three fundamental trigonometric identities.", a: "" },
+  { q: "If sin A = 3/4, calculate cos A and tan A.", a: "" },
+  { q: "Evaluate: (2 tan 30°) / (1 + tan² 30°).", a: "" }
+];
+
+const mathCh9: QuestionItem[] = [
+  { q: "Define the term 'angle of elevation' and 'angle of depression'.", a: "" },
+  { q: "A tower stands vertically on the ground. From a point on the ground, 15m away from the foot of the tower, the angle of elevation of the top of the tower is 60°. Find the height of the tower.", a: "" }
+];
+
+const mathCh10: QuestionItem[] = [
+  { q: "Prove that the tangent at any point of a circle is perpendicular to the radius through the point of contact.", a: "" },
+  { q: "Prove that the lengths of tangents drawn from an external point to a circle are equal.", a: "" },
+  { q: "How many tangents can a circle have at most from a point inside the circle?", a: "" }
+];
+
+const mathCh11: QuestionItem[] = [
+  { q: "How do you divide a line segment internally in a given ratio m:n?", a: "" },
+  { q: "Describe the steps of construction to draw a pair of tangents to a circle from an external point.", a: "" }
+];
+
+const mathCh12: QuestionItem[] = [
+  { q: "State the formula for the area of a sector of a circle of radius r with sector angle θ.", a: "" },
+  { q: "What is the formula to find the area of a segment of a circle?", a: "" },
+  { q: "Find the area of a sector of a circle with radius 6 cm if angle of the sector is 60°.", a: "" }
+];
+
+const mathCh13: QuestionItem[] = [
+  { q: "Write the formulas for the curved surface area, total surface area, and volume of a cylinder.", a: "" },
+  { q: "State the formulas for the surface area and volume of a sphere.", a: "" },
+  { q: "A solid is in the shape of a cone standing on a hemisphere with both their radii being equal to 1 cm and the height of the cone is equal to its radius. Find the volume of the solid in terms of π.", a: "" }
+];
+
+const mathCh14: QuestionItem[] = [
+  { q: "Define Mean, Median, and Mode of grouped data and state the empirical relationship between them.", a: "" },
+  { q: "Explain the direct method, assumed mean method, and step deviation method to find the mean.", a: "" },
+  { q: "How is the mode of grouped data calculated? State the formula.", a: "" }
+];
+
+const mathCh15: QuestionItem[] = [
+  { q: "What is the classical definition of the probability of an event E?", a: "" },
+  { q: "What are the range of values that the probability of any event can take?", a: "" },
+  { q: "A card is drawn from a well-shuffled deck of 52 cards. Find the probability of getting a king of red colour.", a: "" },
+  { q: "Two coins are tossed simultaneously. Find the probability of getting at least one head.", a: "" }
+];
+
+
+// Civics Questions (Chapters 1 to 8)
+const civCh1: QuestionItem[] = [
+  { q: "What is power sharing? Why is it desirable in a democracy?", a: "" },
+  { q: "Describe the ethnic composition of Belgium as mentioned in the chapter.", a: "" },
+  { q: "What is Majoritarianism? How did it lead to civil war in Sri Lanka?", a: "" },
+  { q: "Explain the four major forms of power sharing in modern democracies with examples.", a: "" }
+];
+
+const civCh2: QuestionItem[] = [
+  { q: "Define Federalism. State its key features.", a: "" },
+  { q: "Differentiate between 'Coming Together' and 'Holding Together' federations with examples.", a: "" },
+  { q: "What makes India a federal country? Explain the three-fold distribution of legislative powers.", a: "" },
+  { q: "What is decentralisation? Explain the major steps taken towards decentralisation in India in 1992.", a: "" }
+];
+
+const civCh3: QuestionItem[] = [
+  { q: "Explain the origins of social differences as discussed in the chapter.", a: "" },
+  { q: "How do social divisions affect politics? Give two examples.", a: "" },
+  { q: "What were the three determinants of the outcomes of social divisions on politics?", a: "" }
+];
+
+const civCh4: QuestionItem[] = [
+  { q: "How does gender division express itself in politics?", a: "" },
+  { q: "What is Communalism? How does it pose a threat to Indian democracy?", a: "" },
+  { q: "What are the features of a secular state in India?", a: "" },
+  { q: "How does caste influence politics, and how does politics influence caste?", a: "" }
+];
+
+const civCh5: QuestionItem[] = [
+  { q: "Differentiate between sectional interest groups and public interest groups with examples.", a: "" },
+  { q: "Describe Nepal's movement for democracy in April 2006.", a: "" },
+  { q: "What was Bolivia's Water War? Explain the role of FEDECOR.", a: "" },
+  { q: "How do pressure groups and movements exert influence on politics?", a: "" }
+];
+
+const civCh6: QuestionItem[] = [
+  { q: "What is a political party? State its three components.", a: "" },
+  { q: "Describe the major functions performed by political parties in a democracy.", a: "" },
+  { q: "What are the challenges faced by political parties in India?", a: "" },
+  { q: "Suggest some reforms to strengthen political parties and improve their internal working.", a: "" }
+];
+
+const civCh7: QuestionItem[] = [
+  { q: "How does democracy produce an accountable, responsive, and legitimate government?", a: "" },
+  { q: "Is democracy superior to any other form of government in reducing economic inequalities and poverty?", a: "" },
+  { q: "What are the major outcomes of democracy regarding dignity and freedom of citizens?", a: "" }
+];
+
+const civCh8: QuestionItem[] = [
+  { q: "What are the three broad categories of challenges faced by democracies across the world?", a: "" },
+  { q: "Explain the foundational challenge, challenge of expansion, and challenge of deepening of democracy.", a: "" },
+  { q: "How can political reforms be carried out to overcome the challenges to democracy?", a: "" }
+];
+
 
 // Comprehensive mapping of cbseQuestionsDb
 export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
@@ -481,6 +629,23 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "Sustainable Management of Natural Resources": scCh16,
     "Management of Natural Resources": scCh16
   },
+  "Mathematics": {
+    "Real Numbers": mathCh1,
+    "Polynomials": mathCh2,
+    "Pair of Linear Equations in Two Variables": mathCh3,
+    "Quadratic Equations": mathCh4,
+    "Arithmetic Progressions": mathCh5,
+    "Triangles": mathCh6,
+    "Coordinate Geometry": mathCh7,
+    "Introduction to Trigonometry": mathCh8,
+    "Some Applications of Trigonometry": mathCh9,
+    "Circles": mathCh10,
+    "Constructions": mathCh11,
+    "Areas Related to Circles": mathCh12,
+    "Surface Areas and Volumes": mathCh13,
+    "Statistics": mathCh14,
+    "Probability": mathCh15
+  },
   "Social Studies": {
     // History Chapters
     "The Rise of Nationalism in Europe": histCh1,
@@ -496,6 +661,17 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "Agriculture": geoCh4,
     "Minerals and Energy Resources": geoCh5,
     "Manufacturing Industries": geoCh6,
-    "Lifelines of National Economy": geoCh7
+    "Lifelines of National Economy": geoCh7,
+
+    // Civics Chapters
+    "Power Sharing": civCh1,
+    "Federalism": civCh2,
+    "Democracy and Diversity": civCh3,
+    "Gender, Religion and Caste": civCh4,
+    "Popular Struggles and Movements": civCh5,
+    "Political Parties": civCh6,
+    "Outcomes of Democracy": civCh7,
+    "Challenges to Democracy": civCh8
   }
 };
+

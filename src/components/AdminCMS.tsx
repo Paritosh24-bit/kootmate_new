@@ -12,7 +12,7 @@ import {
 import { ContentItem } from '../types';
 import { AdminContentForm, ContentGrid, ContentFilter, PDFViewer, AudioPlayer } from './CMSComponents';
 
-type AdminTab = 'materials' | 'curriculum' | 'admins';
+type AdminTab = 'materials' | 'curriculum';
 
 export default function AdminCMS() {
   const [activeTab, setActiveTab] = useState<AdminTab>('materials');
@@ -434,6 +434,30 @@ export default function AdminCMS() {
           </div>
         </div>
 
+        {/* Inner sub tab bar to switch between administrative tabs */}
+        <div className="flex border-t border-white/20 pt-4 flex-wrap gap-2" id="cms-sub-tab-switcher">
+          <button
+            onClick={() => setActiveTab('materials')}
+            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              activeTab === 'materials'
+                ? 'bg-white text-[#5c3beb] shadow-md'
+                : 'text-violet-100 hover:bg-white/10'
+            }`}
+          >
+            📚 Materials Publisher
+          </button>
+          <button
+            onClick={() => setActiveTab('curriculum')}
+            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              activeTab === 'curriculum'
+                ? 'bg-white text-[#5c3beb] shadow-md'
+                : 'text-violet-100 hover:bg-white/10'
+            }`}
+          >
+            🗂️ Curriculum Folders
+          </button>
+        </div>
+
         {/* Dynamic feedback messages */}
         {errorMessage && (
           <div className="p-3.5 bg-red-600 border border-red-700 text-white rounded-2xl text-xs font-black animate-pulse flex items-center gap-2 text-left">
@@ -663,72 +687,7 @@ export default function AdminCMS() {
         </div>
       )}
 
-      {/* ==========================================
-          TAB CONTENT SPACE: C. ADMIN DELEGATION
-          ========================================== */}
-      {activeTab === 'admins' && (
-        <div className="p-6 max-w-xl mx-auto space-y-6 text-left animate-in fade-in duration-200">
-          
-          <div className="bg-[#fafafa] border border-neutral-150 rounded-3xl p-6 space-y-4">
-            <h3 className="text-sm font-black text-neutral-900 flex items-center gap-2 border-b border-neutral-200 pb-2">
-              <ShieldAlert className="w-5 h-5 text-pink-500" />
-              Manage Administrative Co-Workers
-            </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed font-bold">
-              Delegate access permission to staff members. Registered emails will bypass student view restrictions and unlock this dynamic file publisher automatically.
-            </p>
 
-            <form onSubmit={handleCreateAdmin} className="space-y-4 pt-1">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-neutral-700">Enter Admin Email Address</label>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. academic.head@company.com"
-                    value={newAdminEmail}
-                    onChange={(e) => setNewAdminEmail(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-neutral-350 rounded-xl text-xs focus:ring-1 focus:ring-violet-500 focus:outline-none text-black"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4.5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-black text-xs rounded-xl cursor-pointer"
-                  >
-                    Grant Access
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
-              Active Authorized Administrators ({adminEmails.length})
-            </p>
-
-            <div className="max-h-64 overflow-y-auto divide-y divide-neutral-150 border border-neutral-200 rounded-3xl bg-white p-4 space-y-3.5">
-              {adminEmails.map(email => (
-                <div key={email} className="flex items-center justify-between py-1 text-xs">
-                  <span className="font-extrabold text-neutral-800 text-xs truncate max-w-xs">{email}</span>
-                  {email === 'admin@company.com' ? (
-                    <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
-                      Root Administrator
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => handleDeleteAdmin(email)}
-                      className="text-red-500 hover:text-red-700 font-extrabold text-[10px] uppercase cursor-pointer hover:underline"
-                    >
-                      Revoke Credentials
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      )}
 
       {/* ==========================================
           FOUNDATIONAL CREATIVE MODALS (CLASS GRADES)

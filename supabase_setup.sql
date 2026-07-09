@@ -212,5 +212,27 @@ ON CONFLICT (id) DO NOTHING;
 -- Reset identity sequence for chapters to start past preloaded IDs
 SELECT setval(pg_get_serial_sequence('chapters', 'id'), COALESCE((SELECT MAX(id)+1 FROM chapters), 1), false);
 
+-- 8. SSC POLITICAL SCIENCE PATCHES (ALTER & INSERT COMMANDS FOR RECOVERY)
+-- Paste these queries in your Supabase SQL Editor if you need to alter existing structures or seed new elements.
 
+-- Alter table queries (if you want to rename or append columns dynamically on existing databases)
+-- ALTER TABLE subjects ALTER COLUMN subject_name TYPE TEXT;
+-- ALTER TABLE content_items ADD COLUMN IF NOT EXISTS is_free_preview BOOLEAN DEFAULT false;
 
+-- Dynamic query to ensure Subject 205 (Social Sciences & Civics / Political Science) is in the database:
+INSERT INTO subjects (id, class_id, subject_name, created_at)
+VALUES (205, 2, 'Social Sciences & Civics 🏛️', NOW())
+ON CONFLICT (id) DO UPDATE SET subject_name = EXCLUDED.subject_name;
+
+-- Seed the 5 Political Science chapters directly under Subject 205 (SSC Social Sciences & Civics)
+INSERT INTO chapters (id, subject_id, chapter_name, description, created_at)
+VALUES 
+  (2051, 205, 'Working of the Constitution', 'Learn about the working of the Indian Constitution, the framework of democracy, social justice, and judiciary roles.', NOW()),
+  (2052, 205, 'The Electoral Process', 'Understand elections, electoral reforms, code of conduct, and the function of the Election Commission.', NOW()),
+  (2053, 205, 'Political Parties', 'Study regional and national political party organizations, coalition structures, and dynamic political agendas in India.', NOW()),
+  (2054, 205, 'Social and Political Movements', 'Examine consumer, environmental, workers, and tribal movements that shape public policy and democratic voices.', NOW()),
+  (2055, 205, 'Challenges Faced by Indian Democracy', 'Analyze foundational, expansionary, and structural issues limiting complete democratic empowerment and civic equality.', NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- Reset identity sequence for chapters to start past preloaded IDs
+SELECT setval(pg_get_serial_sequence('chapters', 'id'), COALESCE((SELECT MAX(id)+1 FROM chapters), 1), false);
