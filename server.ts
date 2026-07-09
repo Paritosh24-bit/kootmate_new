@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import fs from "fs";
 import multer from "multer";
@@ -1312,7 +1311,8 @@ app.use(express.json());
     app.use(async (req, res, next) => {
       try {
         if (!viteDevServer) {
-          viteDevServer = await createViteServer({
+          const { createServer } = await import("vite");
+          viteDevServer = await createServer({
             server: { middlewareMode: true },
             appType: "spa",
           });
