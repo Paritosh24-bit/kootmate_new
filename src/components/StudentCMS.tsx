@@ -11,6 +11,7 @@ import { ContentItem } from '../types';
 import { ContentGrid, PDFViewer, AudioPlayer } from './CMSComponents';
 import { normalizeSubjectName } from './DashboardPage';
 import { cbseQuestionsDb } from '../lib/questionsDb';
+import { removeChapterNumber } from '../lib/utils';
 
 interface StudentCMSProps {
   userBoard?: 'cbse' | 'ssc' | '';
@@ -328,10 +329,10 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
                       }`}
                     >
                     <div className="flex items-center gap-2.5">
-                      <span className={`w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center shrink-0 ${
-                        selectedChapter?.id === ch.id ? 'bg-[#5c3beb] text-white' : 'bg-neutral-100 text-neutral-500'
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                        selectedChapter?.id === ch.id ? 'bg-[#5c3beb] text-white' : 'bg-neutral-100 text-[#5c3beb]'
                       }`}>
-                        {idx + 1}
+                        <BookOpen className="w-3 h-3" />
                       </span>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs font-black text-neutral-900 truncate">
@@ -389,8 +390,8 @@ export default function StudentCMS({ userBoard, studentOnly = false }: StudentCM
                       <ContentGrid
                         items={contentItems}
                         isAdmin={false}
-                        onPlayAudio={(url, title, chap) => setActiveAudio({ url, title, chapter: chap })}
-                        onOpenPDF={(url, title) => setActivePDF({ url, title })}
+                        onPlayAudio={(url, title, chap) => setActiveAudio({ url, title: removeChapterNumber(title), chapter: chap })}
+                        onOpenPDF={(url, title) => setActivePDF({ url, title: removeChapterNumber(title) })}
                       />
 
                       {/* NCERT Chapter Question Bank Section */}

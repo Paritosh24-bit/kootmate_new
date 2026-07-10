@@ -22,7 +22,7 @@ export function normalizeSubjectName(rawName: string): string {
   if (clean.includes("Math 2") || clean.includes("Math Part 2") || clean.includes("Mathematics Part 2") || clean.includes("Geometry")) return "Math 2 (Geometry)";
   if (clean.includes("Science")) return "Science";
   if (clean.includes("Mathematics") || clean.includes("Maths")) return "Mathematics";
-  if (clean.includes("Social Studies") || clean.includes("Social Sciences") || clean.includes("History") || clean.includes("Geography") || clean.includes("Civics")) return "Social Studies";
+  if (clean.includes("Social Studies") || clean.includes("Social Sciences") || clean.includes("History") || clean.includes("Geography") || clean.includes("Civics") || clean.includes("Economics") || clean.includes("SST")) return "Social Studies";
   
   return clean;
 }
@@ -169,12 +169,23 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
   } | null>(null);
   
   const [selectedLesson, setSelectedLesson] = useState<string>('');
-  const [selectedSubSubject, setSelectedSubSubject] = useState<'history' | 'geography' | 'civics' | 'economics' | ''>('');
+  const [selectedSubSubject, setSelectedSubSubject] = useState<'history' | 'geography' | 'civics' | 'economics' | 'science1' | 'science2' | 'math1' | 'math2' | ''>('');
+  const [selectedSstGroup, setSelectedSstGroup] = useState<'history_civics' | 'geo_eco' | 'geography_only' | ''>('');
 
   const selectSubjectAndResetLesson = (sub: any) => {
     setSelectedSubject(sub);
-    setSelectedLesson('');
-    setSelectedSubSubject('');
+    setNotifyFormSubmitted(false);
+    if (sub && sub.id === 'ssc-science') {
+      setSelectedSubSubject('science1');
+      setSelectedLesson('Gravitation');
+    } else if (sub && sub.id === 'ssc-maths') {
+      setSelectedSubSubject('math1');
+      setSelectedLesson('Linear Equations in Two Variables');
+    } else {
+      setSelectedLesson('');
+      setSelectedSubSubject('');
+      setSelectedSstGroup('');
+    }
   };
 
   const sstDynamicLessons: Record<'cbse' | 'ssc', Record<'history' | 'geography' | 'civics' | 'economics', string[]>> = {
@@ -198,14 +209,17 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
       civics: [
         "Power Sharing",
         "Federalism",
-        "Democracy and Diversity",
         "Gender, Religion and Caste",
-        "Popular Struggles and Movements",
         "Political Parties",
-        "Outcomes of Democracy",
-        "Challenges to Democracy"
+        "Outcomes of Democracy"
       ],
-      economics: []
+      economics: [
+        "Development",
+        "Sectors of the Indian Economy",
+        "Money and Credit",
+        "Globalisation and the Indian Economy",
+        "Consumer Rights"
+      ]
     },
     ssc: {
       history: [
@@ -244,8 +258,60 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
   };
 
   const isSSTSubject = selectedSubject && (selectedSubject.id === 'cbse-sst' || selectedSubject.id === 'ssc-sst');
+  const isScienceSubject = selectedSubject && selectedSubject.id === 'ssc-science';
+  const isMathSubject = selectedSubject && selectedSubject.id === 'ssc-maths';
+
   const activeLessons = isSSTSubject
     ? (selectedSubSubject ? sstDynamicLessons[selectedSubject!.board][selectedSubSubject as 'history' | 'geography' | 'civics' | 'economics'] : [])
+    : isScienceSubject
+    ? (selectedSubSubject === 'science1'
+        ? [
+            'Gravitation',
+            'Periodic Classification of Elements',
+            'Chemical Reactions and Equations',
+            'Effects of Electric Current',
+            'Heat',
+            'Refraction of Light',
+            'Lenses',
+            'Metallurgy',
+            'Carbon Compounds',
+            'Space Missions'
+          ]
+        : selectedSubSubject === 'science2'
+        ? [
+            'Heredity and Evolution',
+            'Life Processes in Living Organisms - Part I',
+            'Life Processes in Living Organisms - Part II',
+            'Environmental Management',
+            'Towards Green Energy',
+            'Animal Classification',
+            'Introduction to Microbiology',
+            'Cell Biology and Biotechnology',
+            'Social Health',
+            'Disaster Management'
+          ]
+        : [])
+    : isMathSubject
+    ? (selectedSubSubject === 'math1'
+        ? [
+            'Linear Equations in Two Variables',
+            'Quadratic Equations',
+            'Arithmetic Progression',
+            'Financial Planning',
+            'Probability',
+            'Statistics'
+          ]
+        : selectedSubSubject === 'math2'
+        ? [
+            'Similarity',
+            'Pythagoras Theorem',
+            'Circle',
+            'Geometric Constructions',
+            'Coordinate Geometry',
+            'Trigonometry',
+            'Mensuration'
+          ]
+        : [])
     : (selectedSubject ? selectedSubject.lessons : []);
 
   const [activeCategoryTab, setActiveCategoryTab] = useState<'mind_maps' | 'infographics' | 'audio' | 'games' | 'question_bank'>('mind_maps');
@@ -274,6 +340,10 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         if (isSSTSubject && selectedSubSubject) {
           const discWord = selectedSubSubject.charAt(0).toUpperCase() + selectedSubSubject.slice(1);
           subParam = discWord; 
+        } else if (isScienceSubject && selectedSubSubject) {
+          subParam = selectedSubSubject === 'science1' ? 'Science 1' : 'Science 2';
+        } else if (isMathSubject && selectedSubSubject) {
+          subParam = selectedSubSubject === 'math1' ? 'Math 1 (Algebra)' : 'Math 2 (Geometry)';
         }
         const chapParam = selectedLesson;
         const url = `/api/content?board=${boardParam}&subject=${encodeURIComponent(subParam)}&chapter=${encodeURIComponent(chapParam)}`;
@@ -313,18 +383,15 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         'Acids, Bases and Salts',
         'Metals and Non-metals',
         'Carbon and its Compounds',
-        'Periodic Classification of Elements',
         'Life Processes',
         'Control and Coordination',
         'How do Organisms Reproduce?',
-        'Heredity and Evolution',
+        'Heredity',
         'Light - Reflection and Refraction',
         'The Human Eye and the Colourful World',
         'Electricity',
         'Magnetic Effects of Electric Current',
-        'Sources of Energy',
-        'Our Environment',
-        'Management of Natural Resources'
+        'Our Environment'
       ]
     },
     {
@@ -343,7 +410,6 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         'Introduction to Trigonometry',
         'Some Applications of Trigonometry',
         'Circles',
-        'Constructions',
         'Areas Related to Circles',
         'Surface Areas and Volumes',
         'Statistics',
@@ -354,7 +420,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
       id: 'cbse-sst',
       name: 'Social Studies',
       board: 'cbse' as const,
-      desc: 'Unified history, democratic politics, and geography.',
+      desc: 'Unified history, democratic politics, geography, and economics.',
       lessons: [
         'The Rise of Nationalism in Europe',
         'Nationalism in India',
@@ -370,22 +436,24 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         'Lifelines of National Economy',
         'Power Sharing',
         'Federalism',
-        'Democracy and Diversity',
         'Gender, Religion and Caste',
-        'Popular Struggles and Movements',
         'Political Parties',
         'Outcomes of Democracy',
-        'Challenges to Democracy'
+        'Development',
+        'Sectors of the Indian Economy',
+        'Money and Credit',
+        'Globalisation and the Indian Economy',
+        'Consumer Rights'
       ]
     }
   ];
 
   const sscSubjects = [
     {
-      id: 'ssc-science-1',
-      name: 'Science 1',
+      id: 'ssc-science',
+      name: 'Science',
       board: 'ssc' as const,
-      desc: 'Maharashtra State Board Physics & Chemistry fundamentals, chemical equations, and gravitational laws.',
+      desc: 'Maharashtra State Board Physics, Chemistry, Biology, and Environmental Science.',
       lessons: [
         'Gravitation',
         'Periodic Classification of Elements',
@@ -396,15 +464,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         'Lenses',
         'Metallurgy',
         'Carbon Compounds',
-        'Space Missions'
-      ]
-    },
-    {
-      id: 'ssc-science-2',
-      name: 'Science 2',
-      board: 'ssc' as const,
-      desc: 'Maharashtra State Board Biology, environmental systems, genetic evolutions, and life cycles.',
-      lessons: [
+        'Space Missions',
         'Heredity and Evolution',
         'Life Processes in Living Organisms - Part I',
         'Life Processes in Living Organisms - Part II',
@@ -418,25 +478,17 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
       ]
     },
     {
-      id: 'ssc-math-1',
-      name: 'Math 1 (Algebra)',
+      id: 'ssc-maths',
+      name: 'Mathematics',
       board: 'ssc' as const,
-      desc: 'Linear equations in two variables, quadratic formulas, arithmetic progressive metrics, and financial planning.',
+      desc: 'Maharashtra State Board Algebra and Geometry.',
       lessons: [
         'Linear Equations in Two Variables',
         'Quadratic Equations',
         'Arithmetic Progression',
         'Financial Planning',
         'Probability',
-        'Statistics'
-      ]
-    },
-    {
-      id: 'ssc-math-2',
-      name: 'Math 2 (Geometry)',
-      board: 'ssc' as const,
-      desc: 'Similarity theorems, Pythagoras relations, coordinate grids, trigonometry proofs, and sector mensuration.',
-      lessons: [
+        'Statistics',
         'Similarity',
         'Pythagoras Theorem',
         'Circle',
@@ -1177,8 +1229,8 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                 <div className="text-left">
                   <span className="text-neutral-400 text-[10px] block font-semibold uppercase tracking-wider">Board Chapters</span>
                   <span className="font-extrabold text-lg sm:text-2xl">
-                    {isSSTSubject 
-                      ? (selectedSubSubject ? `${activeLessons.length} Modules (${selectedSubSubject.toUpperCase()})` : '12 Modules total')
+                    {isSSTSubject || isScienceSubject || isMathSubject 
+                      ? (selectedSubSubject ? `${activeLessons.length} Modules (${selectedSubSubject.toUpperCase()})` : 'Select a Part')
                       : `${selectedSubject.lessons.length} Modules`}
                   </span>
                 </div>
@@ -1193,66 +1245,325 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
               </div>
             </div>
 
-            {/* Social Studies Sub-Subject Choice Section */}
-            {isSSTSubject && (
-              <div className="p-6 rounded-3xl border border-indigo-100 bg-white shadow-sm space-y-4 text-left animate-fadeIn" id="sst-branch-selector-panel">
-                <div className="flex items-center justify-between">
+            {/* Science Part Choice Section (SSC) */}
+            {isScienceSubject && (
+              <div className="p-6 rounded-3xl border border-indigo-100 bg-white shadow-sm space-y-4 text-left animate-fadeIn" id="science-branch-selector-panel">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-4">
                   <div className="flex items-center gap-2 text-indigo-950 font-black text-sm">
-                    <span className="p-1.5 rounded-lg bg-indigo-50 text-[#5c3beb] text-xs">🏛️ Social Studies</span>
-                    <span className="text-black font-black">Choose Social Studies Sub-subject</span>
+                    <span className="p-1.5 rounded-lg bg-indigo-50 text-[#5c3beb] text-xs">🧪 Science</span>
+                    <span className="text-black font-black">Choose Science Part</span>
                   </div>
                   {selectedSubSubject && (
-                    <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">
-                      {selectedSubSubject} Active 🌟
+                    <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-2.5 py-1 rounded-full font-black uppercase tracking-wider self-start sm:self-auto">
+                      {selectedSubSubject === 'science1' ? 'Science Part 1 Active 🌟' : 'Science Part 2 Active 🌟'}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-neutral-600 font-bold max-w-xl">
-                  Social Studies is split into distinct disciplines. Select a branch below to explore its chapters. Once a branch is selected, the 4 study options and lesson selector will search those units.
-                </p>
-                
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-3">
-                  {(selectedSubject!.board === 'cbse'
-                    ? [
-                        { key: 'history', name: 'History 📜', desc: 'World wars, nationalist movements & print culture.' },
-                        { key: 'geography', name: 'Geography 🌍', desc: 'Resources, forests, water, agriculture & manufacturing.' },
-                        { key: 'civics', name: 'Civics ⚖️', desc: 'Power sharing, federalism, gender & political parties.' }
-                      ]
-                    : [
-                        { key: 'history', name: 'History 📜', desc: 'Historiography, applied history, heritage & mass media.' },
-                        { key: 'geography', name: 'Geography 🌍', desc: 'India-Brazil comparative climate, pop & tourism.' },
-                        { key: 'civics', name: 'Political Science ⚖️', desc: 'Constitution, electoral process, parties & movements.' }
-                      ]
-                  ).map((branch) => {
-                    const isActive = selectedSubSubject === branch.key;
-                    return (
-                      <button
-                        key={branch.key}
-                        type="button"
-                        onClick={() => {
-                          setSelectedSubSubject(branch.key as any);
-                          const dynamicL = sstDynamicLessons[selectedSubject!.board][branch.key as 'history' | 'geography' | 'civics' | 'economics'];
-                          setSelectedLesson(dynamicL[0] || ''); // Auto-select the first unit so the 4 options appear immediately
-                          setNotifyFormSubmitted(false);
-                        }}
-                        className={`p-4 rounded-2xl border text-left transition-all duration-250 cursor-pointer ${
-                          isActive
-                             ? 'border-[#5c3beb] bg-indigo-50/75 ring-2 ring-[#5c3beb]/20'
-                             : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white'
-                        }`}
-                        id={`sst-btn-${branch.key}`}
-                      >
-                        <h5 className="font-extrabold text-sm text-[#5c3beb] mb-1">{branch.name}</h5>
-                        <p className="text-[10px] text-neutral-500 font-bold leading-relaxed">{branch.desc}</p>
-                      </button>
-                    );
-                  })}
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSubSubject('science1');
+                      setSelectedLesson('Gravitation');
+                      setNotifyFormSubmitted(false);
+                    }}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                      selectedSubSubject === 'science1'
+                        ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                        : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="p-2 rounded-xl bg-violet-100 text-[#5c3beb] text-sm">🧪</span>
+                      <h4 className="font-black text-sm text-indigo-950">Science 1</h4>
+                    </div>
+                    <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                      Physics & Chemistry: Gravitation, periodic classification, chemical reactions, electric current effects, and heat.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSubSubject('science2');
+                      setSelectedLesson('Heredity and Evolution');
+                      setNotifyFormSubmitted(false);
+                    }}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                      selectedSubSubject === 'science2'
+                        ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                        : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="p-2 rounded-xl bg-emerald-100 text-emerald-600 text-sm">🧬</span>
+                      <h4 className="font-black text-sm text-indigo-950">Science 2</h4>
+                    </div>
+                    <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                      Biology & EVS: Heredity and evolution, life processes, towards green energy, animal classification, and biotechnology.
+                    </p>
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* Lesson Select Dropdown Section - Only shown for SST once a branch is active */}
-            {(!isSSTSubject || selectedSubSubject !== '') && (
+            {/* Mathematics Part Choice Section (SSC) */}
+            {isMathSubject && (
+              <div className="p-6 rounded-3xl border border-indigo-100 bg-white shadow-sm space-y-4 text-left animate-fadeIn" id="math-branch-selector-panel">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-4">
+                  <div className="flex items-center gap-2 text-indigo-950 font-black text-sm">
+                    <span className="p-1.5 rounded-lg bg-indigo-50 text-[#5c3beb] text-xs">📐 Mathematics</span>
+                    <span className="text-black font-black">Choose Math Subject</span>
+                  </div>
+                  {selectedSubSubject && (
+                    <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-2.5 py-1 rounded-full font-black uppercase tracking-wider self-start sm:self-auto">
+                      {selectedSubSubject === 'math1' ? 'Math 1 (Algebra) Active 🌟' : 'Math 2 (Geometry) Active 🌟'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSubSubject('math1');
+                      setSelectedLesson('Linear Equations in Two Variables');
+                      setNotifyFormSubmitted(false);
+                    }}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                      selectedSubSubject === 'math1'
+                        ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                        : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="p-2 rounded-xl bg-violet-100 text-[#5c3beb] text-sm">📈</span>
+                      <h4 className="font-black text-sm text-indigo-950">Math 1 (Algebra)</h4>
+                    </div>
+                    <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                      Algebra: Linear equations, quadratic equations, arithmetic progressions, probability, and statistics.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSubSubject('math2');
+                      setSelectedLesson('Similarity');
+                      setNotifyFormSubmitted(false);
+                    }}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                      selectedSubSubject === 'math2'
+                        ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                        : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="p-2 rounded-xl bg-blue-100 text-blue-600 text-sm">📐</span>
+                      <h4 className="font-black text-sm text-indigo-950">Math 2 (Geometry)</h4>
+                    </div>
+                    <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                      Geometry: Similarity, Pythagoras theorem, circle, constructions, coordinate geometry, and trigonometry.
+                    </p>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Social Studies Sub-Subject Choice Section */}
+            {isSSTSubject && (
+              <div className="p-6 rounded-3xl border border-indigo-100 bg-white shadow-sm space-y-6 text-left animate-fadeIn" id="sst-branch-selector-panel">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-100 pb-4">
+                  <div className="flex items-center gap-2 text-indigo-950 font-black text-sm">
+                    <span className="p-1.5 rounded-lg bg-indigo-50 text-[#5c3beb] text-xs">🏛️ Social Science</span>
+                    <span className="text-black font-black">Choose Social Science Group</span>
+                  </div>
+                  {selectedSubSubject && (
+                    <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-2.5 py-1 rounded-full font-black uppercase tracking-wider self-start sm:self-auto">
+                      {selectedSubSubject === 'civics' ? (selectedSubject!.board === 'ssc' ? 'POLITICAL SCIENCE' : 'CIVICS') : selectedSubSubject.toUpperCase()} Active 🌟
+                    </span>
+                  )}
+                </div>
+
+                {/* The Two Main Boxes */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Box 1: History and Political Science */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSstGroup('history_civics');
+                      setSelectedSubSubject('history');
+                      const dynamicL = sstDynamicLessons[selectedSubject!.board]['history'];
+                      setSelectedLesson(dynamicL[0] || '');
+                      setNotifyFormSubmitted(false);
+                    }}
+                    className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                      selectedSstGroup === 'history_civics'
+                        ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                        : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="p-2 rounded-xl bg-violet-100 text-[#5c3beb] text-sm">📜</span>
+                      <h4 className="font-black text-sm text-indigo-950">History and Political Science</h4>
+                    </div>
+                    <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                      {selectedSubject!.board === 'cbse' 
+                        ? 'Explore world history, rise of nationalism, democracy, power sharing, and federal politics.'
+                        : 'Learn historiography, applied history, heritage conservation, elections, and political movements.'}
+                    </p>
+                  </button>
+
+                  {/* Box 2: Geography & Economics (CBSE) or Geography (SSC) */}
+                  {selectedSubject!.board === 'cbse' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedSstGroup('geo_eco');
+                        setSelectedSubSubject('geography');
+                        const dynamicL = sstDynamicLessons['cbse']['geography'];
+                        setSelectedLesson(dynamicL[0] || '');
+                        setNotifyFormSubmitted(false);
+                      }}
+                      className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                        selectedSstGroup === 'geo_eco'
+                          ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                          : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="p-2 rounded-xl bg-blue-100 text-blue-600 text-sm">🌍</span>
+                        <h4 className="font-black text-sm text-indigo-950">Geography and Economics</h4>
+                      </div>
+                      <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                        Study natural resources, agriculture, manufacturing, national economy development, money, credit, and globalization.
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedSstGroup('geography_only');
+                        setSelectedSubSubject('geography');
+                        const dynamicL = sstDynamicLessons['ssc']['geography'];
+                        setSelectedLesson(dynamicL[0] || '');
+                        setNotifyFormSubmitted(false);
+                      }}
+                      className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
+                        selectedSstGroup === 'geography_only'
+                          ? 'border-[#5c3beb] bg-indigo-50/50 ring-2 ring-[#5c3beb]/20'
+                          : 'border-neutral-200 hover:border-violet-300 bg-neutral-50 hover:bg-white shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="p-2 rounded-xl bg-blue-100 text-blue-600 text-sm">🌍</span>
+                        <h4 className="font-black text-sm text-indigo-950">Geography</h4>
+                      </div>
+                      <p className="text-[11px] text-neutral-600 font-medium leading-relaxed">
+                        Explore field visits, physical features, climate, vegetation, wildlife, population, and tourism comparisons.
+                      </p>
+                    </button>
+                  )}
+                </div>
+
+                {/* Sub-Subject Selection (Inner separate branches) */}
+                {selectedSstGroup !== '' && (
+                  <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-3 animate-fadeIn">
+                    <span className="text-[10px] font-black uppercase text-neutral-500 tracking-wider block">
+                      📌 Selected Group Disciplines (Select to view lessons)
+                    </span>
+                    <div className="flex flex-wrap gap-2.5">
+                      {selectedSstGroup === 'history_civics' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSubSubject('history');
+                              const dynamicL = sstDynamicLessons[selectedSubject!.board]['history'];
+                              setSelectedLesson(dynamicL[0] || '');
+                              setNotifyFormSubmitted(false);
+                            }}
+                            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                              selectedSubSubject === 'history'
+                                ? 'bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm'
+                                : 'bg-white text-neutral-750 border-neutral-200 hover:bg-neutral-100/50'
+                            }`}
+                          >
+                            <span>📜</span> History
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSubSubject('civics');
+                              const dynamicL = sstDynamicLessons[selectedSubject!.board]['civics'];
+                              setSelectedLesson(dynamicL[0] || '');
+                              setNotifyFormSubmitted(false);
+                            }}
+                            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                              selectedSubSubject === 'civics'
+                                ? 'bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm'
+                                : 'bg-white text-neutral-750 border-neutral-200 hover:bg-neutral-100/50'
+                            }`}
+                          >
+                            <span>⚖️</span> {selectedSubject!.board === 'ssc' ? 'Political Science' : 'Civics'}
+                          </button>
+                        </>
+                      )}
+                      
+                      {selectedSstGroup === 'geo_eco' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSubSubject('geography');
+                              const dynamicL = sstDynamicLessons['cbse']['geography'];
+                              setSelectedLesson(dynamicL[0] || '');
+                              setNotifyFormSubmitted(false);
+                            }}
+                            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                              selectedSubSubject === 'geography'
+                                ? 'bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm'
+                                : 'bg-white text-neutral-750 border-neutral-200 hover:bg-neutral-100/50'
+                            }`}
+                          >
+                            <span>🌍</span> Geography
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSubSubject('economics');
+                              const dynamicL = sstDynamicLessons['cbse']['economics'];
+                              setSelectedLesson(dynamicL[0] || '');
+                              setNotifyFormSubmitted(false);
+                            }}
+                            className={`px-4 py-2.5 text-xs font-black rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
+                              selectedSubSubject === 'economics'
+                                ? 'bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm'
+                                : 'bg-white text-neutral-750 border-neutral-200 hover:bg-neutral-100/50'
+                            }`}
+                          >
+                            <span>📈</span> Economics
+                          </button>
+                        </>
+                      )}
+
+                      {selectedSstGroup === 'geography_only' && (
+                        <button
+                          type="button"
+                          className="px-4 py-2.5 text-xs font-black rounded-xl border bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm flex items-center gap-2"
+                        >
+                          <span>🌍</span> Geography
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lesson Select Dropdown Section - Only shown for SST / Science / Maths once a branch is active */}
+            {((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== '') && (
               <div className="p-6 rounded-3xl border border-indigo-100 bg-indigo-50/60 shadow-xs space-y-3.5 text-left animate-fadeIn">
                 <div className="flex items-center gap-2 text-indigo-950 font-black text-sm">
                   <span className="p-1.5 rounded-lg bg-indigo-100 text-[#5c3beb] text-xs">🎓 Unit</span>
@@ -1275,7 +1586,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     <option value="">-- Choose textbook lesson --</option>
                     {activeLessons.map((lesson, idx) => (
                       <option key={idx} value={lesson}>
-                        Lesson {idx + 1}: {lesson}
+                        {lesson}
                       </option>
                     ))}
                   </select>
@@ -1286,7 +1597,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
               </div>
             )}
 
-            {(!isSSTSubject || selectedSubSubject !== "") && selectedLesson === "" ? (
+            {((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== "") && selectedLesson === "" ? (
               <div className="p-12 rounded-3xl border border-dashed border-indigo-200 bg-white text-center space-y-6 animate-fadeIn">
                 <div className="flex justify-center">
                   <span className="p-5 rounded-3xl bg-indigo-50 border border-indigo-100 text-[#5c3beb] animate-bounce-slow flex items-center justify-center">
@@ -1315,13 +1626,13 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                         onClick={() => setSelectedLesson(lesson)}
                         className="px-4 py-2.5 text-xs font-bold bg-white text-neutral-800 hover:bg-neutral-50 border border-neutral-250 hover:border-[#5c3beb] hover:text-[#5c3beb] rounded-xl transition-all cursor-pointer shadow-xs active:scale-95 animate-slideUp"
                       >
-                        Lesson {idx + 1}: {lesson} &rarr;
+                        {lesson} &rarr;
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-            ) : (!isSSTSubject || selectedSubSubject !== "") && selectedLesson !== "" ? (
+            ) : ((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== "") && selectedLesson !== "" ? (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn animate-slideUp">
               
               {/* Left Column Tabs Selector (Duolingo Style Buttons) */}
@@ -1454,7 +1765,14 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                   });
 
                   if (activeCategoryTab === 'question_bank') {
-                    const subName = normalizeSubjectName(selectedSubject!.name);
+                    let subName = normalizeSubjectName(selectedSubject!.name);
+                    if (isSSTSubject && selectedSubSubject) {
+                      subName = "Social Studies";
+                    } else if (isScienceSubject && selectedSubSubject) {
+                      subName = selectedSubSubject === 'science1' ? 'Science 1' : 'Science 2';
+                    } else if (isMathSubject && selectedSubSubject) {
+                      subName = selectedSubSubject === 'math1' ? 'Math 1 (Algebra)' : 'Math 2 (Geometry)';
+                    }
                     const hasUploadedQuestionBanks = tabFilteredItems.length > 0;
                     const parsedQuestions = hasUploadedQuestionBanks ? [] : (cbseQuestionsDb[subName]?.[selectedLesson] || []);
 

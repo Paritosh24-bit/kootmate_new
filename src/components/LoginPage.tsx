@@ -385,22 +385,28 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   setEmail('student@cleverly.com');
                   setPassword('password123');
                   setLoginRole('student');
-                  setSuccessMsg('Loading CBSE Student Dashboard with preloaded content...');
-                  setTimeout(() => {
+                  setErrorMsg('');
+                  setSuccessMsg('Loading CBSE Student Dashboard...');
+                  setIsVerifying(true);
+                  const res = await dbLoginUser('student@cleverly.com', 'password123');
+                  setIsVerifying(false);
+                  if (res.success) {
                     onLoginSuccess({
                       name: 'Paritosh Student',
                       email: 'student@cleverly.com',
                       selectedBoard: 'cbse',
                       role: 'student',
-                      schoolName: 'St. Xavier\'s High School',
+                      schoolName: "St. Xavier's High School",
                       dob: '2011-05-15'
                     });
                     onNavigate('dashboard');
-                  }, 800);
+                  } else {
+                    setErrorMsg(res.message);
+                  }
                 }}
                 className="py-3 px-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-[10px] text-indigo-850 font-black tracking-wide uppercase transition-all cursor-pointer text-center"
               >
@@ -409,12 +415,16 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
 
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   setEmail('teacher@cleverly.com');
                   setPassword('password123');
                   setLoginRole('teacher');
-                  setSuccessMsg('Loading CBSE Teacher Dashboard with game capabilities...');
-                  setTimeout(() => {
+                  setErrorMsg('');
+                  setSuccessMsg('Loading CBSE Teacher Dashboard...');
+                  setIsVerifying(true);
+                  const res = await dbLoginUser('teacher@cleverly.com', 'password123');
+                  setIsVerifying(false);
+                  if (res.success) {
                     onLoginSuccess({
                       name: 'Anjali Teacher',
                       email: 'teacher@cleverly.com',
@@ -422,7 +432,9 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
                       role: 'teacher'
                     });
                     onNavigate('dashboard');
-                  }, 800);
+                  } else {
+                    setErrorMsg(res.message);
+                  }
                 }}
                 className="py-3 px-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-[10px] text-amber-850 font-black tracking-wide uppercase transition-all cursor-pointer text-center"
               >
@@ -431,12 +443,16 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
 
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   setEmail('ssc_student@cleverly.com');
                   setPassword('password123');
                   setLoginRole('student');
-                  setSuccessMsg('Loading SSC Student Dashboard with preloaded content...');
-                  setTimeout(() => {
+                  setErrorMsg('');
+                  setSuccessMsg('Loading SSC Student Dashboard...');
+                  setIsVerifying(true);
+                  const res = await dbLoginUser('ssc_student@cleverly.com', 'password123');
+                  setIsVerifying(false);
+                  if (res.success) {
                     onLoginSuccess({
                       name: 'Paritosh SSC Student',
                       email: 'ssc_student@cleverly.com',
@@ -446,7 +462,9 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
                       dob: '2010-08-20'
                     });
                     onNavigate('dashboard');
-                  }, 800);
+                  } else {
+                    setErrorMsg(res.message);
+                  }
                 }}
                 className="py-3 px-2 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-[10px] text-pink-850 font-black tracking-wide uppercase transition-all cursor-pointer text-center"
               >
@@ -455,12 +473,16 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
 
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   setEmail('ssc_teacher@cleverly.com');
                   setPassword('password123');
                   setLoginRole('teacher');
-                  setSuccessMsg('Loading SSC Teacher Dashboard with game capabilities...');
-                  setTimeout(() => {
+                  setErrorMsg('');
+                  setSuccessMsg('Loading SSC Teacher Dashboard...');
+                  setIsVerifying(true);
+                  const res = await dbLoginUser('ssc_teacher@cleverly.com', 'password123');
+                  setIsVerifying(false);
+                  if (res.success) {
                     onLoginSuccess({
                       name: 'Anjali SSC Teacher',
                       email: 'ssc_teacher@cleverly.com',
@@ -468,7 +490,9 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
                       role: 'teacher'
                     });
                     onNavigate('dashboard');
-                  }, 800);
+                  } else {
+                    setErrorMsg(res.message);
+                  }
                 }}
                 className="py-3 px-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl text-[10px] text-rose-850 font-black tracking-wide uppercase transition-all cursor-pointer text-center"
               >
@@ -478,11 +502,15 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
 
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 setEmail('admin@company.com');
                 setPassword('ADMIN777');
-                setSuccessMsg('Accessing system admin override console...');
-                setTimeout(() => {
+                setErrorMsg('');
+                setSuccessMsg('Accessing system admin override...');
+                setIsVerifying(true);
+                const res = await dbLoginUser('admin@company.com', 'ADMIN777');
+                setIsVerifying(false);
+                if (res.success) {
                   onLoginSuccess({
                     name: 'System Admin Override',
                     email: 'admin@company.com',
@@ -490,7 +518,9 @@ export default function LoginPage({ onNavigate, onLoginSuccess, isDarkMode }: Lo
                     role: 'admin'
                   });
                   onNavigate('dashboard');
-                }, 800);
+                } else {
+                  setErrorMsg(res.message);
+                }
               }}
               className="w-full py-3 px-3 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl text-[10px] text-red-700 font-black tracking-wide uppercase transition-all cursor-pointer text-center"
             >

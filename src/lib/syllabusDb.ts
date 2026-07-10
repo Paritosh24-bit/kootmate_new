@@ -99,17 +99,6 @@ const INITIAL_CHAPTERS: ChapterItem[] = [
     created_at: new Date().toISOString()
   },
   {
-    id: 1006,
-    subject_id: 101,
-    chapter_name: 'Periodic Classification of Elements',
-    description: 'Examine historical attempts to classify elements, including Mendeleev\'s periodic table and the modern periodic table trends.',
-    mindmap_url: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?q=80&w=600&auto=format&fit=crop',
-    game_url: 'https://poki.com/en/g/refraction',
-    audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-    pdf_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    created_at: new Date().toISOString()
-  },
-  {
     id: 1007,
     subject_id: 101,
     chapter_name: 'Life Processes',
@@ -145,8 +134,8 @@ const INITIAL_CHAPTERS: ChapterItem[] = [
   {
     id: 1010,
     subject_id: 101,
-    chapter_name: 'Heredity and Evolution',
-    description: 'Study Mendelian inheritance laws, variation, sex determination, and fundamental concepts of evolution and fossils.',
+    chapter_name: 'Heredity',
+    description: 'Study Mendelian inheritance laws, variation, sex determination, and fundamental concepts of genetics.',
     mindmap_url: 'https://images.unsplash.com/photo-1530210124550-912dc1381cb8?q=80&w=600&auto=format&fit=crop',
     game_url: 'https://poki.com/en/g/refraction',
     audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
@@ -198,17 +187,6 @@ const INITIAL_CHAPTERS: ChapterItem[] = [
     created_at: new Date().toISOString()
   },
   {
-    id: 1015,
-    subject_id: 101,
-    chapter_name: 'Sources of Energy',
-    description: 'Differentiate conventional and non-conventional energy sources, nuclear energy, and environmental impacts.',
-    mindmap_url: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=600&auto=format&fit=crop',
-    game_url: 'https://poki.com/en/g/refraction',
-    audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    pdf_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    created_at: new Date().toISOString()
-  },
-  {
     id: 1016,
     subject_id: 101,
     chapter_name: 'Our Environment',
@@ -216,17 +194,6 @@ const INITIAL_CHAPTERS: ChapterItem[] = [
     mindmap_url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=600&auto=format&fit=crop',
     game_url: 'https://poki.com/en/g/refraction',
     audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-    pdf_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 1017,
-    subject_id: 101,
-    chapter_name: 'Sustainable Management of Natural Resources',
-    description: 'Study conservation principles, chipko movement, water harvesting, and sustainable resource management policies.',
-    mindmap_url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop',
-    game_url: 'https://poki.com/en/g/refraction',
-    audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
     pdf_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     created_at: new Date().toISOString()
   },

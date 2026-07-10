@@ -53,313 +53,132 @@ export interface UserProfile {
 }
 
 /**
- * Persists the registered student to either Supabase (if configured) or localStorage simulation.
- * This guarantees both local operation and true live cloud syncing.
+ * Persists the registered student by calling the Express full-stack auth endpoint.
  */
 export async function dbRegisterUser(profile: UserProfile): Promise<{ success: boolean; message: string }> {
   try {
-    const isAppAdmin = profile.role === 'admin' || profile.email.toLowerCase() === 'admin@company.com';
-    
-    // 1. Always sync to localStorage first to guarantee smooth preview interaction
-    const localUsersStr = localStorage.getItem('kootmate_users') || '[]';
-    const localUsers = JSON.parse(localUsersStr);
-    
-    // Check local duplicate
-    const existingLocalIdx = localUsers.findIndex((u: any) => u.email.toLowerCase() === profile.email.toLowerCase());
-    if (existingLocalIdx !== -1) {
-      const existingUser = localUsers[existingLocalIdx];
-      if (isAccountExpired(existingUser.createdAt)) {
-        // Expired! Overwrite or remove old one
-        localUsers.splice(existingLocalIdx, 1);
-      } else {
-        return { success: false, message: 'An account with this email address already exists.' };
-      }
-    }
-
-    localUsers.push({
-      name: profile.name,
-      email: profile.email.toLowerCase(),
-      password: profile.password || '',
-      couponCode: profile.coupon_code || '',
-      selectedBoard: profile.selected_board || 'cbse',
-      createdAt: new Date().toISOString(),
-      role: profile.role || 'student'
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: profile.name,
+        email: profile.email,
+        password: profile.password,
+        referral_code: profile.coupon_code,
+        selected_board: profile.selected_board || 'cbse',
+        role: profile.role || 'student'
+      })
     });
-    localStorage.setItem('kootmate_users', JSON.stringify(localUsers));
-
-    if (isAppAdmin) {
-      const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
-      if (!adminEmails.includes(profile.email.toLowerCase())) {
-        adminEmails.push(profile.email.toLowerCase());
-        localStorage.setItem('kootmate_admin_emails', JSON.stringify(adminEmails));
-      }
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, message: data.error || "Registration failed." };
     }
-
-    // 2. Perform live Supabase sync if credentials are set up
-    const supabase = getSupabase();
-    if (supabase) {
-      // Check if email already exists in Supabase
-      const { data: dbUser, error: checkError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', profile.email.toLowerCase())
-        .maybeSingle();
-
-      let writeError = null;
-
-      if (dbUser) {
-        if (isAccountExpired(dbUser.created_at)) {
-          // Reset expired Supabase account
-          const { error: updateError } = await supabase
-            .from('users')
-            .update({
-              name: profile.name,
-              password: profile.password || '',
-              referral_code: profile.coupon_code || '',
-              selected_board: profile.selected_board || 'cbse',
-              created_at: new Date().toISOString(),
-              role: profile.role || 'student'
-            })
-            .eq('email', profile.email.toLowerCase());
-          writeError = updateError;
-        } else {
-          return { success: false, message: 'An account with this email address already exists.' };
-        }
-      } else {
-        // Normal insert
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              name: profile.name,
-              email: profile.email.toLowerCase(),
-              password: profile.password || '',
-              referral_code: profile.coupon_code || '',
-              selected_board: profile.selected_board || 'cbse',
-              created_at: new Date().toISOString(),
-              role: profile.role || 'student'
-            }
-          ]);
-        writeError = insertError;
-      }
-
-      if (writeError) {
-        console.error('Supabase write error:', writeError.message);
-        if (writeError.message && (writeError.message.includes('public.users') || writeError.message.includes('relation "users" does not exist') || writeError.message.includes('schema cache'))) {
-          localStorage.setItem('kootmate_supabase_table_error', 'true');
-        }
-        return { 
-          success: true, 
-          message: `Local profile saved! Supabase insert status: ${writeError.message}` 
-        };
-      } else {
-        localStorage.removeItem('kootmate_supabase_table_error');
-      }
-      return { success: true, message: 'Account saved securely to Supabase database!' };
-    }
-
-    return { 
-      success: true, 
-      message: 'Account created successfully in local repository! (To sync with live Supabase, supply credentials in settings).' 
-    };
-
+    return { success: true, message: data.message };
   } catch (err: any) {
-    console.error('Registration handler failure:', err);
-    return { success: false, message: err.message || 'Error occurred during database enrollment.' };
+    console.error("dbRegisterUser wrapper error:", err);
+    return { success: false, message: "Could not connect to authentication server." };
   }
 }
 
 /**
- * Authenticates user credentials. Checks local localStorage repository,
- * and if Supabase is active, verifies against the remote table database.
+ * Authenticates user credentials via Express full-stack auth endpoint to support single-active-session validation.
  */
 export async function dbLoginUser(email: string, password: string): Promise<{ success: boolean; user?: any; message: string }> {
-  const targetEmail = email.toLowerCase().trim();
-  
-  // 0. Explicit support for primary admin account
-  if (targetEmail === 'admin@company.com' && password === 'admin@123') {
-    // Make sure we have admin@company.com in local users so they can be retrieved
-    const localUsersStr = localStorage.getItem('kootmate_users') || '[]';
-    const localUsers = JSON.parse(localUsersStr);
-    if (!localUsers.some((u: any) => u.email.toLowerCase() === 'admin@company.com')) {
-      localUsers.push({
-        name: 'Primary Admin',
-        email: 'admin@company.com',
-        password: 'admin@123',
-        selectedBoard: 'cbse',
-        role: 'admin',
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem('kootmate_users', JSON.stringify(localUsers));
-    }
-
-    const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
-    if (!adminEmails.includes('admin@company.com')) {
-      adminEmails.push('admin@company.com');
-      localStorage.setItem('kootmate_admin_emails', JSON.stringify(adminEmails));
-    }
-
-    return {
-      success: true,
-      user: {
-        name: 'Primary Admin',
-        email: 'admin@company.com',
-        selectedBoard: 'cbse',
-        role: 'admin',
-        isAdmin: true
-      },
-      message: 'Access granted! Welcome to the Administrator CMS Workspace...'
-    };
-  }
-
   try {
-    // 1. Try Supabase verification if active
-    const supabase = getSupabase();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', targetEmail)
-        .eq('password', password)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Supabase fetch error: ' + JSON.stringify(error));
-        if (error.message && (error.message.includes('public.users') || error.message.includes('relation "users" does not exist') || error.message.includes('schema cache'))) {
-          localStorage.setItem('kootmate_supabase_table_error', 'true');
-        }
-      } else if (data) {
-        if (isAccountExpired(data.created_at)) {
-          return {
-            success: false,
-            message: 'This account expired on March 31st as per the annual policy. Please register a new account to continue.'
-          };
-        }
-
-        localStorage.removeItem('kootmate_supabase_table_error');
-        const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
-        const isUserAdmin = data.role === 'admin' || data.email.toLowerCase() === 'admin@company.com' || adminEmails.includes(data.email.toLowerCase());
-        
-        return { 
-          success: true, 
-          user: {
-            name: data.name,
-            email: data.email,
-            couponCode: data.referral_code || '',
-            selectedBoard: data.selected_board || 'cbse',
-            googleId: data.google_id || '',
-            avatarUrl: data.avatar_url || '',
-            role: data.role || 'student',
-            schoolName: data.school_name || '',
-            phoneNumber: data.phone_number || '',
-            dob: data.dob || '',
-            isAdmin: isUserAdmin
-          },
-          message: 'Authenticated securely from real-time Supabase remote database!' 
-        };
-      }
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, message: data.error || "Login failed." };
     }
-
-    // 2. Fallback check local simulation
-    const localUsersStr = localStorage.getItem('kootmate_users') || '[]';
-    const localUsers = JSON.parse(localUsersStr);
-    const matched = localUsers.find((u: any) => u.email.toLowerCase() === targetEmail && u.password === password);
-
-    if (matched) {
-      if (isAccountExpired(matched.createdAt)) {
-        return {
-          success: false,
-          message: 'This account expired on March 31st as per the annual policy. Please register a new account to continue.'
-        };
-      }
-
-      const adminEmails = JSON.parse(localStorage.getItem('kootmate_admin_emails') || '[]');
-      const isUserAdmin = matched.role === 'admin' || matched.email.toLowerCase() === 'admin@company.com' || adminEmails.includes(matched.email.toLowerCase());
-
-      return {
-        success: true,
-        user: {
-          name: matched.name,
-          email: matched.email,
-          couponCode: matched.couponCode || '',
-          selectedBoard: matched.selectedBoard || 'cbse',
-          googleId: matched.googleId || '',
-          avatarUrl: matched.avatarUrl || '',
-          role: matched.role || 'student',
-          schoolName: matched.schoolName || '',
-          phoneNumber: matched.phoneNumber || '',
-          dob: matched.dob || '',
-          isAdmin: isUserAdmin
-        },
-        message: 'Successfully signed in!'
-      };
+    // Store token in localStorage as fallback (cookies are HttpOnly and set automatically)
+    if (data.session_token) {
+      localStorage.setItem("session_token", data.session_token);
     }
-
-    // 3. Fallback to default developer profile bypass for seamless testing
-    if (password === 'password123') {
-      if (targetEmail === 'student@kootmate.com' || targetEmail === 'student@cleverly.com') {
-        return {
-          success: true,
-          user: {
-            name: 'Paritosh Student',
-            email: targetEmail,
-            couponCode: 'WELCOME100',
-            selectedBoard: 'cbse',
-            role: 'student',
-            schoolName: "St. Xavier's High School",
-            dob: '2011-05-15',
-            isAdmin: false
-          },
-          message: 'Signed in with pre-loaded account.'
-        };
-      }
-      if (targetEmail === 'teacher@cleverly.com') {
-        return {
-          success: true,
-          user: {
-            name: 'Anjali Teacher',
-            email: 'teacher@cleverly.com',
-            selectedBoard: 'cbse',
-            role: 'teacher',
-            isAdmin: false
-          },
-          message: 'Signed in with pre-loaded account.'
-        };
-      }
-      if (targetEmail === 'ssc_student@cleverly.com') {
-        return {
-          success: true,
-          user: {
-            name: 'Paritosh SSC Student',
-            email: 'ssc_student@cleverly.com',
-            selectedBoard: 'ssc',
-            role: 'student',
-            schoolName: 'Pune High School (SSC)',
-            dob: '2010-08-20',
-            isAdmin: false
-          },
-          message: 'Signed in with pre-loaded account.'
-        };
-      }
-      if (targetEmail === 'ssc_teacher@cleverly.com') {
-        return {
-          success: true,
-          user: {
-            name: 'Anjali SSC Teacher',
-            email: 'ssc_teacher@cleverly.com',
-            selectedBoard: 'ssc',
-            role: 'teacher',
-            isAdmin: false
-          },
-          message: 'Signed in with pre-loaded account.'
-        };
-      }
-    }
-
-    return { success: false, message: 'Invalid email or password combination. Verify entries or Sign Up!' };
-
+    return { success: true, user: data.user, message: data.message };
   } catch (err: any) {
-    return { success: false, message: err.message || 'System verification error.' };
+    console.error("dbLoginUser wrapper error:", err);
+    return { success: false, message: "Could not connect to authentication server." };
+  }
+}
+
+/**
+ * Logs out user by clearing cookies and invalidating backend session.
+ */
+export async function dbLogoutUser(): Promise<{ success: boolean; message: string }> {
+  try {
+    const token = localStorage.getItem("session_token");
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const res = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers
+    });
+    const data = await res.json();
+    localStorage.removeItem("session_token");
+    return { success: true, message: data.message || "Successfully logged out." };
+  } catch (err: any) {
+    console.error("dbLogoutUser wrapper error:", err);
+    localStorage.removeItem("session_token");
+    return { success: true, message: "Logged out locally." };
+  }
+}
+
+/**
+ * Heartbeat method to confirm user's active status every 60s
+ */
+export async function dbHeartbeat(): Promise<{ success: boolean; message: string }> {
+  try {
+    const token = localStorage.getItem("session_token");
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const res = await fetch("/api/auth/heartbeat", {
+      method: "POST",
+      headers
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, message: data.error || "Heartbeat failed." };
+    }
+    return { success: true, message: data.message };
+  } catch (err: any) {
+    console.error("dbHeartbeat wrapper error:", err);
+    return { success: false, message: "Heartbeat server offline." };
+  }
+}
+
+/**
+ * Verifies active session token and fetches current user profile
+ */
+export async function dbGetCurrentUser(): Promise<{ success: boolean; user?: any; error?: string }> {
+  try {
+    const token = localStorage.getItem("session_token");
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const res = await fetch("/api/auth/me", {
+      method: "GET",
+      headers
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.error || "Failed to fetch user." };
+    }
+    return { success: true, user: data.user };
+  } catch (err: any) {
+    console.error("dbGetCurrentUser wrapper error:", err);
+    return { success: false, error: "Network or server offline." };
   }
 }
 

@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw, Lock, ShieldAlert, Laptop, Smartphone
 } from "lucide-react";
 import { ContentItem } from "../types";
+import { removeChapterNumber } from "../lib/utils";
 
 // ==========================================
 // 1. UPLOAD PROGRESS COMPONENT
@@ -870,8 +871,8 @@ export function ContentCard({
 
         {/* Info detail block */}
         <div className="space-y-1">
-          <h4 className="text-sm font-black text-slate-900 not-dark:text-neutral-100 truncate group-hover:text-violet-600 transition-colors" title={item.title}>
-            {item.title}
+          <h4 className="text-sm font-black text-slate-900 not-dark:text-neutral-100 truncate group-hover:text-violet-600 transition-colors" title={removeChapterNumber(item.title)}>
+            {removeChapterNumber(item.title)}
           </h4>
           
           <div className="flex flex-wrap items-center gap-x-2 text-[9px] font-extrabold text-[#5c3beb]/80 uppercase tracking-wide">
@@ -930,7 +931,7 @@ export function ContentCard({
           <button
             onClick={() => {
               logPreviewClick();
-              onOpenPDF ? onOpenPDF(item.resource_url, item.title) : window.open(item.resource_url, "_blank");
+              onOpenPDF ? onOpenPDF(item.resource_url, removeChapterNumber(item.title)) : window.open(item.resource_url, "_blank");
             }}
             className="flex items-center gap-1 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-red-100/50"
           >
@@ -945,7 +946,7 @@ export function ContentCard({
               logPreviewClick();
               const isPdf = item.resource_url.toLowerCase().endsWith('.pdf');
               if (isPdf && onOpenPDF) {
-                onOpenPDF(item.resource_url, item.title);
+                onOpenPDF(item.resource_url, removeChapterNumber(item.title));
               } else {
                 window.open(item.resource_url, "_blank");
               }
@@ -961,7 +962,7 @@ export function ContentCard({
           <button
             onClick={() => {
               logPreviewClick();
-              onPlayAudio ? onPlayAudio(item.resource_url, item.title, item.chapter) : window.open(item.resource_url, "_blank");
+              onPlayAudio ? onPlayAudio(item.resource_url, removeChapterNumber(item.title), item.chapter) : window.open(item.resource_url, "_blank");
             }}
             className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-[#5c3beb] font-black text-[10px] rounded-lg transition-transform active:scale-95 cursor-pointer border border-indigo-100/50"
           >
@@ -1028,7 +1029,7 @@ export function ContentGrid({
 
 export const BOARD_SUBJECTS: Record<string, string[]> = {
   CBSE: ["Science", "Mathematics", "Social Studies"],
-  SSC: ["Science 1", "Science 2", "Math 1 (Algebra)", "Math 2 (Geometry)", "Social Studies"]
+  SSC: ["Science", "Mathematics", "Social Studies"]
 };
 
 export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Record<string, string[]>>> = {
@@ -1038,18 +1039,15 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
       "Acids, Bases and Salts",
       "Metals and Non-metals",
       "Carbon and its Compounds",
-      "Periodic Classification of Elements",
       "Life Processes",
       "Control and Coordination",
       "How do Organisms Reproduce?",
-      "Heredity and Evolution",
+      "Heredity",
       "Light - Reflection and Refraction",
       "The Human Eye and the Colourful World",
       "Electricity",
       "Magnetic Effects of Electric Current",
-      "Sources of Energy",
-      "Our Environment",
-      "Management of Natural Resources"
+      "Our Environment"
     ],
     "Mathematics": [
       "Real Numbers",
@@ -1062,7 +1060,6 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
       "Introduction to Trigonometry",
       "Some Applications of Trigonometry",
       "Circles",
-      "Constructions",
       "Areas Related to Circles",
       "Surface Areas and Volumes",
       "Statistics",
@@ -1088,57 +1085,65 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
       "Civics": [
         "Power Sharing",
         "Federalism",
-        "Democracy and Diversity",
         "Gender, Religion and Caste",
-        "Popular Struggles and Movements",
         "Political Parties",
-        "Outcomes of Democracy",
-        "Challenges to Democracy"
+        "Outcomes of Democracy"
+      ],
+      "Economics": [
+        "Development",
+        "Sectors of the Indian Economy",
+        "Money and Credit",
+        "Globalisation and the Indian Economy",
+        "Consumer Rights"
       ]
     }
   },
   SSC: {
-    "Science 1": [
-      "Gravitation",
-      "Periodic Classification of Elements",
-      "Chemical Reactions and Equations",
-      "Effects of Electric Current",
-      "Heat",
-      "Refraction of Light",
-      "Lenses",
-      "Metallurgy",
-      "Carbon Compounds",
-      "Space Missions"
-    ],
-    "Science 2": [
-      "Heredity and Evolution",
-      "Life Processes in Living Organisms - Part I",
-      "Life Processes in Living Organisms - Part II",
-      "Environmental Management",
-      "Towards Green Energy",
-      "Animal Classification",
-      "Introduction to Microbiology",
-      "Cell Biology and Biotechnology",
-      "Social Health",
-      "Disaster Management"
-    ],
-    "Math 1 (Algebra)": [
-      "Linear Equations in Two Variables",
-      "Quadratic Equations",
-      "Arithmetic Progression",
-      "Financial Planning",
-      "Probability",
-      "Statistics"
-    ],
-    "Math 2 (Geometry)": [
-      "Similarity",
-      "Pythagoras Theorem",
-      "Circle",
-      "Geometric Constructions",
-      "Coordinate Geometry",
-      "Trigonometry",
-      "Mensuration"
-    ],
+    "Science": {
+      "Science 1": [
+        "Gravitation",
+        "Periodic Classification of Elements",
+        "Chemical Reactions and Equations",
+        "Effects of Electric Current",
+        "Heat",
+        "Refraction of Light",
+        "Lenses",
+        "Metallurgy",
+        "Carbon Compounds",
+        "Space Missions"
+      ],
+      "Science 2": [
+        "Heredity and Evolution",
+        "Life Processes in Living Organisms - Part I",
+        "Life Processes in Living Organisms - Part II",
+        "Environmental Management",
+        "Towards Green Energy",
+        "Animal Classification",
+        "Introduction to Microbiology",
+        "Cell Biology and Biotechnology",
+        "Social Health",
+        "Disaster Management"
+      ]
+    },
+    "Mathematics": {
+      "Math 1 (Algebra)": [
+        "Linear Equations in Two Variables",
+        "Quadratic Equations",
+        "Arithmetic Progression",
+        "Financial Planning",
+        "Probability",
+        "Statistics"
+      ],
+      "Math 2 (Geometry)": [
+        "Similarity",
+        "Pythagoras Theorem",
+        "Circle",
+        "Geometric Constructions",
+        "Coordinate Geometry",
+        "Trigonometry",
+        "Mensuration"
+      ]
+    },
     "Social Studies": {
       "History": [
         "Historiography: Development in the West",
@@ -1219,11 +1224,23 @@ export function AdminContentForm({
       
       const savedSub = initialValues.subject || "";
       const isSubSst = ["history", "civics", "geography", "economics"].includes(savedSub.toLowerCase());
+      const isSubSci = ["science 1", "science 2"].includes(savedSub.toLowerCase());
+      const isSubMath = ["math 1 (algebra)", "math 2 (geometry)"].includes(savedSub.toLowerCase());
+
       let matchedSubject = "Science";
       let matchedSst = "";
       if (isSubSst) {
         matchedSubject = "Social Studies";
         matchedSst = savedSub.charAt(0).toUpperCase() + savedSub.slice(1).toLowerCase();
+        if (matchedSst === "Civics" && initialBoard === "SSC") {
+          matchedSst = "Civics";
+        }
+      } else if (isSubSci) {
+        matchedSubject = "Science";
+        matchedSst = savedSub === "Science 1" ? "Science 1" : "Science 2";
+      } else if (isSubMath) {
+        matchedSubject = "Mathematics";
+        matchedSst = savedSub.includes("Math 1") ? "Math 1 (Algebra)" : "Math 2 (Geometry)";
       } else {
         matchedSubject = savedSub || "Science";
       }
@@ -1236,7 +1253,7 @@ export function AdminContentForm({
       } else {
         const boardLessons = PRE_ENTERED_LESSONS[initialBoard] || PRE_ENTERED_LESSONS["CBSE"];
         const subjectLessons = boardLessons[matchedSubject] || [];
-        const lessons = matchedSubject === "Social Studies" && matchedSst
+        const lessons = (matchedSubject === "Social Studies" || (initialBoard === "SSC" && (matchedSubject === "Science" || matchedSubject === "Mathematics"))) && matchedSst
           ? (subjectLessons as Record<string, string[]>)[matchedSst] || []
           : subjectLessons as string[];
         setChapter(lessons[0] || "");
@@ -1274,12 +1291,12 @@ export function AdminContentForm({
   const handleBoardChange = (newBoard: string) => {
     setBoard(newBoard);
     const validSubs = BOARD_SUBJECTS[newBoard] || BOARD_SUBJECTS["CBSE"];
-    const defSub = validSubs[0];
+    const defSub = validSubs[0]; // Science
     setSubject(defSub);
     
-    if (defSub === "Social Studies") {
-      setSstDiscipline("History");
-      const defaultLessons = PRE_ENTERED_LESSONS[newBoard]?.[defSub]?.["History"] || [];
+    if (newBoard === "SSC") {
+      setSstDiscipline("Science 1");
+      const defaultLessons = PRE_ENTERED_LESSONS["SSC"]?.["Science"]?.["Science 1"] || [];
       setChapter(defaultLessons[0] || "");
     } else {
       setSstDiscipline("");
@@ -1293,6 +1310,14 @@ export function AdminContentForm({
     if (newSubject === "Social Studies") {
       setSstDiscipline("History");
       const defaultLessons = PRE_ENTERED_LESSONS[board]?.[newSubject]?.["History"] || [];
+      setChapter(defaultLessons[0] || "");
+    } else if (board === "SSC" && newSubject === "Science") {
+      setSstDiscipline("Science 1");
+      const defaultLessons = PRE_ENTERED_LESSONS["SSC"]?.["Science"]?.["Science 1"] || [];
+      setChapter(defaultLessons[0] || "");
+    } else if (board === "SSC" && newSubject === "Mathematics") {
+      setSstDiscipline("Math 1 (Algebra)");
+      const defaultLessons = PRE_ENTERED_LESSONS["SSC"]?.["Mathematics"]?.["Math 1 (Algebra)"] || [];
       setChapter(defaultLessons[0] || "");
     } else {
       setSstDiscipline("");
@@ -1311,6 +1336,12 @@ export function AdminContentForm({
     const boardLessons = PRE_ENTERED_LESSONS[board] || PRE_ENTERED_LESSONS["CBSE"];
     const subjectLessons = boardLessons[subject] || [];
     if (subject === "Social Studies") {
+      return (subjectLessons as Record<string, string[]>)[sstDiscipline] || [];
+    }
+    if (board === "SSC" && subject === "Science") {
+      return (subjectLessons as Record<string, string[]>)[sstDiscipline] || [];
+    }
+    if (board === "SSC" && subject === "Mathematics") {
       return (subjectLessons as Record<string, string[]>)[sstDiscipline] || [];
     }
     return subjectLessons as string[];
@@ -1417,7 +1448,7 @@ export function AdminContentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalSubject = subject === "Social Studies" && sstDiscipline ? sstDiscipline : subject;
+    const finalSubject = (subject === "Social Studies" || (board === "SSC" && (subject === "Science" || subject === "Mathematics"))) && sstDiscipline ? sstDiscipline : subject;
     if (!finalSubject.trim() || !chapter.trim() || !title.trim()) {
       alert("Please fill in Subject, Chapter, and Title fields to structure folder namespaces properly.");
       return;
@@ -1539,12 +1570,75 @@ export function AdminContentForm({
           <label className="text-xs font-black uppercase text-indigo-950 tracking-wider block">
             🏛️ Social Studies Sub-subject
           </label>
-          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
             {([
               { key: "History", label: "History 📜" },
               { key: "Geography", label: "Geography 🌍" },
-              { key: "Civics", label: board === "SSC" ? "Political Science ⚖️" : "Civics ⚖️" }
+              { key: "Civics", label: board === "SSC" ? "Political Science ⚖️" : "Civics ⚖️" },
+              ...(board === "CBSE" ? [{ key: "Economics", label: "Economics 📈" }] : [])
             ]).map((disc) => {
+              const active = sstDiscipline === disc.key;
+              return (
+                <button
+                  key={disc.key}
+                  type="button"
+                  onClick={() => handleSstDisciplineChange(disc.key)}
+                  className={`px-4 py-3 text-xs font-black rounded-xl border-2 transition-all cursor-pointer ${
+                    active
+                      ? "bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm"
+                      : "bg-white text-zinc-850 border-indigo-200 hover:bg-indigo-50/50"
+                  }`}
+                >
+                  {disc.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* SSC Science Part selection */}
+      {board === "SSC" && subject === "Science" && (
+        <div className="p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-150 space-y-2.5 animate-fadeIn">
+          <label className="text-xs font-black uppercase text-indigo-950 tracking-wider block">
+            🧪 Science Part Option
+          </label>
+          <div className="grid gap-3 grid-cols-2">
+            {[
+              { key: "Science 1", label: "Science 1 (Physics/Chem) 🧪" },
+              { key: "Science 2", label: "Science 2 (Biology/EVS) 🧬" }
+            ].map((disc) => {
+              const active = sstDiscipline === disc.key;
+              return (
+                <button
+                  key={disc.key}
+                  type="button"
+                  onClick={() => handleSstDisciplineChange(disc.key)}
+                  className={`px-4 py-3 text-xs font-black rounded-xl border-2 transition-all cursor-pointer ${
+                    active
+                      ? "bg-[#5c3beb] text-white border-[#5c3beb] shadow-sm"
+                      : "bg-white text-zinc-850 border-indigo-200 hover:bg-indigo-50/50"
+                  }`}
+                >
+                  {disc.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* SSC Mathematics Part selection */}
+      {board === "SSC" && subject === "Mathematics" && (
+        <div className="p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-150 space-y-2.5 animate-fadeIn">
+          <label className="text-xs font-black uppercase text-indigo-950 tracking-wider block">
+            📐 Mathematics Part Option
+          </label>
+          <div className="grid gap-3 grid-cols-2">
+            {[
+              { key: "Math 1 (Algebra)", label: "Math 1 (Algebra) 📈" },
+              { key: "Math 2 (Geometry)", label: "Math 2 (Geometry) 📐" }
+            ].map((disc) => {
               const active = sstDiscipline === disc.key;
               return (
                 <button

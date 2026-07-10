@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import { PDFViewer } from './CMSComponents';
+import { removeChapterNumber } from '../lib/utils';
 
 interface LandingPageProps {
   onNavigate: (page: 'landing' | 'login' | 'signup' | 'dashboard') => void;
@@ -451,12 +452,12 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                           if (infoItem) {
                             setActivePDF({
                               url: infoItem.resource_url,
-                              title: infoItem.title
+                              title: removeChapterNumber(infoItem.title)
                             });
                           } else {
                             setActivePDF({
                               url: "https://kootmate-content.e919105d6b0d81f6ecf5f7ae83c1992d.r2.cloudflarestorage.com/class10/cbse/science/chemicalreactionsandequations/sdvf.pdf",
-                              title: "CBSE Class 10 Science Chapter 1 - In A Nutshell Infographic Summary"
+                              title: removeChapterNumber("CBSE Class 10 Science Chapter 1 - In A Nutshell Infographic Summary")
                             });
                           }
                         } else if (tool.id === 'audio') {
@@ -466,14 +467,14 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                           if (audioItem) {
                             setActiveDynamicAudio({
                               url: audioItem.resource_url,
-                              title: audioItem.title,
+                              title: removeChapterNumber(audioItem.title),
                               subject: audioItem.subject,
                               chapter: audioItem.chapter
                             });
                           } else {
                             setActiveDynamicAudio({
                               url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-                              title: "Science Ch1: Chemical Reactions and Equations Summary",
+                              title: removeChapterNumber("Science Ch1: Chemical Reactions and Equations Summary"),
                               subject: "Science",
                               chapter: "Chapter 1"
                             });
@@ -826,7 +827,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                             >
                               <div className="min-w-0 flex-1">
                                 <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-neutral-700 text-amber-400 uppercase">Default</span>
-                                <p className="text-xs font-black truncate mt-1">Science Ch1: Chemical Reactions and Equations</p>
+                                <p className="text-xs font-black truncate mt-1">{removeChapterNumber("Science Ch1: Chemical Reactions and Equations")}</p>
                               </div>
                               <span className="text-[10px] font-bold text-neutral-500">Audio Preview</span>
                             </button>
@@ -837,7 +838,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                                 onClick={() => {
                                   setSelectedAudioItem({
                                     url: audio.resource_url,
-                                    title: audio.title,
+                                    title: removeChapterNumber(audio.title),
                                     chapter: audio.chapter
                                   });
                                   setIsPlaying(false);
@@ -855,7 +856,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
                                   <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 uppercase">
                                     {audio.subject}
                                   </span>
-                                  <p className="text-xs font-black truncate mt-1">{audio.title}</p>
+                                  <p className="text-xs font-black truncate mt-1">{removeChapterNumber(audio.title)}</p>
                                   <p className="text-[9px] text-neutral-500 font-bold mt-0.5">Chapter: {audio.chapter}</p>
                                 </div>
                                 <span className="text-[10px] font-bold text-amber-600">Play Stream</span>

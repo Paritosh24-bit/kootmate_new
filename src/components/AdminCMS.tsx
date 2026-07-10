@@ -11,6 +11,7 @@ import {
 } from '../lib/syllabusDb';
 import { ContentItem } from '../types';
 import { AdminContentForm, ContentGrid, ContentFilter, PDFViewer, AudioPlayer } from './CMSComponents';
+import { removeChapterNumber } from '../lib/utils';
 
 type AdminTab = 'materials' | 'curriculum';
 
@@ -541,8 +542,8 @@ export default function AdminCMS() {
                     isAdmin={true}
                     onEdit={startEditContent}
                     onDelete={handleDeleteContentItem}
-                    onPlayAudio={(url, title, chap) => setActiveAudio({ url, title, chapter: chap })}
-                    onOpenPDF={(url, title) => setActivePDF({ url, title })}
+                    onPlayAudio={(url, title, chap) => setActiveAudio({ url, title: removeChapterNumber(title), chapter: chap })}
+                    onOpenPDF={(url, title) => setActivePDF({ url, title: removeChapterNumber(title) })}
                   />
                 </div>
               )}
