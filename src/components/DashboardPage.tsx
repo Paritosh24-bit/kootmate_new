@@ -231,8 +231,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Entertainment and History",
         "Sports and History",
         "Tourism and History",
-        "Heritage Management",
-        "Preservation of Heritage"
+        "Heritage Management"
       ],
       geography: [
         "Field Visit",
@@ -243,8 +242,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Population",
         "Human Settlements",
         "Economy and Occupations",
-        "Transport and Communication",
-        "Tourism"
+        "Tourism, Transport and Communication"
       ],
       civics: [
         "Working of the Constitution",
@@ -513,7 +511,6 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Sports and History",
         "Tourism and History",
         "Heritage Management",
-        "Preservation of Heritage",
         "Field Visit",
         "Location and Extent",
         "Physiography and Drainage",
@@ -522,8 +519,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
         "Population",
         "Human Settlements",
         "Economy and Occupations",
-        "Transport and Communication",
-        "Tourism",
+        "Tourism, Transport and Communication",
         "Working of the Constitution",
         "The Electoral Process",
         "Political Parties",

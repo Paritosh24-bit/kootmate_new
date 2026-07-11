@@ -343,6 +343,152 @@ const histCh5: QuestionItem[] = [
 ];
 
 
+// SSC History Questions (Chapters 1 to 9)
+const sscHistCh1: QuestionItem[] = [
+  { q: "What is historiography, and why is it important in the study of history?", a: "" },
+  { q: "Explain the contribution of Herodotus to the development of historiography.", a: "" },
+  { q: "Why is Thucydides regarded as the father of scientific historiography?", a: "" },
+  { q: "What are the main differences between the approaches of Herodotus and Thucydides in writing history?", a: "" },
+  { q: "Explain the historical method proposed by Leopold von Ranke.", a: "" },
+  { q: "How did the ideas of the Renaissance influence the writing of history?", a: "" },
+  { q: "Describe the impact of the Age of Enlightenment on the development of modern historiography.", a: "" },
+  { q: "Explain the contribution of Voltaire to historiography.", a: "" },
+  { q: "What is meant by scientific historiography, and what are its key characteristics?", a: "" },
+  { q: "Why is the critical examination of historical sources essential for writing authentic history?", a: "" },
+  { q: "How did the development of archaeology and other auxiliary sciences improve historical research?", a: "" },
+  { q: "Compare ancient historiography with modern scientific historiography.", a: "" },
+  { q: "Analyse how the evolution of historiography has improved the accuracy, objectivity, and reliability of historical writing.", a: "" }
+];
+
+const sscHistCh2: QuestionItem[] = [
+  { q: "What is meant by Indian historiography?", a: "" },
+  { q: "Explain the main characteristics of colonial historiography.", a: "" },
+  { q: "Why did Orientalist historians show special interest in ancient Indian culture and Sanskrit literature?", a: "" },
+  { q: "State the contributions of Sir William Jones to the study of Indian history.", a: "" },
+  { q: "Explain the contribution of Friedrich Max Müller to Indian historiography.", a: "" },
+  { q: "What are the main features of nationalistic historiography in India?", a: "" },
+  { q: "Explain the contribution of Vishwanath Kashinath Rajwade to historical research in India.", a: "" },
+  { q: "What are the main principles of Marxist historiography?", a: "" },
+  { q: "Explain the concept of subaltern history and discuss its significance.", a: "" },
+  { q: "How did Mahatma Jyotirao Phule and B. R. Ambedkar contribute to subaltern historiography?", a: "" },
+  { q: "What is feminist historiography, and why did it emerge?", a: "" },
+  { q: "Compare colonial, nationalistic, and Marxist historiography.", a: "" },
+  { q: "Analyse how different ideological frameworks have influenced the writing and interpretation of Indian history.", a: "" }
+];
+
+const sscHistCh3: QuestionItem[] = [
+  { q: "What is meant by Applied History?", a: "" },
+  { q: "Why is Applied History also known as Public History?", a: "" },
+  { q: "Explain the importance of Applied History in solving contemporary social issues.", a: "" },
+  { q: "How is the method of history useful in the research of science and technology?", a: "" },
+  { q: "Describe the role of history in management studies and industrial development.", a: "" },
+  { q: "Differentiate between tangible and intangible cultural heritage with suitable examples.", a: "" },
+  { q: "What is natural heritage? Explain its major components.", a: "" },
+  { q: "What is the role of UNESCO in the conservation of cultural and natural heritage?", a: "" },
+  { q: "Explain the importance of preserving cultural and natural heritage for future generations.", a: "" },
+  { q: "What are the objectives and functions of archives and museums in preserving historical sources?", a: "" },
+  { q: "Discuss the role of local people and experts in the conservation and management of heritage sites.", a: "" },
+  { q: "What are the major professional fields associated with Applied History?", a: "" },
+  { q: "Analyse how Applied History contributes to heritage conservation, public awareness, research, and sustainable development.", a: "" }
+];
+
+const sscHistCh4: QuestionItem[] = [
+  { q: "What is meant by art, and what are the essential elements of artistic creation?", a: "" },
+  { q: "Differentiate between visual arts and performing arts with suitable examples.", a: "" },
+  { q: "Distinguish between folk art and classical art.", a: "" },
+  { q: "Explain the characteristics and historical importance of the Maratha style of painting.", a: "" },
+  { q: "Describe the significance of the Ajanta paintings and Bhimbetka rock paintings in the history of Indian art.", a: "" },
+  { q: "What are the six aspects (Shadanga) of classical Indian painting? Explain briefly.", a: "" },
+  { q: "Explain the development of Indian sculptural art from the Harappan period to the Gupta period.", a: "" },
+  { q: "What is Indian iconography? Discuss the contributions of the Gandhara and Mathura schools of art.", a: "" },
+  { q: "Compare the Nagara, Dravida, and Vesara styles of Indian temple architecture.", a: "" },
+  { q: "Explain the major features of Indo-Islamic architecture with suitable examples.", a: "" },
+  { q: "Describe the main traditions of Indian performing arts, including classical music, dance, and folk arts.", a: "" },
+  { q: "Explain how Indian art provides valuable information about the social, cultural, and religious life of different historical periods.", a: "" },
+  { q: "Analyse how India's visual arts, performing arts, sculpture, and architecture reflect the country's rich cultural heritage and historical development.", a: "" }
+];
+
+const sscHistCh5: QuestionItem[] = [
+  { q: "What is meant by mass media?", a: "" },
+  { q: "Explain the importance of mass media in preserving and promoting history.", a: "" },
+  { q: "What are the different types of mass media? Give suitable examples.", a: "" },
+  { q: "How do newspapers and magazines serve as valuable sources of historical information?", a: "" },
+  { q: "Explain the role of radio and television in creating historical awareness among people.", a: "" },
+  { q: "How has the internet changed the collection, preservation, and dissemination of historical information?", a: "" },
+  { q: "What are the advantages and limitations of electronic media as a source of history?", a: "" },
+  { q: "Why is it necessary to critically evaluate information obtained through mass media?", a: "" },
+  { q: "Explain the contribution of documentaries and news reports to the understanding of historical events.", a: "" },
+  { q: "How do advertisements, photographs, and films help historians study society and culture?", a: "" },
+  { q: "Discuss the role of archives and digital media in preserving historical records.", a: "" },
+  { q: "Explain how mass media influences public opinion about historical events and personalities.", a: "" },
+  { q: "Analyse the role of mass media in preserving historical heritage, educating society, and promoting awareness of the past.", a: "" }
+];
+
+const sscHistCh6: QuestionItem[] = [
+  { q: "What is meant by entertainment, and how has it changed over time?", a: "" },
+  { q: "Explain the relationship between history and the various forms of entertainment.", a: "" },
+  { q: "What are the different sources that help us understand the history of entertainment?", a: "" },
+  { q: "Describe the development of theatre as a form of entertainment in India.", a: "" },
+  { q: "Explain the contribution of Indian cinema to the preservation and promotion of history.", a: "" },
+  { q: "How do historical films and television serials help people understand historical events and personalities?", a: "" },
+  { q: "What role do folk arts and traditional performances play in preserving cultural heritage?", a: "" },
+  { q: "Explain the significance of music, dance, and drama in reflecting the social and cultural history of India.", a: "" },
+  { q: "How have technological advancements influenced the entertainment industry?", a: "" },
+  { q: "Why is it important to maintain historical accuracy while producing historical films and serials?", a: "" },
+  { q: "Explain the educational value of museums, exhibitions, and cultural festivals as sources of entertainment.", a: "" },
+  { q: "Discuss the positive and negative effects of entertainment media on people's understanding of history.", a: "" },
+  { q: "Analyse how entertainment has evolved from traditional folk performances to modern digital media while continuing to preserve and communicate historical and cultural heritage.", a: "" }
+];
+
+const sscHistCh7: QuestionItem[] = [
+  { q: "What is the relationship between sports and history?", a: "" },
+  { q: "Explain how sports reflect the social and cultural development of a society.", a: "" },
+  { q: "What are the major sources used to study the history of sports?", a: "" },
+  { q: "Describe the origin and historical development of the Olympic Games.", a: "" },
+  { q: "Explain the contribution of International Olympic Committee in promoting international sports.", a: "" },
+  { q: "What is the significance of traditional Indian sports in preserving cultural heritage?", a: "" },
+  { q: "How have sports contributed to national integration and international goodwill?", a: "" },
+  { q: "Explain the role of sports museums, records, and archives in preserving the history of sports.", a: "" },
+  { q: "How has technology influenced the development and management of modern sports?", a: "" },
+  { q: "Discuss the importance of sports biographies and autobiographies as historical sources.", a: "" },
+  { q: "Explain the achievements of Indian sportspersons in international competitions and their contribution to India's sporting history.", a: "" },
+  { q: "Why is it important to preserve the history and heritage of sports for future generations?", a: "" },
+  { q: "Analyse how sports have evolved over time and contributed to cultural exchange, national identity, and international cooperation.", a: "" }
+];
+
+const sscHistCh8: QuestionItem[] = [
+  { q: "What is meant by tourism, and how is it related to history?", a: "" },
+  { q: "Explain the importance of historical tourism in understanding the cultural heritage of a country.", a: "" },
+  { q: "What are the different types of tourism mentioned in the chapter?", a: "" },
+  { q: "How do historical monuments, forts, caves, and museums promote tourism?", a: "" },
+  { q: "Explain the role of tourism in preserving cultural and historical heritage.", a: "" },
+  { q: "How does tourism contribute to the economic development of a country?", a: "" },
+  { q: "Why is it necessary to conserve and protect historical monuments and heritage sites?", a: "" },
+  { q: "Explain the role of the government and local communities in promoting sustainable tourism.", a: "" },
+  { q: "What is the importance of museums, archives, and heritage sites for tourists and researchers?", a: "" },
+  { q: "Discuss the impact of tourism on local culture, traditions, and employment opportunities.", a: "" },
+  { q: "What precautions should tourists take while visiting historical and heritage sites?", a: "" },
+  { q: "Explain how tourism creates awareness about the history and culture of different regions.", a: "" },
+  { q: "Analyse how responsible tourism helps preserve historical heritage while promoting cultural understanding and sustainable development.", a: "" }
+];
+
+const sscHistCh9: QuestionItem[] = [
+  { q: "What is meant by heritage management?", a: "" },
+  { q: "Differentiate between cultural heritage and natural heritage with suitable examples.", a: "" },
+  { q: "Explain the importance of conserving and preserving heritage for future generations.", a: "" },
+  { q: "What is the role of UNESCO in protecting World Heritage Sites?", a: "" },
+  { q: "Explain the functions of the Archaeological Survey of India in the conservation of historical monuments.", a: "" },
+  { q: "What is the role of Indian National Trust for Art and Cultural Heritage in heritage conservation?", a: "" },
+  { q: "Why is public participation important in the management and preservation of heritage sites?", a: "" },
+  { q: "Explain the contribution of museums, archives, and libraries in preserving historical heritage.", a: "" },
+  { q: "What are the major challenges faced in the conservation of historical monuments and heritage sites?", a: "" },
+  { q: "Discuss the importance of documentation, research, and scientific methods in heritage management.", a: "" },
+  { q: "Explain how tourism and heritage management are interconnected.", a: "" },
+  { q: "Suggest suitable measures for the effective conservation and protection of India's cultural and natural heritage.", a: "" },
+  { q: "Analyse how heritage management helps preserve national identity, promotes sustainable tourism, creates employment opportunities, and safeguards historical resources for future generations.", a: "" }
+];
+
+
 // Geography Questions (Chapters 1 to 7)
 const geoCh1: QuestionItem[] = [
   { q: "What is the definition of a 'Resource' as per the textbook?", a: "" },
@@ -1136,16 +1282,15 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "The Making of a Global World": histCh3,
     "The Age of Industrialisation": histCh4,
     "Print Culture and the Modern World": histCh5,
-    "Historiography: Development in the West": histCh1,
-    "Historiography: Indian Tradition": histCh2,
-    "Applied History": histCh3,
-    "History of Indian Arts": histCh4,
-    "Mass Media and History": histCh5,
-    "Entertainment and History": histCh1,
-    "Sports and History": histCh2,
-    "Tourism and History": histCh3,
-    "Heritage Management": histCh4,
-    "Preservation of Heritage": histCh5,
+    "Historiography: Development in the West": sscHistCh1,
+    "Historiography: Indian Tradition": sscHistCh2,
+    "Applied History": sscHistCh3,
+    "History of Indian Arts": sscHistCh4,
+    "Mass Media and History": sscHistCh5,
+    "Entertainment and History": sscHistCh6,
+    "Sports and History": sscHistCh7,
+    "Tourism and History": sscHistCh8,
+    "Heritage Management": sscHistCh9,
 
     // Geography Chapters
     "Resources and Development": geoCh1,
@@ -1165,6 +1310,7 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "Human Occupations": sscGeoCh7,
     "Economy and Occupations": sscGeoCh7,
     "Transport and Communication": sscGeoCh7,
+    "Tourism, Transport and Communication": sscGeoCh7,
     "Tourism": sscGeoCh8,
     "Environmental Management": sscGeoCh9,
 

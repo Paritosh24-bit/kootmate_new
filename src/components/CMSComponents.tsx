@@ -1154,8 +1154,7 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
         "Entertainment and History",
         "Sports and History",
         "Tourism and History",
-        "Heritage Management",
-        "Preservation of Heritage"
+        "Heritage Management"
       ],
       "Geography": [
         "Field Visit",
@@ -1166,8 +1165,7 @@ export const PRE_ENTERED_LESSONS: Record<string, Record<string, string[] | Recor
         "Population",
         "Human Settlements",
         "Economy and Occupations",
-        "Transport and Communication",
-        "Tourism"
+        "Tourism, Transport and Communication"
       ],
       "Civics": [
         "Working of the Constitution",
