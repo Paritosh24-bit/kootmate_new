@@ -1195,6 +1195,534 @@ const sscGeoCh9: QuestionItem[] = [
   { q: "Analyse the need for sustainable resource management for future generations.", a: "" }
 ];
 
+const sc1Ch1: QuestionItem[] = [
+  { q: "What is gravitation, and how did Sir Isaac Newton arrive at the idea of gravitational force?", a: "" },
+  { q: "What is centripetal force? Explain its role in the circular motion of a stone tied to a string and of the Moon around the Earth.", a: "" },
+  { q: "State Kepler's three laws of planetary motion.", a: "" },
+  { q: "Explain Newton's Universal Law of Gravitation and write its mathematical expression.", a: "" },
+  { q: "What is the Universal Gravitational Constant (G)? State its SI unit and explain its physical significance.", a: "" },
+  { q: "Why did Newton conclude that the gravitational force follows the inverse square law of distance? Explain using Kepler's third law.", a: "" },
+  { q: "Explain acceleration due to gravity (g). Derive the expression for the value of g on the surface of the Earth.", a: "" },
+  { q: "How does the value of g vary: (a) from the equator to the poles, (b) with increasing height above the Earth's surface, and (c) with increasing depth below the Earth's surface?", a: "" },
+  { q: "Differentiate between mass and weight with respect to definition, SI unit, nature, dependence on gravity, and variation from place to place.", a: "" },
+  { q: "What is free fall? Why do all objects fall with the same acceleration in vacuum regardless of their masses?", a: "" },
+  { q: "Explain gravitational potential energy. Why does its value become negative when measured with reference to an object at an infinite distance from the Earth?", a: "" },
+  { q: "What is escape velocity? Derive or explain the concept using the principle of conservation of energy, and state its importance in launching spacecraft.", a: "" },
+  { q: "Astronauts inside an orbiting spacecraft appear to float even though Earth's gravity still acts on them. Explain why they experience weightlessness.", a: "" }
+];
+
+const sc1Ch2: QuestionItem[] = [
+  { q: "Why did scientists feel the need to classify elements, and how did the increase in the number of known elements lead to the development of different classification systems?", a: "" },
+  { q: "Explain Dobereiner's Triads. Why was this method of classification not applicable to all known elements?", a: "" },
+  { q: "State Newlands' Law of Octaves. What similarities did Newlands observe among the elements arranged according to increasing atomic mass?", a: "" },
+  { q: "Discuss the limitations of Newlands' Law of Octaves.", a: "" },
+  { q: "Explain how Dmitri Mendeleev developed the periodic table and state Mendeleev's Periodic Law.", a: "" },
+  { q: "Describe the structure of Mendeleev's Periodic Table. What are periods and groups in this table?", a: "" },
+  { q: "Explain any four merits or achievements of Mendeleev's Periodic Table.", a: "" },
+  { q: "What were the major limitations of Mendeleev's Periodic Table? Explain with suitable examples.", a: "" },
+  { q: "How did the discovery of isotopes create difficulties in Mendeleev's Periodic Table?", a: "" },
+  { q: "Explain the Modern Periodic Law. How does it differ from Mendeleev's Periodic Law?", a: "" },
+  { q: "Describe the structure of the Modern Periodic Table, including the arrangement of periods, groups, metals, non-metals, metalloids, and noble gases.", a: "" },
+  { q: "How do the atomic radius, valency, and metallic and non-metallic character vary across a period and down a group in the Modern Periodic Table?", a: "" },
+  { q: "Compare Mendeleev's Periodic Table with the Modern Periodic Table. How did the modern classification overcome the shortcomings of Mendeleev's arrangement?", a: "" }
+];
+
+const sc1Ch3: QuestionItem[] = [
+  { q: "What is a chemical reaction? List the common observations that indicate a chemical reaction has taken place.", a: "" },
+  { q: "What is a chemical equation? Why is it necessary to balance a chemical equation?", a: "" },
+  { q: "Explain the steps involved in balancing a chemical equation using the hit-and-trial method with a suitable example.", a: "" },
+  { q: "What is the difference between a balanced chemical equation and an unbalanced chemical equation?", a: "" },
+  { q: "Differentiate between combination, decomposition, displacement, and double displacement reactions with one example of each.", a: "" },
+  { q: "What are exothermic and endothermic reactions? Explain each with suitable examples from everyday life.", a: "" },
+  { q: "What is oxidation? Explain the process with suitable chemical reactions.", a: "" },
+  { q: "What is reduction? How are oxidation and reduction related in a redox reaction?", a: "" },
+  { q: "Explain the process of corrosion. Why is rusting of iron considered a chemical change, and how can it be prevented?", a: "" },
+  { q: "What is rancidity? Explain its causes and suggest methods to prevent it in food materials.", a: "" },
+  { q: "Explain the practical applications of chemical reactions in everyday life, such as combustion, corrosion prevention, and food preservation.", a: "" },
+  { q: "Why is it important to write the physical states of reactants and products while representing a chemical equation? What information do they provide?", a: "" },
+  { q: "Compare physical changes and chemical changes on the basis of formation of new substances, reversibility, energy changes, and examples.", a: "" }
+];
+
+const sc1Ch4: QuestionItem[] = [
+  { q: "What is electric current? Define it and state its SI unit.", a: "" },
+  { q: "Explain the relationship between potential difference, current, and resistance according to Ohm's Law.", a: "" },
+  { q: "State Ohm's Law. Describe an experiment to verify it using the required apparatus, procedure, observations, and conclusion.", a: "" },
+  { q: "What is electrical resistance? Discuss the factors that affect the resistance of a conductor.", a: "" },
+  { q: "Differentiate between conductors, insulators, and semiconductors with suitable examples.", a: "" },
+  { q: "What is electrical power? Derive its expression and state its SI unit.", a: "" },
+  { q: "Explain the heating effect of electric current. Mention its practical applications in everyday life.", a: "" },
+  { q: "State Joule's Law of Heating. How is it useful in designing electrical appliances?", a: "" },
+  { q: "Explain the construction and working of an electric fuse. Why is it an important safety device in electrical circuits?", a: "" },
+  { q: "Differentiate between a fuse and an MCB (Miniature Circuit Breaker) on the basis of construction, working, reusability, and applications.", a: "" },
+  { q: "What is electromagnetism? Explain the magnetic effect of electric current with a suitable example.", a: "" },
+  { q: "Describe the construction and working of an electric motor. State its principle and mention its common applications.", a: "" },
+  { q: "Explain the importance of electrical safety while using household appliances. What precautions should be taken to prevent electric shocks and short circuits?", a: "" }
+];
+
+const sc1Ch5: QuestionItem[] = [
+  { q: "What is heat? Differentiate between heat and temperature.", a: "" },
+  { q: "Explain the concepts of temperature, thermal equilibrium, and the transfer of heat between two bodies.", a: "" },
+  { q: "Describe the three modes of heat transfer, namely conduction, convection, and radiation, with one everyday example of each.", a: "" },
+  { q: "What is thermal conductivity? Why are some materials good conductors of heat while others are poor conductors?", a: "" },
+  { q: "Explain the construction and working of a thermos flask. How does it minimize heat transfer by conduction, convection, and radiation?", a: "" },
+  { q: "What is specific heat capacity? State its SI unit and explain its practical significance.", a: "" },
+  { q: "Define latent heat. Differentiate between latent heat of fusion and latent heat of vaporization with suitable examples.", a: "" },
+  { q: "Explain the processes of melting, freezing, evaporation, condensation, and boiling in terms of heat energy.", a: "" },
+  { q: "Why does evaporation produce a cooling effect? Explain with suitable examples from daily life.", a: "" },
+  { q: "Describe the factors affecting the rate of evaporation and explain how each factor influences the process.", a: "" },
+  { q: "Explain the concept of anomalous expansion of water. Why is it important for aquatic life during winter?", a: "" },
+  { q: "How do sea breeze and land breeze occur? Explain their formation using the principle of convection.", a: "" },
+  { q: "Explain the practical applications of heat transfer in everyday life by discussing any four examples such as cooking utensils, woollen clothes, desert coolers, chimneys, or solar cookers.", a: "" }
+];
+
+const sc1Ch6: QuestionItem[] = [
+  { q: "What is refraction of light? Why does a ray of light bend when it passes from one transparent medium to another?", a: "" },
+  { q: "State the laws of refraction (Snell's Law). How do they explain the behavior of light at the boundary of two media?", a: "" },
+  { q: "Define refractive index. How is the refractive index of a medium related to the speed of light in that medium?", a: "" },
+  { q: "Differentiate between a rarer medium and a denser medium with suitable examples.", a: "" },
+  { q: "Explain the concepts of the angle of incidence, angle of refraction, and the normal with the help of a ray diagram.", a: "" },
+  { q: "What is total internal reflection? State the conditions necessary for it to occur.", a: "" },
+  { q: "Define the critical angle. Explain its significance in the phenomenon of total internal reflection.", a: "" },
+  { q: "Describe any four practical applications of total internal reflection in everyday life or technology.", a: "" },
+  { q: "Explain the construction and working of an optical fibre. How does total internal reflection make optical communication possible?", a: "" },
+  { q: "Why does a pencil partially immersed in water appear bent? Explain this phenomenon using the concept of refraction.", a: "" },
+  { q: "Explain how mirages are formed in deserts or on hot roads with the help of total internal reflection.", a: "" },
+  { q: "Draw and explain the path of a light ray when it passes from: (a) a rarer medium to a denser medium, and (b) a denser medium to a rarer medium.", a: "" },
+  { q: "Compare refraction and total internal reflection on the basis of their conditions, behavior of light, and practical applications.", a: "" }
+];
+
+const sc1Ch7: QuestionItem[] = [
+  { q: "What is a lens? Differentiate between a convex lens and a concave lens based on their shape and effect on light rays.", a: "" },
+  { q: "Define the following terms related to lenses: principal axis, optical centre, principal focus, focal length, and centre of curvature.", a: "" },
+  { q: "Explain the formation of images by a convex lens for different positions of the object with the help of ray diagrams.", a: "" },
+  { q: "Describe the image formation by a concave lens. State the nature, size, and position of the image formed.", a: "" },
+  { q: "Explain the rules for drawing ray diagrams to locate the image formed by a lens.", a: "" },
+  { q: "State the lens formula. Explain the significance of each term in the formula and the sign convention used for lenses.", a: "" },
+  { q: "What is magnification produced by a lens? Derive or state the expression for magnification and explain what positive and negative values indicate.", a: "" },
+  { q: "Differentiate between real and virtual images formed by lenses with suitable examples.", a: "" },
+  { q: "Explain the defects of vision, namely myopia (short-sightedness) and hypermetropia (long-sightedness). How are they corrected using lenses?", a: "" },
+  { q: "What is the power of a lens? State its SI unit and explain the relationship between power and focal length.", a: "" },
+  { q: "Explain the construction and working of the human eye. What are the functions of the cornea, iris, pupil, retina, and eye lens?", a: "" },
+  { q: "Compare convex and concave lenses on the basis of shape, image formation, nature of images, and common applications.", a: "" },
+  { q: "Discuss the practical applications of lenses in everyday life by explaining the working of any four optical instruments such as spectacles, magnifying glass, camera, microscope, telescope, or projector.", a: "" }
+];
+
+const sc1Ch8: QuestionItem[] = [
+  { q: "What is metallurgy? Explain the main objectives of the metallurgical process.", a: "" },
+  { q: "Explain the occurrence of metals in nature. Differentiate between minerals and ores with suitable examples.", a: "" },
+  { q: "Describe the various steps involved in the extraction of metals from their ores.", a: "" },
+  { q: "What is concentration (enrichment) of ore? Explain any two methods used for concentrating ores.", a: "" },
+  { q: "Explain the process of roasting and calcination. How are these processes different from each other?", a: "" },
+  { q: "Describe the methods used for the reduction of metal oxides to obtain pure metals with suitable examples.", a: "" },
+  { q: "What is electrolytic refining? Explain its principle and the process involved in obtaining pure metals.", a: "" },
+  { q: "Explain the reactivity series of metals. How does it help in selecting the appropriate method for extracting a metal?", a: "" },
+  { q: "What is corrosion? Discuss its causes, harmful effects, and methods of prevention.", a: "" },
+  { q: "Explain alloy formation. Why are alloys generally preferred over pure metals? Give suitable examples.", a: "" },
+  { q: "Discuss the extraction of aluminium from bauxite, highlighting the important stages involved.", a: "" },
+  { q: "Explain the importance of metallurgy in everyday life and industrial development.", a: "" },
+  { q: "Compare the extraction methods used for highly reactive, moderately reactive, and less reactive metals with suitable examples.", a: "" }
+];
+
+const sc1Ch9: QuestionItem[] = [
+  { q: "What are carbon compounds? Explain why carbon forms a large number of compounds.", a: "" },
+  { q: "Describe the unique properties of carbon, namely catenation and tetravalency, with suitable examples.", a: "" },
+  { q: "Differentiate between saturated and unsaturated carbon compounds.", a: "" },
+  { q: "What are hydrocarbons? Classify them into alkanes, alkenes, and alkynes with suitable examples.", a: "" },
+  { q: "Explain the concept of functional groups. Why are functional groups important in organic compounds?", a: "" },
+  { q: "What is homologous series? State its characteristics and explain its significance.", a: "" },
+  { q: "Explain the naming (nomenclature) of simple carbon compounds according to IUPAC rules.", a: "" },
+  { q: "Describe the chemical properties of carbon compounds, including combustion, oxidation, addition, and substitution reactions.", a: "" },
+  { q: "What are ethanol and ethanoic acid? Discuss their important physical and chemical properties along with their common uses.", a: "" },
+  { q: "Explain the process of soap and detergent formation. How do soaps clean greasy substances?", a: "" },
+  { q: "Differentiate between soaps and detergents with respect to composition, cleansing action, and effectiveness in hard water.", a: "" },
+  { q: "Explain the environmental impact of carbon compounds and suggest measures for their safe and responsible use.", a: "" },
+  { q: "Compare saturated and unsaturated hydrocarbons on the basis of structure, bonding, chemical properties, and common uses.", a: "" }
+];
+
+const sc1Ch10: QuestionItem[] = [
+  { q: "What is a space mission? Explain its objectives and importance in the field of science and technology.", a: "" },
+  { q: "Differentiate between natural satellites and artificial satellites with suitable examples.", a: "" },
+  { q: "Explain the different types of artificial satellites based on their functions.", a: "" },
+  { q: "Describe the role of satellites in communication, weather forecasting, navigation, disaster management, and remote sensing.", a: "" },
+  { q: "What is a launch vehicle? Explain its role in placing satellites into orbit.", a: "" },
+  { q: "Discuss the contributions of the Indian Space Research Organisation (ISRO) to space research and satellite technology.", a: "" },
+  { q: "Explain the objectives, achievements, and significance of the Mangalyaan.", a: "" },
+  { q: "Describe the objectives and importance of the Chandrayaan Mission.", a: "" },
+  { q: "Explain the importance of remote sensing satellites and their applications in agriculture, environmental monitoring, and resource management.", a: "" },
+  { q: "What are space debris? Discuss the challenges they create for present and future space missions.", a: "" },
+  { q: "Explain the benefits of space technology in improving the quality of human life with suitable examples.", a: "" },
+  { q: "Discuss the major challenges faced during space exploration and suggest possible solutions.", a: "" },
+  { q: "Evaluate India's achievements in space research and explain how future space missions can contribute to scientific advancement and national development.", a: "" }
+];
+
+const sc2Ch1: QuestionItem[] = [
+  { q: "What is heredity, and why is it important for the continuity of living organisms?", a: "" },
+  { q: "Explain the process of transcription and state its role in protein synthesis.", a: "" },
+  { q: "Differentiate between transcription, translation, and translocation.", a: "" },
+  { q: "What is a mutation? Explain how mutations can be beneficial or harmful with a suitable example.", a: "" },
+  { q: "Define evolution. How does evolution lead to the formation of new species over time?", a: "" },
+  { q: "Explain any four evidences of evolution that support the theory of evolution.", a: "" },
+  { q: "How do vestigial organs provide evidence for evolution? Give suitable examples from humans and other animals.", a: "" },
+  { q: "What are connecting links? Explain their evolutionary significance with examples such as Peripatus, duck-billed platypus, or lungfish.", a: "" },
+  { q: "Explain Darwin's theory of natural selection. Why is it also known as the theory of \"survival of the fittest\"?", a: "" },
+  { q: "State the main principles of Lamarckism. Why was Lamarck's theory of inheritance of acquired characters later rejected?", a: "" },
+  { q: "Define speciation. Explain how genetic variation, geographical isolation, and reproductive isolation contribute to the formation of new species.", a: "" },
+  { q: "Describe the major stages in the evolution of humans from ancient ape-like ancestors to modern Homo sapiens.", a: "" },
+  { q: "The textbook presents several evidences such as fossils, comparative anatomy, embryology, and connecting links to support evolution. Which of these do you think provides the strongest evidence for evolution? Justify your answer with suitable reasons.", a: "" }
+];
+
+const sc2Ch2: QuestionItem[] = [
+  { q: "Explain the role of various life processes in the production and utilization of energy in living organisms.", a: "" },
+  { q: "Differentiate between aerobic respiration and anaerobic respiration with respect to process, products formed, and energy released.", a: "" },
+  { q: "Describe the three major stages of aerobic respiration, namely glycolysis, Krebs cycle, and the electron transport chain.", a: "" },
+  { q: "Why is ATP called the \"energy currency\" of the cell? Explain its structure and function.", a: "" },
+  { q: "Explain how carbohydrates, proteins, and lipids are utilized by the body for energy production under different conditions.", a: "" },
+  { q: "Why do muscle cells perform anaerobic respiration during vigorous exercise? What are its effects on the human body?", a: "" },
+  { q: "Discuss the importance of proteins, lipids, vitamins, water, and dietary fibers in maintaining normal body functions.", a: "" },
+  { q: "Explain the process of mitosis with the help of its four stages and state its significance in living organisms.", a: "" },
+  { q: "Differentiate between mitosis and meiosis based on occurrence, chromosome number, daughter cells formed, and biological importance.", a: "" },
+  { q: "Explain the two stages of meiosis. Why is crossing over during meiosis biologically significant?", a: "" },
+  { q: "Why is cell division considered an essential life process? Explain its role in growth, repair, reproduction, and maintenance of living organisms.", a: "" },
+  { q: "An onion root tip is commonly used to observe mitosis. Explain why actively growing root tips are suitable for studying cell division and describe the basic procedure used.", a: "" },
+  { q: "A person has been fasting for a long period and has exhausted most of the stored carbohydrates in the body. Using the concepts discussed in this chapter, explain how the body continues to produce energy and which nutrients become the major sources of energy under such conditions.", a: "" }
+];
+
+const sc2Ch3: QuestionItem[] = [
+  { q: "What is reproduction? Explain its importance in maintaining the continuity of species.", a: "" },
+  { q: "Differentiate between asexual reproduction and sexual reproduction with respect to the number of parents involved, gamete formation, genetic variation, and advantages.", a: "" },
+  { q: "Explain binary fission in unicellular organisms. How does it differ in Amoeba, Paramecium, and Euglena?", a: "" },
+  { q: "Describe the process of multiple fission in Amoeba. Under what conditions does this type of reproduction occur?", a: "" },
+  { q: "Explain budding in yeast and Hydra. How does the formation of a new individual differ in these two organisms?", a: "" },
+  { q: "What is vegetative propagation? Explain its importance with suitable examples such as potato, Bryophyllum, and sugarcane.", a: "" },
+  { q: "Describe spore formation in fungi. Why are spores considered an effective method of reproduction and survival?", a: "" },
+  { q: "Explain the two major stages of sexual reproduction: gamete formation and fertilization. Why is meiosis essential during gamete formation?", a: "" },
+  { q: "Describe the structure of a typical flower and explain the functions of its four floral whorls.", a: "" },
+  { q: "Explain the process of pollination. Differentiate between self-pollination and cross-pollination with suitable examples.", a: "" },
+  { q: "Describe the process of fertilization in flowering plants. Explain how fertilization leads to the formation of seeds and fruits.", a: "" },
+  { q: "Explain the structure and functions of the male and female reproductive systems in humans. How does fertilization occur in human beings?", a: "" },
+  { q: "Population explosion is becoming a major global concern. Explain its causes, effects, and discuss the importance of reproductive health, family planning, and modern reproductive technologies in addressing this issue.", a: "" }
+];
+
+const sc2Ch4: QuestionItem[] = [
+  { q: "What is environmental management? Explain its importance in maintaining ecological balance and sustainable development.", a: "" },
+  { q: "Explain the concepts of conservation, preservation, and protection of the environment. How are they different from one another?", a: "" },
+  { q: "Describe the major causes of environmental degradation. What are their effects on ecosystems and human life?", a: "" },
+  { q: "What is biodiversity? Explain its ecological, economic, and scientific importance with suitable examples.", a: "" },
+  { q: "Discuss the importance of in-situ and ex-situ conservation of biodiversity. Give suitable examples of each.", a: "" },
+  { q: "Explain the concept of solid waste management. Describe the methods that can be adopted for proper segregation, treatment, and disposal of waste.", a: "" },
+  { q: "What are the 3Rs (Reduce, Reuse, and Recycle)? Explain how each principle contributes to environmental conservation.", a: "" },
+  { q: "Describe the objectives and importance of disaster management in protecting the environment and society during natural and human-made disasters.", a: "" },
+  { q: "Explain the role of individuals, communities, industries, and government in environmental conservation and pollution control.", a: "" },
+  { q: "What is an ecosystem? Explain how human activities can disturb the balance of an ecosystem and suggest measures to restore it.", a: "" },
+  { q: "Explain the importance of environmental laws and regulations in conserving natural resources and controlling pollution.", a: "" },
+  { q: "Climate change, deforestation, and pollution are interrelated environmental issues. Explain how these problems affect biodiversity and the quality of human life.", a: "" },
+  { q: "A city is facing increasing problems of plastic waste, polluted rivers, and shrinking green spaces due to rapid urbanization. As an environmental manager, propose a comprehensive plan based on the concepts discussed in this chapter to improve environmental sustainability.", a: "" }
+];
+
+const sc2Ch5: QuestionItem[] = [
+  { q: "What is green energy? Why has it become an essential alternative to conventional sources of energy?", a: "" },
+  { q: "Differentiate between conventional and non-conventional sources of energy with suitable examples.", a: "" },
+  { q: "Explain the working principle of a solar cell. State its advantages, limitations, and major applications.", a: "" },
+  { q: "Describe the construction and working of a hydroelectric power plant. Why is it considered a renewable source of energy?", a: "" },
+  { q: "Explain how wind energy is converted into electrical energy. What factors influence the efficiency of a wind power plant?", a: "" },
+  { q: "What is biomass energy? Explain how biogas is produced and discuss its advantages over traditional fuels.", a: "" },
+  { q: "Describe the process of electricity generation in a thermal power plant. Mention its environmental impacts.", a: "" },
+  { q: "Explain the need for energy conservation. Suggest practical measures that can be adopted at home, school, and industries to reduce energy consumption.", a: "" },
+  { q: "What are the advantages and disadvantages of nuclear energy? Why is proper management of radioactive waste necessary?", a: "" },
+  { q: "Explain the importance of energy auditing. How does an energy audit help in reducing energy wastage and improving efficiency?", a: "" },
+  { q: "Compare solar energy, wind energy, hydroelectric energy, and biomass energy based on availability, environmental impact, reliability, and applications.", a: "" },
+  { q: "Why is the transition from fossil fuels to green energy important for sustainable development? Explain with suitable reasons.", a: "" },
+  { q: "A village depends mainly on diesel generators for electricity, resulting in high fuel costs and environmental pollution. Based on the concepts discussed in this chapter, design a suitable green energy plan for the village. Justify your choice of renewable energy sources and explain how your plan would benefit both the environment and the local community.", a: "" }
+];
+
+const sc2Ch6: QuestionItem[] = [
+  { q: "Why is animal classification necessary? Explain its importance in the scientific study of biodiversity.", a: "" },
+  { q: "What are the major criteria used for the classification of animals? Explain any four criteria with suitable examples.", a: "" },
+  { q: "Differentiate between invertebrates and vertebrates based on their structural characteristics.", a: "" },
+  { q: "Describe the characteristic features of the phyla Porifera, Coelenterata (Cnidaria), Platyhelminthes, Nematoda, Annelida, Arthropoda, Mollusca, and Echinodermata with one suitable example each.", a: "" },
+  { q: "Explain the distinguishing characteristics of the classes Pisces, Amphibia, Reptilia, Aves, and Mammalia with suitable examples.", a: "" },
+  { q: "Why is Arthropoda considered the largest phylum in the animal kingdom? Explain with suitable examples.", a: "" },
+  { q: "Explain the concept of symmetry, body cavity (coelom), segmentation, and notochord. How are these characteristics useful in animal classification?", a: "" },
+  { q: "Differentiate between Chordata and Non-Chordata based on their defining characteristics.", a: "" },
+  { q: "Explain the importance of notochord, vertebral column, and endoskeleton in vertebrate animals.", a: "" },
+  { q: "Some animals possess characteristics of more than one group during different stages of their life cycle. Explain this statement with suitable examples from the chapter.", a: "" },
+  { q: "Describe the adaptations that enable animals of different classes to survive in their respective habitats.", a: "" },
+  { q: "Explain the importance of scientific classification in fields such as wildlife conservation, biological research, agriculture, and medicine.", a: "" },
+  { q: "A newly discovered animal has the following characteristics: bilateral symmetry, segmented body, jointed appendages, an exoskeleton made of chitin, and an open circulatory system. Using the classification criteria discussed in this chapter, identify the most appropriate phylum for this organism and justify your answer with suitable reasons.", a: "" }
+];
+
+const sc2Ch7: QuestionItem[] = [
+  { q: "What is microbiology? Explain its importance in understanding microorganisms and their role in daily life.", a: "" },
+  { q: "Classify microorganisms into their major groups. State one characteristic and one example of each group.", a: "" },
+  { q: "Differentiate between bacteria, fungi, protozoa, algae, and viruses based on their structure, nutrition, and mode of reproduction.", a: "" },
+  { q: "Explain the structure of a typical bacterial cell. How does it differ from the cells of higher organisms?", a: "" },
+  { q: "Describe the different shapes of bacteria with suitable examples.", a: "" },
+  { q: "Explain the beneficial roles of microorganisms in agriculture, food production, medicine, industry, and environmental management.", a: "" },
+  { q: "Harmful microorganisms can affect human life in many ways. Explain their role in causing diseases, food spoilage, and other harmful effects with suitable examples.", a: "" },
+  { q: "What are communicable diseases? Explain their modes of transmission and suggest preventive measures to control their spread.", a: "" },
+  { q: "What are antibiotics? Explain how they are produced, their uses, and why they should be used responsibly.", a: "" },
+  { q: "Describe the importance of vaccination in preventing microbial diseases. How does immunization help protect individuals and society?", a: "" },
+  { q: "Explain the role of microorganisms in sewage treatment, decomposition, and maintaining ecological balance.", a: "" },
+  { q: "Viruses exhibit characteristics of both living and non-living organisms. Explain this statement with suitable reasons.", a: "" },
+  { q: "A food-processing company is facing repeated contamination of its products due to microbial growth. Based on the concepts discussed in this chapter, suggest suitable methods to prevent contamination and ensure the safety and quality of the products.", a: "" }
+];
+
+const sc2Ch8: QuestionItem[] = [
+  { q: "What is biotechnology? Explain its significance in agriculture, medicine, industry, and environmental conservation.", a: "" },
+  { q: "Explain the basic structure of a cell. Describe the functions of the cell membrane, cytoplasm, nucleus, and major cell organelles.", a: "" },
+  { q: "What are stem cells? Explain their characteristics, types, and potential applications in modern medicine.", a: "" },
+  { q: "Describe the process of tissue culture in plants. What are its advantages and practical applications?", a: "" },
+  { q: "Explain the principles and steps involved in genetic engineering. How does recombinant DNA technology help in biotechnology?", a: "" },
+  { q: "What are genetically modified (GM) organisms? Discuss their advantages, limitations, and applications with suitable examples.", a: "" },
+  { q: "Explain the production of insulin using biotechnology. Why is recombinant human insulin preferred over animal insulin?", a: "" },
+  { q: "Discuss the role of biotechnology in improving crop production, disease resistance, and food security.", a: "" },
+  { q: "Explain the applications of biotechnology in healthcare, including vaccine production, diagnosis of diseases, and gene therapy.", a: "" },
+  { q: "What are bioethics? Explain the ethical, social, and environmental concerns associated with biotechnology.", a: "" },
+  { q: "Describe the importance of biotechnology in environmental management, including bioremediation and waste treatment.", a: "" },
+  { q: "Differentiate between traditional biotechnology and modern biotechnology with suitable examples.", a: "" },
+  { q: "A farming community is experiencing severe crop losses due to insect attacks and plant diseases. Based on the concepts discussed in this chapter, suggest suitable biotechnological solutions to improve crop productivity while considering the associated ethical and environmental concerns.", a: "" }
+];
+
+const sc2Ch9: QuestionItem[] = [
+  { q: "What is social health? Explain its importance in the overall well-being of an individual.", a: "" },
+  { q: "Explain the major factors affecting social health and describe how each factor influences an individual's quality of life.", a: "" },
+  { q: "How do education, employment opportunities, financial status, and social environment contribute to social health?", a: "" },
+  { q: "Define stress. Explain the common causes and symptoms of stress in students and adults.", a: "" },
+  { q: "Describe the different methods of stress management discussed in the chapter. Why is stress management important for maintaining good social health?", a: "" },
+  { q: "Explain the harmful effects of addictions such as tobacco, alcohol, and drug abuse on an individual's physical, mental, and social health.", a: "" },
+  { q: "What are social media and internet addiction? Discuss their impact on social relationships, academic performance, and mental well-being.", a: "" },
+  { q: "Explain the importance of communication, cooperation, empathy, and healthy interpersonal relationships in maintaining social health.", a: "" },
+  { q: "What are the social consequences of discrimination, gender inequality, and social conflicts? Suggest suitable measures to reduce these problems.", a: "" },
+  { q: "Explain the role of family, school, friends, and society in promoting positive social health among adolescents.", a: "" },
+  { q: "Why is balanced use of technology important in today's society? Discuss the advantages and possible risks of excessive dependence on television, mobile phones, and the internet.", a: "" },
+  { q: "Explain the importance of self-discipline, emotional control, and responsible decision-making in achieving a healthy social life.", a: "" },
+  { q: "A student spends most of the day on a smartphone, rarely interacts with family or friends, experiences stress before examinations, and has developed poor sleeping habits. Based on the concepts discussed in this chapter, analyze the factors affecting the student's social health and suggest practical measures to improve their overall well-being.", a: "" }
+];
+
+const sc2Ch10: QuestionItem[] = [
+  { q: "What is a disaster? Differentiate between natural disasters and human-made disasters with suitable examples.", a: "" },
+  { q: "Explain the disaster management cycle. Describe the importance of mitigation, preparedness, response, recovery, and rehabilitation.", a: "" },
+  { q: "What are the major causes and effects of earthquakes? State the safety measures that should be followed before, during, and after an earthquake.", a: "" },
+  { q: "Describe the causes, impacts, and preventive measures related to floods. How can proper planning reduce the damage caused by floods?", a: "" },
+  { q: "Explain the causes and effects of cyclones. What precautions should people take before, during, and after a cyclone?", a: "" },
+  { q: "What is a drought? Discuss its causes, effects on agriculture and society, and the measures that can be adopted to reduce its impact.", a: "" },
+  { q: "Explain the causes of fire disasters. Describe the safety measures and the correct use of fire extinguishers in emergency situations.", a: "" },
+  { q: "What is first aid? Explain its importance and describe the basic principles that should be followed while providing first aid to an injured person.", a: "" },
+  { q: "Discuss the role of government agencies, local authorities, and citizens in effective disaster management.", a: "" },
+  { q: "Explain the importance of early warning systems, communication networks, and community participation in minimizing the impact of disasters.", a: "" },
+  { q: "Describe the emergency measures that should be taken during disasters such as lightning, landslides, or stampedes.", a: "" },
+  { q: "Why is disaster preparedness considered more effective than disaster response? Explain with suitable reasons and examples.", a: "" },
+  { q: "A coastal town is frequently affected by cyclones and flooding during the monsoon season. Based on the concepts discussed in this chapter, prepare a comprehensive disaster management plan that includes mitigation, preparedness, emergency response, evacuation, relief, and rehabilitation measures.", a: "" }
+];
+
+const sscM1Ch1: QuestionItem[] = [
+  { q: "What is a linear equation in two variables?", a: "" },
+  { q: "Write the general form of a linear equation in two variables and explain the meaning of its constants.", a: "" },
+  { q: "How can you determine whether a given equation is linear in two variables?", a: "" },
+  { q: "What are simultaneous linear equations?", a: "" },
+  { q: "Explain the elimination method for solving simultaneous linear equations.", a: "" },
+  { q: "How is the substitution method used to solve simultaneous linear equations?", a: "" },
+  { q: "What is the graphical method of solving simultaneous equations?", a: "" },
+  { q: "How can the point of intersection of two lines help in finding the solution of simultaneous equations?", a: "" },
+  { q: "What is Cramer’s Rule and when is it used?", a: "" },
+  { q: "How can equations that are not initially linear be transformed into linear equations in two variables?", a: "" },
+  { q: "What does it mean if two equations have no common solution?", a: "" },
+  { q: "How can simultaneous equations be applied to solve real-life word problems?", a: "" },
+  { q: "Compare the graphical method and Cramer’s method for solving simultaneous linear equations.", a: "" }
+];
+
+const sscM1Ch2: QuestionItem[] = [
+  { q: "What is a quadratic equation?", a: "" },
+  { q: "Write the standard form of a quadratic equation and explain its components.", a: "" },
+  { q: "How can a practical problem be represented using a quadratic equation?", a: "" },
+  { q: "How can you identify whether a given equation is quadratic?", a: "" },
+  { q: "What are the roots of a quadratic equation?", a: "" },
+  { q: "Explain the factorization method for solving quadratic equations.", a: "" },
+  { q: "How is the quadratic formula used to find the roots of a quadratic equation?", a: "" },
+  { q: "What is the discriminant of a quadratic equation?", a: "" },
+  { q: "How does the value of the discriminant determine the nature of roots?", a: "" },
+  { q: "What is the relationship between the roots and coefficients of a quadratic equation?", a: "" },
+  { q: "How can a quadratic equation be formed when its roots are known?", a: "" },
+  { q: "How are quadratic equations used in solving area and dimension problems?", a: "" },
+  { q: "Compare the different methods used for solving quadratic equations.", a: "" }
+];
+
+const sscM1Ch3: QuestionItem[] = [
+  { q: "What is a sequence?", a: "" },
+  { q: "How is a sequence different from a random collection of numbers?", a: "" },
+  { q: "What is meant by the term of a sequence?", a: "" },
+  { q: "Define an Arithmetic Progression (A.P.).", a: "" },
+  { q: "What is the common difference in an A.P.", a: "" },
+  { q: "How can you determine whether a given sequence is an Arithmetic Progression?", a: "" },
+  { q: "Derive the formula for the nth term of an A.P.", a: "" },
+  { q: "How can the nth term formula be used to find a specific term in an A.P.?", a: "" },
+  { q: "What is the sum of the first n terms of an Arithmetic Progression?", a: "" },
+  { q: "Derive the formula for the sum of the first n terms of an A.P.", a: "" },
+  { q: "How can Arithmetic Progressions be identified in real-life patterns?", a: "" },
+  { q: "What happens to an A.P. when the common difference is positive, negative, or zero?", a: "" },
+  { q: "Solve a practical problem involving the nth term or sum of an Arithmetic Progression.", a: "" }
+];
+
+const sscM1Ch4: QuestionItem[] = [
+  { q: "What is GST and why was it introduced in India?", a: "" },
+  { q: "What is meant by the statement “One Nation, One Tax, One Market”?", a: "" },
+  { q: "Which taxes were merged into GST?", a: "" },
+  { q: "What are the main components of GST?", a: "" },
+  { q: "Differentiate between CGST and SGST.", a: "" },
+  { q: "What is GSTIN and why is it important?", a: "" },
+  { q: "Explain the structure of a GST Identification Number (GSTIN).", a: "" },
+  { q: "What is an HSN code and what is its purpose?", a: "" },
+  { q: "What information is included in a GST tax invoice?", a: "" },
+  { q: "How is GST calculated on a taxable product?", a: "" },
+  { q: "What is Input Tax Credit (ITC) and why is it important in GST computation?", a: "" },
+  { q: "What are shares, mutual funds, and SIPs?", a: "" },
+  { q: "How can financial planning through investments help achieve long-term financial goals?", a: "" }
+];
+
+const sscM1Ch5: QuestionItem[] = [
+  { q: "What is probability?", a: "" },
+  { q: "How do we express possibility in everyday life using terms such as probable, sure, and impossible?", a: "" },
+  { q: "What is a random experiment?", a: "" },
+  { q: "Give examples of random experiments from daily life.", a: "" },
+  { q: "What is meant by an outcome of a random experiment?", a: "" },
+  { q: "List all possible outcomes when a coin is tossed once.", a: "" },
+  { q: "List all possible outcomes when a coin is tossed twice.", a: "" },
+  { q: "What are the possible outcomes when a die is thrown once?", a: "" },
+  { q: "What are equally likely outcomes?", a: "" },
+  { q: "What is a sample space?", a: "" },
+  { q: "What is an event in probability?", a: "" },
+  { q: "How is the probability of an event calculated?", a: "" },
+  { q: "Compare sure events, impossible events, and equally likely events with suitable examples.", a: "" }
+];
+
+const sscM1Ch6: QuestionItem[] = [
+  { q: "What is statistics and why is it important in different fields?", a: "" },
+  { q: "What contribution did Francis Galton make to the development of statistics?", a: "" },
+  { q: "What is meant by the measure of central tendency?", a: "" },
+  { q: "Define mean, median, and mode.", a: "" },
+  { q: "Why do observations in a dataset tend to cluster around a representative value?", a: "" },
+  { q: "How is the mean calculated from grouped frequency distribution using the direct method?", a: "" },
+  { q: "What is a class mark and how is it determined?", a: "" },
+  { q: "Why is the direct method useful for finding the mean of grouped data?", a: "" },
+  { q: "What is the assumed mean method?", a: "" },
+  { q: "How does the assumed mean method simplify calculations?", a: "" },
+  { q: "How is median determined from grouped frequency data?", a: "" },
+  { q: "How is mode determined from grouped frequency data?", a: "" },
+  { q: "What are histogram, frequency polygon, and pie diagram, and how are they used to represent statistical data?", a: "" }
+];
+
+const sscM2Ch1: QuestionItem[] = [
+  { q: "What is meant by the ratio of the areas of two triangles?", a: "" },
+  { q: "How can the ratio of the areas of two triangles be expressed in terms of their bases and corresponding heights?", a: "" },
+  { q: "State the property relating the areas of two triangles having equal heights.", a: "" },
+  { q: "State the property relating the areas of two triangles having equal bases.", a: "" },
+  { q: "In a triangle, how does a point dividing one side affect the ratio of the areas of the triangles formed on the same altitude?", a: "" },
+  { q: "What is the Basic Proportionality Theorem (Thales' Theorem)?", a: "" },
+  { q: "Explain the converse of the Basic Proportionality Theorem.", a: "" },
+  { q: "What conditions must be satisfied for two triangles to be similar according to the AA similarity test?", a: "" },
+  { q: "How does the SAS similarity test determine whether two triangles are similar?", a: "" },
+  { q: "State the SSS similarity test for triangles.", a: "" },
+  { q: "What is the property of the angle bisector of a triangle regarding the opposite side?", a: "" },
+  { q: "State the property relating the areas of two similar triangles to their corresponding sides.", a: "" },
+  { q: "What is the relationship between the intercepts made on two transversals by three parallel lines?", a: "" }
+];
+
+const sscM2Ch2: QuestionItem[] = [
+  { q: "State the Pythagoras Theorem.", a: "" },
+  { q: "What is a Pythagorean triplet?", a: "" },
+  { q: "Verify whether the numbers (11, 60, 61) form a Pythagorean triplet.", a: "" },
+  { q: "State the formula used to generate Pythagorean triplets.", a: "" },
+  { q: "What is the property of a 30°–60°–90° right-angled triangle?", a: "" },
+  { q: "What is the property of a 45°–45°–90° right-angled triangle?", a: "" },
+  { q: "How can the area of a trapezium be used to prove the Pythagoras Theorem?", a: "" },
+  { q: "State the theorem related to similarity in a right-angled triangle when an altitude is drawn to the hypotenuse.", a: "" },
+  { q: "What is the Theorem of Geometric Mean?", a: "" },
+  { q: "How is the geometric mean theorem applied in a right-angled triangle?", a: "" },
+  { q: "Explain the proof of the Pythagoras Theorem using similar triangles.", a: "" },
+  { q: "State the Converse of the Pythagoras Theorem.", a: "" },
+  { q: "How can the Converse of the Pythagoras Theorem be used to determine whether a triangle is right-angled?", a: "" }
+];
+
+const sscM2Ch3: QuestionItem[] = [
+  { q: "State the theorem related to the perpendicular drawn from the centre of a circle to a chord.", a: "" },
+  { q: "What is the relationship between equal chords and their distances from the centre of a circle?", a: "" },
+  { q: "What is the relationship between chords that are equidistant from the centre of a circle?", a: "" },
+  { q: "How many circles can pass through a single point? Explain.", a: "" },
+  { q: "How many circles can pass through two distinct points? Explain.", a: "" },
+  { q: "Why is there a unique circle passing through three non-collinear points?", a: "" },
+  { q: "Why is it impossible to draw a circle passing through three collinear points?", a: "" },
+  { q: "What is the difference between a secant and a tangent of a circle?", a: "" },
+  { q: "State the Tangent Theorem.", a: "" },
+  { q: "How can a tangent be drawn at a point on a circle using the radius through that point?", a: "" },
+  { q: "What is meant by an arc of a circle?", a: "" },
+  { q: "What is the relationship between an inscribed angle and its intercepted arc?", a: "" },
+  { q: "State any important property of a cyclic quadrilateral.", a: "" }
+];
+
+const sscM2Ch4: QuestionItem[] = [
+  { q: "Why is the construction of similar figures important in fields such as architecture, geography, and engineering?", a: "" },
+  { q: "What is meant by a triangle similar to a given triangle?", a: "" },
+  { q: "What properties of similar triangles are used while constructing a similar triangle?", a: "" },
+  { q: "How can a triangle be constructed similar to a given triangle when no vertex is common?", a: "" },
+  { q: "Why is the ratio of corresponding sides important in the construction of similar triangles?", a: "" },
+  { q: "How can a line segment be divided into a given number of equal parts during a construction?", a: "" },
+  { q: "How can a triangle similar to a given triangle be constructed when one vertex is common?", a: "" },
+  { q: "Why is a line parallel to one side of a triangle used in the construction of a similar triangle?", a: "" },
+  { q: "What changes are required in the construction steps when the required triangle is larger than the given triangle?", a: "" },
+  { q: "What is a tangent to a circle?", a: "" },
+  { q: "How can a tangent be constructed at a point on a circle using the centre of the circle?", a: "" },
+  { q: "How can a tangent be constructed at a point on a circle without using the centre?", a: "" },
+  { q: "How can tangents be constructed from a point outside a circle?", a: "" }
+];
+
+const sscM2Ch5: QuestionItem[] = [
+  { q: "How is the distance between two points on a number line determined?", a: "" },
+  { q: "How can the distance between two points on the X-axis be calculated?", a: "" },
+  { q: "How can the distance between two points on the Y-axis be calculated?", a: "" },
+  { q: "How can the distance between two points be found when the segment joining them is parallel to the X-axis?", a: "" },
+  { q: "How can the distance between two points be found when the segment joining them is parallel to the Y-axis?", a: "" },
+  { q: "State the Distance Formula in coordinate geometry.", a: "" },
+  { q: "How is the Distance Formula derived using the Pythagoras Theorem?", a: "" },
+  { q: "What is the significance of the coordinates of a point in locating it on the Cartesian plane?", a: "" },
+  { q: "What is the section formula and why is it used?", a: "" },
+  { q: "How can the coordinates of a point dividing a line segment in a given ratio be found?", a: "" },
+  { q: "What is meant by the midpoint of a line segment?", a: "" },
+  { q: "What is the slope of a line?", a: "" },
+  { q: "How does the slope help in determining the inclination and nature of a line?", a: "" }
+];
+
+const sscM2Ch6: QuestionItem[] = [
+  { q: "What are trigonometric ratios and why are they important?", a: "" },
+  { q: "Define sine, cosine, and tangent ratios with reference to a right-angled triangle.", a: "" },
+  { q: "What are cosecant, secant, and cotangent ratios?", a: "" },
+  { q: "How are cosecant, secant, and cotangent related to sine, cosine, and tangent respectively?", a: "" },
+  { q: "State the trigonometric identity ( \\sin^2\\theta + \\cos^2\\theta = 1 ).", a: "" },
+  { q: "How can the identity ( \\sin^2\\theta + \\cos^2\\theta = 1 ) be derived using the Pythagoras Theorem?", a: "" },
+  { q: "Write the values of the trigonometric ratios for 30°, 45°, and 60°.", a: "" },
+  { q: "What contribution did Aryabhata make to the development of trigonometry?", a: "" },
+  { q: "What is meant by the angle of elevation?", a: "" },
+  { q: "What is meant by the angle of depression?", a: "" },
+  { q: "How are trigonometric ratios used in solving problems involving heights and distances?", a: "" },
+  { q: "Why is the tangent ratio useful in practical applications involving measurements?", a: "" },
+  { q: "How can trigonometric identities simplify calculations in trigonometry?", a: "" }
+];
+
+const sscM2Ch7: QuestionItem[] = [
+  { q: "What is meant by mensuration?", a: "" },
+  { q: "Write the formulae for the surface area and volume of a cuboid.", a: "" },
+  { q: "Write the formulae for the surface area and volume of a cube.", a: "" },
+  { q: "Write the formulae for the curved surface area, total surface area, and volume of a cylinder.", a: "" },
+  { q: "What is the slant height of a cone and how is it calculated?", a: "" },
+  { q: "Write the formulae for the curved surface area, total surface area, and volume of a cone.", a: "" },
+  { q: "Write the formulae for the surface area and volume of a sphere.", a: "" },
+  { q: "Write the formulae for the curved surface area, total surface area, and volume of a hemisphere.", a: "" },
+  { q: "How can the volume of an oil can be calculated using the dimensions of a cuboid?", a: "" },
+  { q: "What is the relationship between a sphere and a cylinder when the sphere exactly fits inside the cylinder?", a: "" },
+  { q: "How can an activity using a ball and a cylindrical beaker help derive the formula for the volume of a sphere?", a: "" },
+  { q: "What is the length of an arc of a circle and how is it calculated?", a: "" },
+  { q: "How are the area of a sector and the area of a segment of a circle determined?", a: "" }
+];
+
 
 // Comprehensive mapping of cbseQuestionsDb
 export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
@@ -1218,28 +1746,30 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "Our Environment": scCh15
   },
   "Science 1": {
-    "Gravitation": scCh1,
-    "Periodic Classification of Elements": scCh5,
-    "Chemical Reactions and Equations": scCh1,
-    "Effects of Electric Current": scCh13,
-    "Heat": scCh2,
-    "Refraction of Light": scCh10,
-    "Lenses": scCh10,
-    "Metallurgy": scCh3,
-    "Carbon Compounds": scCh4,
-    "Space Missions": scCh15
+    "Gravitation": sc1Ch1,
+    "Periodic Classification of Elements": sc1Ch2,
+    "Chemical Reactions and Equations": sc1Ch3,
+    "Effects of Electric Current": sc1Ch4,
+    "Heat": sc1Ch5,
+    "Refraction of Light": sc1Ch6,
+    "Lenses": sc1Ch7,
+    "Metallurgy": sc1Ch8,
+    "Carbon Compounds": sc1Ch9,
+    "Space Missions": sc1Ch10
   },
   "Science 2": {
-    "Heredity and Evolution": scCh9,
-    "Life Processes in Living Organisms - Part I": scCh6,
-    "Life Processes in Living Organisms - Part II": scCh6,
-    "Environmental Management": scCh15,
-    "Towards Green Energy": scCh15,
-    "Animal Classification": scCh8,
-    "Introduction to Microbiology": scCh2,
-    "Cell Biology and Biotechnology": scCh9,
-    "Social Health": scCh7,
-    "Disaster Management": scCh15
+    "Heredity and Evolution": sc2Ch1,
+    "Life Processes in Living Organisms - Part I": sc2Ch2,
+    "Life Processes in Living Organisms Part - 1": sc2Ch2,
+    "Life Processes in Living Organisms - Part II": sc2Ch3,
+    "Life Processes in Living Organisms Part - 2": sc2Ch3,
+    "Environmental Management": sc2Ch4,
+    "Towards Green Energy": sc2Ch5,
+    "Animal Classification": sc2Ch6,
+    "Introduction to Microbiology": sc2Ch7,
+    "Cell Biology and Biotechnology": sc2Ch8,
+    "Social Health": sc2Ch9,
+    "Disaster Management": sc2Ch10
   },
   "Mathematics": {
     "Real Numbers": mathCh1,
@@ -1259,21 +1789,21 @@ export const cbseQuestionsDb: Record<string, Record<string, QuestionItem[]>> = {
     "Probability": mathCh14
   },
   "Math 1 (Algebra)": {
-    "Linear Equations in Two Variables": mathCh3,
-    "Quadratic Equations": mathCh4,
-    "Arithmetic Progression": mathCh5,
-    "Financial Planning": mathCh11,
-    "Probability": mathCh14,
-    "Statistics": mathCh13
+    "Linear Equations in Two Variables": sscM1Ch1,
+    "Quadratic Equations": sscM1Ch2,
+    "Arithmetic Progression": sscM1Ch3,
+    "Financial Planning": sscM1Ch4,
+    "Probability": sscM1Ch5,
+    "Statistics": sscM1Ch6
   },
   "Math 2 (Geometry)": {
-    "Similarity": mathCh6,
-    "Pythagoras Theorem": mathCh6,
-    "Circle": mathCh10,
-    "Geometric Constructions": mathCh6,
-    "Coordinate Geometry": mathCh7,
-    "Trigonometry": mathCh8,
-    "Mensuration": mathCh12
+    "Similarity": sscM2Ch1,
+    "Pythagoras Theorem": sscM2Ch2,
+    "Circle": sscM2Ch3,
+    "Geometric Constructions": sscM2Ch4,
+    "Coordinate Geometry": sscM2Ch5,
+    "Trigonometry": sscM2Ch6,
+    "Mensuration": sscM2Ch7
   },
   "Social Studies": {
     // History Chapters

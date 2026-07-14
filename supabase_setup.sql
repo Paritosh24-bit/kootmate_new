@@ -274,7 +274,7 @@ DROP POLICY IF EXISTS "Allow public delete active_sessions" ON active_sessions;
 -- - The table is accessed exclusively by our secure Express backend using the Supabase Service Role Key (which bypasses RLS).
 -- - This protects all session tokens from being sniffed, created, or mutated by third-party clients.
 
--- 2. Atomic procedure to create/validate user session (handles race conditions and prevents multiple concurrent logins)
+-- 2. Atomic procedure to create/validate user session (handles race conditions and prevents multiple concurrent logins for students)
 CREATE OR REPLACE FUNCTION create_user_session(
   p_user_id BIGINT,
   p_session_token TEXT,
@@ -286,19 +286,25 @@ CREATE OR REPLACE FUNCTION create_user_session(
 ) RETURNS JSON AS $$
 DECLARE
   v_existing_id BIGINT;
+  v_user_role TEXT;
   v_result JSON;
 BEGIN
-  -- Perform row-level lock on the specific user to eliminate any race conditions
-  PERFORM id FROM users WHERE id = p_user_id FOR UPDATE;
+  -- Perform row-level lock on the specific user to eliminate any race conditions, and select their role
+  SELECT role INTO v_user_role FROM users WHERE id = p_user_id FOR UPDATE;
 
-  -- Search for any currently active session that hasn't timed out (sent heartbeat in last 2 mins)
-  SELECT id INTO v_existing_id 
-  FROM active_sessions 
-  WHERE user_id = p_user_id 
-    AND is_active = true 
-    AND last_seen >= NOW() - INTERVAL '2 minutes'
-    AND (expires_at IS NULL OR expires_at > NOW())
-  LIMIT 1;
+  -- Only restrict to single active session if the user role is 'student'
+  IF v_user_role = 'student' THEN
+    -- Search for any currently active session that hasn't timed out (sent heartbeat in last 2 mins)
+    SELECT id INTO v_existing_id 
+    FROM active_sessions 
+    WHERE user_id = p_user_id 
+      AND is_active = true 
+      AND last_seen >= NOW() - INTERVAL '2 minutes'
+      AND (expires_at IS NULL OR expires_at > NOW())
+    LIMIT 1;
+  ELSE
+    v_existing_id := NULL;
+  END IF;
 
   IF v_existing_id IS NOT NULL THEN
     -- Active session already exists on another client device, login rejected
@@ -308,10 +314,12 @@ BEGIN
       'message', 'This account is already logged in on another device. Please log out from that device before logging in.'
     );
   ELSE
-    -- No active session exists. Invalidate any old stale sessions for this user
-    UPDATE active_sessions 
-    SET is_active = false 
-    WHERE user_id = p_user_id;
+    -- Invalidate old stale sessions for this user ONLY if they are a student
+    IF v_user_role = 'student' THEN
+      UPDATE active_sessions 
+      SET is_active = false 
+      WHERE user_id = p_user_id;
+    END IF;
 
     -- Insert new session record
     INSERT INTO active_sessions (

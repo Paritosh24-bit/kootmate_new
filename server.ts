@@ -384,13 +384,17 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
           if (rpcError) {
             console.warn("RPC session creation failed, trying fallback standard queries:", rpcError.message);
             // Standard queries fallback: check and insert manually
-            const { data: activeSession } = await supabase
-              .from("active_sessions")
-              .select("*")
-              .eq("user_id", matchedUser.id)
-              .eq("is_active", true)
-              .gte("last_seen", new Date(Date.now() - 2 * 60 * 1000).toISOString())
-              .maybeSingle();
+            let activeSession = null;
+            if (matchedUser.role === "student") {
+              const { data: foundSession } = await supabase
+                .from("active_sessions")
+                .select("*")
+                .eq("user_id", matchedUser.id)
+                .eq("is_active", true)
+                .gte("last_seen", new Date(Date.now() - 2 * 60 * 1000).toISOString())
+                .maybeSingle();
+              activeSession = foundSession;
+            }
 
             if (activeSession) {
               return res.status(403).json({
@@ -399,11 +403,13 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
               });
             }
 
-            // Deactivate old ones
-            await supabase
-              .from("active_sessions")
-              .update({ is_active: false })
-              .eq("user_id", matchedUser.id);
+            // Deactivate old ones (only for students to keep it a single active session)
+            if (matchedUser.role === "student") {
+              await supabase
+                .from("active_sessions")
+                .update({ is_active: false })
+                .eq("user_id", matchedUser.id);
+            }
 
             // Create new
             const { error: insertError } = await supabase
@@ -438,9 +444,9 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
 
       if (!sessionCreatedSuccessfully) {
         // Fallback to memory session
-        const existingSession = Array.from(simulatedSessions.values()).find(
+        const existingSession = matchedUser.role === "student" ? Array.from(simulatedSessions.values()).find(
           s => s.user_id === matchedUser.id && s.is_active && s.last_seen.getTime() >= Date.now() - 2 * 60 * 1000
-        );
+        ) : null;
         if (existingSession) {
           return res.status(403).json({
             success: false,
@@ -448,10 +454,12 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
           });
         }
 
-        // Deactivate old
-        simulatedSessions.forEach(s => {
-          if (s.user_id === matchedUser.id) s.is_active = false;
-        });
+        // Deactivate old (only for students)
+        if (matchedUser.role === "student") {
+          simulatedSessions.forEach(s => {
+            if (s.user_id === matchedUser.id) s.is_active = false;
+          });
+        }
 
         // Store active session
         simulatedSessions.set(sessionToken, {

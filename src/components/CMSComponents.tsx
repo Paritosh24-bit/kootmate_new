@@ -890,9 +890,6 @@ export function ContentCard({
       {/* Button action area */}
       <div className="pt-3 border-t border-neutral-100 not-dark:border-neutral-800 flex items-center justify-between mt-auto">
         <div className="flex flex-col text-left">
-          <span className="text-[9px] font-mono text-neutral-400 font-bold">
-            {item.created_at ? new Date(item.created_at).toLocaleDateString() : "Active Unit"}
-          </span>
           {isAdmin && item.is_free_preview && (
             <span className="text-[9px] font-black uppercase text-amber-600 tracking-wider">
               ★ {item.preview_clicks || 0} clicks

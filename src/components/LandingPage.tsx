@@ -1120,20 +1120,55 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t bg-neutral-900 text-white font-medium" id="landing-footer-section">
-        <div id="footer-inner" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-1.5" id="footer-logo-block">
-            <Logo size="sm" showText={false} className="w-10 h-10 shrink-0" />
-            <span className="font-extrabold text-sm tracking-tight text-white ml-1">Cleverly EdTech Corp</span>
+      <footer className="py-16 border-t border-neutral-800 bg-neutral-950 text-white" id="landing-footer-section">
+        <div id="footer-inner" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          
+          {/* Tagline & Marketing content */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            
+            {/* Column 1: Brand Logo & Statement */}
+            <div className="md:col-span-5 space-y-4 text-left">
+              <div className="flex items-center gap-2" id="footer-logo-block">
+                <Logo size="sm" showText={false} className="w-10 h-10 shrink-0" />
+                <span className="font-black text-2xl tracking-tighter text-white ml-1 font-sans italic lowercase">cleverly</span>
+              </div>
+              <p className="text-sm text-neutral-400 font-medium leading-relaxed max-w-sm">
+                Empowering class 10 students to master their syllabus through immersive visual resources and curated test items.
+              </p>
+            </div>
+
+            {/* Column 2: Mission Tagline (Proper formatting of the requested tagline) */}
+            <div className="md:col-span-7 space-y-3 text-left md:border-l md:border-neutral-800 md:pl-8">
+              <h4 className="text-lg sm:text-xl font-black text-amber-400 tracking-tight flex items-center gap-2">
+                <span>🚀</span>
+                <span>Learn Smarter. Understand Better. Achieve More.</span>
+              </h4>
+              <p className="text-sm sm:text-base text-neutral-300 font-bold leading-relaxed">
+                Every chapter is designed to help you build concepts through{' '}
+                <span className="text-violet-400 font-black">Mind Maps</span>,{' '}
+                <span className="text-blue-400 font-black">Podcasts</span>,{' '}
+                <span className="text-cyan-400 font-black">Infographics</span>, and{' '}
+                <span className="text-orange-400 font-black">Question Banks</span>.
+              </p>
+            </div>
+
           </div>
-          <p className="text-xs text-neutral-300 font-extrabold" id="footer-copyright-text">
-            &copy; 2026 Cleverly. Crafted with love for SSC and CBSE Class 10 Students. All rights reserved.
-          </p>
-          <div className="flex gap-4 text-xs font-bold text-amber-400" id="footer-navigation-links">
-            <button onClick={() => onNavigate('login')} className="hover:underline cursor-pointer" id="footer-nav-login">Login</button>
-            <span>&bull;</span>
-            <button onClick={() => onNavigate('signup')} className="hover:underline cursor-pointer" id="footer-nav-signup">Register</button>
+
+          {/* Divider */}
+          <div className="border-t border-neutral-900" />
+
+          {/* Bottom row: copyright & links */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+            <p className="text-xs text-neutral-500 font-bold tracking-wider" id="footer-copyright-text">
+              © 2026 Cleverly. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-xs font-bold text-amber-400" id="footer-navigation-links">
+              <button onClick={() => onNavigate('login')} className="hover:underline cursor-pointer" id="footer-nav-login">Login</button>
+              <span className="text-neutral-700">&bull;</span>
+              <button onClick={() => onNavigate('signup')} className="hover:underline cursor-pointer" id="footer-nav-signup">Register</button>
+            </div>
           </div>
+
         </div>
       </footer>
 

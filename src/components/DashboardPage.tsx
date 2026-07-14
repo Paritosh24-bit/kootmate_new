@@ -3,7 +3,7 @@ import {
   BookOpen, Layers, HelpCircle, Gamepad2, Volume2, Image, 
   ArrowLeft, Search, Award, Flame, Zap, Bell, CheckCircle, 
   ChevronRight, LogOut, Compass, Sparkles, PlusCircle, Bookmark, FileText,
-  ChevronUp, ChevronDown
+  ChevronUp, ChevronDown, Target, Rocket
 } from 'lucide-react';
 import Logo from './Logo';
 import StudentCMS from './StudentCMS';
@@ -1034,19 +1034,6 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                           }`}>
                             + {sub.lessons.length - 3} more interactive units
                           </p>
-
-                          {/* Syllabus tracker progress bar placeholder */}
-                          <div className="mt-3 pt-3 border-t border-neutral-150/50">
-                            <div className="flex items-center justify-between text-[9px] font-black text-neutral-400 mb-1">
-                              <span>Course Syllabus Map</span>
-                              <span className="text-black font-black uppercase text-[8px] tracking-wider px-1.5 py-0.5 rounded bg-neutral-100">Pending Release</span>
-                            </div>
-                            <div className="w-full bg-neutral-100 dark:bg-neutral-900 h-1.5 rounded-full overflow-hidden">
-                              <div className={`h-full rounded-full transition-all duration-500 w-[15%] ${
-                                sub.id.includes('science') ? 'bg-[#5c3beb]' : sub.id.includes('maths') ? 'bg-emerald-500' : 'bg-[#e94674]'
-                              }`}></div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                   ))}
@@ -1145,19 +1132,6 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                           }`}>
                             + {sub.lessons.length - 3} more interactive units
                           </p>
-
-                          {/* Syllabus tracker progress bar placeholder */}
-                          <div className="mt-3 pt-3 border-t border-neutral-150/50">
-                            <div className="flex items-center justify-between text-[9px] font-black text-neutral-400 mb-1">
-                              <span>Course Syllabus Map</span>
-                              <span className="text-black font-black uppercase text-[8px] tracking-wider px-1.5 py-0.5 rounded bg-neutral-100">Pending Release</span>
-                            </div>
-                            <div className="w-full bg-neutral-100 dark:bg-neutral-900 h-1.5 rounded-full overflow-hidden">
-                              <div className={`h-full rounded-full transition-all duration-500 w-[15%] ${
-                                sub.id.includes('science') ? 'bg-[#5c3beb]' : sub.id.includes('maths') ? 'bg-emerald-500' : 'bg-[#e94674]'
-                              }`}></div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                   ))}
@@ -1220,7 +1194,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                 </p>
               </div>
 
-              {/* Subject Chapter Tracker Stats (Placeholder) */}
+              {/* Subject Chapter Tracker Stats */}
               <div className="flex gap-4">
                 <div className="text-left">
                   <span className="text-neutral-400 text-[10px] block font-semibold uppercase tracking-wider">Board Chapters</span>
@@ -1228,14 +1202,6 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     {isSSTSubject || isScienceSubject || isMathSubject 
                       ? (selectedSubSubject ? `${activeLessons.length} Modules (${selectedSubSubject.toUpperCase()})` : 'Select a Part')
                       : `${selectedSubject.lessons.length} Modules`}
-                  </span>
-                </div>
-                <div className="w-px bg-neutral-300 dark:bg-neutral-800"></div>
-                <div className="text-left">
-                  <span className="text-neutral-400 text-[10px] block font-semibold uppercase tracking-wider">Status</span>
-                  <span className="font-black text-rose-500 text-xs sm:text-sm flex items-center gap-1 mt-1">
-                    <Zap className="w-4 h-4 fill-rose-500 text-rose-500" />
-                    Pending Release
                   </span>
                 </div>
               </div>
@@ -1593,42 +1559,365 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
               </div>
             )}
 
-            {((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== "") && selectedLesson === "" ? (
-              <div className="p-12 rounded-3xl border border-dashed border-indigo-200 bg-white text-center space-y-6 animate-fadeIn">
-                <div className="flex justify-center">
-                  <span className="p-5 rounded-3xl bg-indigo-50 border border-indigo-100 text-[#5c3beb] animate-bounce-slow flex items-center justify-center">
-                    <Sparkles className="w-10 h-10 animate-pulse" />
-                  </span>
-                </div>
-
-                <div className="space-y-2 max-w-md mx-auto">
-                  <h4 className="text-xl font-extrabold tracking-tight text-neutral-900">
-                    Unfold the 4 Study Formats!
-                  </h4>
-                  <p className="text-xs sm:text-sm text-neutral-500 font-semibold leading-relaxed">
-                    Select a class topic or board lesson in the dropdown above to unlock its custom Mind Map, Audio Podcast, high-definition Infographic poster, and formula-matching Game resources.
-                  </p>
-                </div>
-
-                {/* Grid of quick choices */}
-                <div className="space-y-2.5 max-w-lg mx-auto pt-2">
-                  <span className="text-[10px] font-black uppercase text-neutral-400 tracking-wider block">
-                    Quick-Load Available Lessons:
-                  </span>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {activeLessons.map((lesson, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedLesson(lesson)}
-                        className="px-4 py-2.5 text-xs font-bold bg-white text-neutral-800 hover:bg-neutral-50 border border-neutral-250 hover:border-[#5c3beb] hover:text-[#5c3beb] rounded-xl transition-all cursor-pointer shadow-xs active:scale-95 animate-slideUp"
-                      >
-                        {lesson} &rarr;
-                      </button>
-                    ))}
+            {((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== "") ? (
+              <div className="relative overflow-hidden rounded-[32px] min-h-[420px] bg-[#F8FAFC] border border-neutral-200/50 p-2 shadow-sm">
+                
+                {/* CLEVERLY WATERMARK BACKGROUND - PERSISTENT & SHIFTED TO THE RIGHT */}
+                <div className="absolute inset-0 pointer-events-none select-none overflow-hidden flex items-center justify-end pr-2 sm:pr-4 md:pr-8 lg:pr-12 opacity-[0.05] dark:opacity-[0.01]">
+                  <div className="text-[12vw] font-black tracking-tighter text-neutral-950 text-right leading-none select-none whitespace-nowrap rotate-[-6deg] transform scale-110 font-sans italic">
+                    cleverly
                   </div>
                 </div>
-              </div>
-            ) : ((!isSSTSubject && !isScienceSubject && !isMathSubject) || selectedSubSubject !== "") && selectedLesson !== "" ? (
+
+                {selectedLesson === "" ? (
+                  <div className="relative w-full py-10 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center animate-fadeIn">
+                    
+                    {/* TWO-COLUMN WELCOME HERO */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center w-full mb-12">
+                      
+                      {/* Left Column (Hero copy and badges) */}
+                      <div className="md:col-span-7 text-left space-y-6">
+                        
+                        {/* Ready to Learn? Badge */}
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-indigo-100 bg-indigo-50/75 text-[#5c3beb] text-xs font-black uppercase tracking-widest shadow-xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5c3beb] animate-pulse" />
+                          <span>Ready to Learn?</span>
+                        </div>
+
+                        {/* Completely black colored heading */}
+                        <h1 className="text-4xl sm:text-5xl font-black text-black tracking-tight leading-tight">
+                          👋 Welcome Back!
+                        </h1>
+
+                        {/* Beautiful learning subtitle */}
+                        <p className="text-sm sm:text-base text-neutral-600 font-bold leading-relaxed max-w-xl">
+                          Continue your learning journey by selecting a chapter above. Once selected, you'll instantly unlock all interactive study resources for that chapter.
+                        </p>
+
+                        {/* CTA button that pushes the user to the top of the page */}
+                        <div className="pt-2">
+                          <button 
+                            onClick={() => {
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                              setTimeout(() => {
+                                const selectEl = document.getElementById("lesson-dropdown-select");
+                                if (selectEl) {
+                                  selectEl.focus();
+                                }
+                              }, 400);
+                            }}
+                            className="group inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-black text-sm shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/20 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+                          >
+                            <span>Select a Chapter</span>
+                            <svg className="w-4 h-4 text-white transform group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                              <line x1="12" y1="19" x2="12" y2="5" />
+                              <polyline points="5 12 12 5 19 12" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Three horizontal highlights */}
+                        <div className="flex flex-wrap gap-3 pt-2">
+                          <div className="flex items-center gap-2.5 bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl px-4 py-2 shadow-xs">
+                            <span className="text-lg">🚀</span>
+                            <div className="text-left">
+                              <p className="text-[10px] font-black text-neutral-900 dark:text-neutral-100 leading-none">Interactive Learning</p>
+                              <p className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 mt-1 leading-none">Engage deeply</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2.5 bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl px-4 py-2 shadow-xs">
+                            <span className="text-lg">🎯</span>
+                            <div className="text-left">
+                              <p className="text-[10px] font-black text-neutral-900 dark:text-neutral-100 leading-none">Better Understanding</p>
+                              <p className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 mt-1 leading-none">Learn with clarity</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2.5 bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl px-4 py-2 shadow-xs">
+                            <span className="text-lg">🏆</span>
+                            <div className="text-left">
+                              <p className="text-[10px] font-black text-neutral-900 dark:text-neutral-100 leading-none">Track Your Progress</p>
+                              <p className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 mt-1 leading-none">Achieve more</p>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Right Column (Stunning 3D Stacked Book Illustration) */}
+                      <div className="md:col-span-5 relative flex items-center justify-center">
+                        <svg viewBox="0 0 500 450" className="w-full max-w-[420px] h-auto drop-shadow-[0_20px_50px_rgba(92,59,235,0.06)] overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <defs>
+                            {/* Glow Background */}
+                            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%" stopColor="#818cf8" stopOpacity="0.25" />
+                              <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
+                            </radialGradient>
+                            
+                            {/* Bulb Glow */}
+                            <radialGradient id="bulbGlow" cx="50%" cy="50%" r="40%">
+                              <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.5" />
+                              <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+                            </radialGradient>
+                            
+                            {/* Book Gradients */}
+                            <linearGradient id="blueBook" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#3b82f6" />
+                              <stop offset="100%" stopColor="#1d4ed8" />
+                            </linearGradient>
+                            <linearGradient id="purpleBook" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#a78bfa" />
+                              <stop offset="100%" stopColor="#6d28d9" />
+                            </linearGradient>
+                            
+                            {/* Squircle Gradients */}
+                            <linearGradient id="sqPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#8b5cf6" />
+                              <stop offset="100%" stopColor="#5b21b6" />
+                            </linearGradient>
+                            <linearGradient id="sqBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#3b82f6" />
+                              <stop offset="100%" stopColor="#1d4ed8" />
+                            </linearGradient>
+                            <linearGradient id="sqPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#ec4899" />
+                              <stop offset="100%" stopColor="#be185d" />
+                            </linearGradient>
+                            <linearGradient id="sqGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#10b981" />
+                              <stop offset="100%" stopColor="#047857" />
+                            </linearGradient>
+                            
+                            {/* Glossy Overlay */}
+                            <linearGradient id="gloss" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+                              <stop offset="50%" stopColor="white" stopOpacity="0.05" />
+                              <stop offset="100%" stopColor="white" stopOpacity="0" />
+                            </linearGradient>
+                          </defs>
+
+                          {/* Glow Background */}
+                          <circle cx="250" cy="220" r="180" fill="url(#glow)" />
+                          
+                          {/* Bulb Glow Radiating */}
+                          <circle cx="250" cy="80" r="80" fill="url(#bulbGlow)" />
+
+                          {/* POTTED PLANT */}
+                          <g transform="translate(390, 150)">
+                            <ellipse cx="25" cy="115" rx="18" ry="5" fill="#000000" fillOpacity="0.1" />
+                            <path d="M12,70 L38,70 L32,115 L18,115 Z" fill="#eaeaea" stroke="#d4d4d4" strokeWidth="1" />
+                            <ellipse cx="25" cy="70" rx="13" ry="3.5" fill="#f5f5f5" stroke="#d4d4d4" strokeWidth="1" />
+                            <ellipse cx="25" cy="72" rx="11" ry="3" fill="#a3a3a3" />
+                            <path d="M25,70 Q10,40 -8,25 Q15,45 25,70" fill="#22c55e" opacity="0.9" />
+                            <path d="M25,70 Q25,30 14,12 Q33,35 25,70" fill="#15803d" />
+                            <path d="M25,70 Q43,35 53,22 Q38,50 25,70" fill="#4ade80" />
+                            <path d="M25,70 Q5,50 -18,58 Q5,58 25,70" fill="#166534" />
+                            <path d="M25,70 Q43,55 58,63 Q38,63 25,70" fill="#22c55e" />
+                          </g>
+
+                          {/* BOOK STACK */}
+                          
+                          {/* Blue Book */}
+                          <g transform="translate(200, 240)">
+                            <path d="M-60,50 L110,10 L160,35 L0,85 Z" fill="#000000" fillOpacity="0.12" filter="blur(6px)" />
+                            <path d="M-60,30 L0,65 L0,85 L-60,50 Z" fill="#1e3a8a" />
+                            <path d="M0,65 L110,25 L110,45 L0,85 Z" fill="#f3f4f6" />
+                            <line x1="10" y1="65" x2="100" y2="33" stroke="#e5e7eb" strokeWidth="1.5" />
+                            <line x1="10" y1="70" x2="100" y2="38" stroke="#e5e7eb" strokeWidth="1.5" />
+                            <line x1="10" y1="75" x2="100" y2="43" stroke="#e5e7eb" strokeWidth="1.5" />
+                            <path d="M-62,28 L0,63 L112,23 L50,-12 Z" fill="url(#blueBook)" />
+                            <path d="M-62,28 L0,63 L112,23 L50,-12 Z" fill="url(#gloss)" />
+                          </g>
+
+                          {/* Purple Book */}
+                          <g transform="translate(205, 195)">
+                            <path d="M-65,35 L0,65 L0,85 L-65,55 Z" fill="#4c1d95" />
+                            <path d="M0,65 L105,30 L105,50 L0,85 Z" fill="#f9fafb" />
+                            <line x1="10" y1="68" x2="95" y2="38" stroke="#f3f4f6" strokeWidth="1.5" />
+                            <line x1="10" y1="73" x2="95" y2="43" stroke="#f3f4f6" strokeWidth="1.5" />
+                            <path d="M-67,33 L0,63 L107,28 L40,-2 Z" fill="url(#purpleBook)" />
+                            <path d="M-67,33 L0,63 L107,28 L40,-2 Z" fill="url(#gloss)" />
+                          </g>
+
+                          {/* Top Open Book */}
+                          <g transform="translate(250, 195)">
+                            <path d="M-110, -5 L-110, 5 L0, 30 L0, 20 Z" fill="#1e1b4b" />
+                            <path d="M110, -5 L110, 5 L0, 30 L0, 20 Z" fill="#1e1b4b" />
+                            <path d="M-105, -7 L-105, 1 L0, 26 L0, 18 Z" fill="#e5e7eb" />
+                            <path d="M105, -7 L105, 1 L0, 26 L0, 18 Z" fill="#e5e7eb" />
+                            <path d="M-105, -9 C-70, -25 -30, -10 0, 15 L0, 23 C-30, -2 -70, -17 -105, -1 Z" fill="#ffffff" />
+                            <path d="M105, -9 C70, -25 30, -10 0, 15 L0, 23 C30, -2 70, -17 105, -1 Z" fill="#ffffff" />
+                            <path d="M-103, -11 C-70, -27 -30, -12 0, 13 L0, 14 C-30, -11 -70, -26 -103, -10 Z" fill="#fefefe" />
+                            <path d="M103, -11 C70, -27 30, -12 0, 13 L0, 14 C30, -11 70, -26 103, -10 Z" fill="#fefefe" />
+                            <path d="M-5, 12 C-2, 5 2, 5 5, 12 L0, 13 Z" fill="#cbd5e1" opacity="0.6" />
+                            <path d="M0, 14 Q20, 35 15, 60 Q10, 50 5, 45" fill="#6d28d9" />
+                            
+                            {/* Pages Lines */}
+                            <path d="M-85, -14 Q-60, -20 -40, -14" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M-85, -8 Q-60, -14 -35, -8" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M-80, -2 Q-60, -8 -30, -2" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M-75, 4 Q-55, -2 -30, 4" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M40, -14 Q60, -20 85, -14" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M35, -8 Q60, -14 85, -8" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M30, -2 Q60, -8 80, -2" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                            <path d="M30, 4 Q55, -2 75, 4" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
+                          </g>
+
+                          {/* GLOWING LIGHT BULB */}
+                          <g transform="translate(250, 75)">
+                            <circle cx="0" cy="0" r="35" fill="#fbbf24" opacity="0.25" filter="blur(4px)" />
+                            <line x1="-35" y1="0" x2="-22" y2="0" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                            <line x1="22" y1="0" x2="35" y2="0" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                            <line x1="0" y1="-35" x2="0" y2="-22" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                            <line x1="-25" y1="-25" x2="-15" y2="-15" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                            <line x1="15" y1="-15" x2="25" y2="-25" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                            <path d="M-9,24 L9,24 L6,34 L-6,34 Z" fill="#a3a3a3" stroke="#525252" strokeWidth="1.5" />
+                            <rect x="-7" y="34" width="14" height="4" rx="1.5" fill="#525252" />
+                            <ellipse cx="0" cy="38" rx="4" ry="1.5" fill="#171717" />
+                            <path d="M-14,10 C-14,21 -7,23 -7,23 L7,23 C7,23 14,21 14,10 C14,-5 7,-17 0,-17 C-7,-17 -14,-5 -14,10 Z" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
+                            <path d="M-8,-7 C-5,-11 0,-12 0,-12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                            <path d="M-4,10 L-1.5,-1 C-1.5,-3 1.5,-3 1.5,-1 L4,10" stroke="#d97706" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+                          </g>
+
+                          {/* FLOATING SQUIRCLES */}
+                          
+                          {/* Purple Squircle (Top Left) */}
+                          <g transform="translate(100, 100)" className="animate-bounce-slow">
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="#000000" fillOpacity="0.12" filter="blur(3px)" />
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="url(#sqPurple)" stroke="#c084fc" strokeWidth="1.5" />
+                            <rect x="-22" y="-22" width="44" height="22" rx="14" fill="url(#gloss)" />
+                            <circle cx="-8" cy="-8" r="3.5" fill="#ffffff" />
+                            <circle cx="8" cy="-4" r="2.5" fill="#ffffff" />
+                            <circle cx="-4" cy="8" r="2.5" fill="#ffffff" />
+                            <circle cx="10" cy="8" r="3.5" fill="#ffffff" />
+                            <line x1="-8" y1="-8" x2="8" y2="-4" stroke="#ffffff" strokeWidth="1.5" />
+                            <line x1="-8" y1="-8" x2="-4" y2="8" stroke="#ffffff" strokeWidth="1.5" />
+                            <line x1="-4" y1="8" x2="10" y2="8" stroke="#ffffff" strokeWidth="1.5" />
+                            <line x1="8" y1="-4" x2="10" y2="8" stroke="#ffffff" strokeWidth="1.5" />
+                          </g>
+
+                          {/* Blue Squircle (Top Right) */}
+                          <g transform="translate(410, 110)">
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="#000000" fillOpacity="0.12" filter="blur(3px)" />
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="url(#sqBlue)" stroke="#93c5fd" strokeWidth="1.5" />
+                            <rect x="-22" y="-22" width="44" height="22" rx="14" fill="url(#gloss)" />
+                            <path d="M-10,4 C-10,-8 10,-8 10,4" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                            <rect x="-12" y="2" width="4" height="6" rx="1.5" fill="#ffffff" />
+                            <rect x="8" y="2" width="4" height="6" rx="1.5" fill="#ffffff" />
+                            <line x1="-5" y1="2" x2="-5" y2="6" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="-1.5" y1="-1" x2="-1.5" y2="10" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="1.5" y1="-1" x2="1.5" y2="10" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                            <line x1="5" y1="2" x2="5" y2="6" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+                          </g>
+
+                          {/* Pink Squircle (Middle Left) */}
+                          <g transform="translate(80, 230)">
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="#000000" fillOpacity="0.12" filter="blur(3px)" />
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="url(#sqPink)" stroke="#f472b6" strokeWidth="1.5" />
+                            <rect x="-22" y="-22" width="44" height="22" rx="14" fill="url(#gloss)" />
+                            <circle cx="0" cy="0" r="10" fill="#ffffff" opacity="0.3" />
+                            <path d="M0,0 L0,-10 A10,10 0 0,1 10,0 Z" fill="#ffffff" />
+                            <circle cx="-2" cy="-2" r="8" stroke="#ffffff" strokeWidth="1.8" fill="none" />
+                          </g>
+
+                          {/* Green Squircle (Bottom Right) */}
+                          <g transform="translate(410, 310)">
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="#000000" fillOpacity="0.12" filter="blur(3px)" />
+                            <rect x="-22" y="-22" width="44" height="44" rx="14" fill="url(#sqGreen)" stroke="#6ee7b7" strokeWidth="1.5" />
+                            <rect x="-22" y="-22" width="44" height="22" rx="14" fill="url(#gloss)" />
+                            <rect x="-8" y="-10" width="16" height="20" rx="2" fill="#ffffff" />
+                            <circle cx="8" cy="8" r="6" fill="#10b981" />
+                            <path d="M5,8 L7,10 L11,6" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                            <line x1="-5" y1="-5" x2="5" y2="-5" stroke="#cbd5e1" strokeWidth="1.2" strokeLinecap="round" />
+                            <line x1="-5" y1="-1" x2="5" y2="-1" stroke="#cbd5e1" strokeWidth="1.2" strokeLinecap="round" />
+                            <line x1="-5" y1="3" x2="2" y2="3" stroke="#cbd5e1" strokeWidth="1.2" strokeLinecap="round" />
+                          </g>
+
+                          {/* Sparkles */}
+                          <g transform="translate(330, 40)">
+                            <path d="M0,-6 L1.5,-1.5 L6,0 L1.5,1.5 L0,6 L-1.5,1.5 L-6,0 L-1.5,-1.5 Z" fill="#fbbf24" opacity="0.8" />
+                          </g>
+                        </svg>
+                      </div>
+
+                    </div>
+
+                    {/* FEATURE CARDS 2x2 GRID (Light theme elegant white cards with specific accents: Purple, Blue, Cyan, Orange) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-12 text-left">
+                      
+                      {/* Mind Maps Card (Purple Accent) */}
+                      <div className="group bg-white border border-neutral-200/80 p-6 rounded-[28px] relative overflow-hidden flex items-start gap-5 shadow-xs hover:shadow-md hover:border-violet-300 transition-all duration-300 hover:-translate-y-1">
+                        <div className="absolute right-0 bottom-0 w-24 h-24 bg-violet-50/40 rounded-tl-[80px] pointer-events-none transition-all duration-300 group-hover:bg-violet-50/75" />
+                        <div className="w-14 h-14 shrink-0 rounded-2xl bg-violet-50 border border-violet-100 flex items-center justify-center shadow-xs">
+                          <span className="text-2xl">🧠</span>
+                        </div>
+                        <div className="space-y-1 pr-2">
+                          <h3 className="text-base font-black text-neutral-900 flex items-center gap-2">
+                            Mind Maps
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700">Interactive</span>
+                          </h3>
+                          <p className="text-xs sm:text-sm text-neutral-500 font-bold leading-relaxed">
+                            Visualize complex concepts with interactive diagrams & visual trees.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Audio Podcasts Card (Blue Accent) */}
+                      <div className="group bg-white border border-neutral-200/80 p-6 rounded-[28px] relative overflow-hidden flex items-start gap-5 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-300 hover:-translate-y-1">
+                        <div className="absolute right-0 bottom-0 w-24 h-24 bg-blue-50/40 rounded-tl-[80px] pointer-events-none transition-all duration-300 group-hover:bg-blue-50/75" />
+                        <div className="w-14 h-14 shrink-0 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-xs">
+                          <span className="text-2xl">🎙️</span>
+                        </div>
+                        <div className="space-y-1 pr-2">
+                          <h3 className="text-base font-black text-neutral-900 flex items-center gap-2">
+                            Audio Podcasts
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Listening</span>
+                          </h3>
+                          <p className="text-xs sm:text-sm text-neutral-500 font-bold leading-relaxed">
+                            Learn anytime, anywhere through beautifully narrated masterclass episodes.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Infographics Card (Cyan Accent) */}
+                      <div className="group bg-white border border-neutral-200/80 p-6 rounded-[28px] relative overflow-hidden flex items-start gap-5 shadow-xs hover:shadow-md hover:border-cyan-300 transition-all duration-300 hover:-translate-y-1">
+                        <div className="absolute right-0 bottom-0 w-24 h-24 bg-cyan-50/40 rounded-tl-[80px] pointer-events-none transition-all duration-300 group-hover:bg-cyan-50/75" />
+                        <div className="w-14 h-14 shrink-0 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center shadow-xs">
+                          <span className="text-2xl">📊</span>
+                        </div>
+                        <div className="space-y-1 pr-2">
+                          <h3 className="text-base font-black text-neutral-900 flex items-center gap-2">
+                            Infographics
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700">Visual</span>
+                          </h3>
+                          <p className="text-xs sm:text-sm text-neutral-500 font-bold leading-relaxed">
+                            Revise 10x faster with high-impact cheatsheets and summaries.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Question Bank Card (Orange Accent) */}
+                      <div className="group bg-white border border-neutral-200/80 p-6 rounded-[28px] relative overflow-hidden flex items-start gap-5 shadow-xs hover:shadow-md hover:border-orange-300 transition-all duration-300 hover:-translate-y-1">
+                        <div className="absolute right-0 bottom-0 w-24 h-24 bg-orange-50/40 rounded-tl-[80px] pointer-events-none transition-all duration-300 group-hover:bg-orange-50/75" />
+                        <div className="w-14 h-14 shrink-0 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shadow-xs">
+                          <span className="text-2xl">❓</span>
+                        </div>
+                        <div className="space-y-1 pr-2">
+                          <h3 className="text-base font-black text-neutral-900 flex items-center gap-2">
+                            Question Bank
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">Practice</span>
+                          </h3>
+                          <p className="text-xs sm:text-sm text-neutral-500 font-bold leading-relaxed">
+                            Challenge yourself with dynamic, high-yield practice scenarios and quizzes.
+                          </p>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                ) : (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn animate-slideUp">
               
               {/* Left Column Tabs Selector (Duolingo Style Buttons) */}
@@ -1996,6 +2285,8 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                 })()}
               </div>
 
+              </div>
+                )}
               </div>
             ) : null}
           </div>
