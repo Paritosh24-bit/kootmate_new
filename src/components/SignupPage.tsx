@@ -421,7 +421,7 @@ export default function SignupPage({ onNavigate, onLoginSuccess, isDarkMode }: S
                 </div>
                 <h4 className="text-sm font-black text-neutral-900">Enter Verification Code</h4>
                 <p className="text-xs text-neutral-500 font-semibold leading-relaxed">
-                  Check your email inbox or folders for your validation code. (Note: Due to Resend's free tier configuration, verification emails are sent only to <span className="font-bold underline text-[#5c3beb]">paritoshbadave@gmail.com</span>. For any other email address, please use the standby bypass code <span className="font-extrabold text-[#5c3beb]">1234</span> or <span className="font-extrabold text-[#5c3beb]">123456</span> to register instantly!)
+                  Check your email inbox or folders for your validation code sent to your registered email address.
                 </p>
               </div>
 

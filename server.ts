@@ -959,12 +959,9 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
       console.log(`[Email OTP Store] Generated code: ${generatedOtp} for ${searchEmail}`);
 
       // Try inserting into Supabase tables if configured
-      const vUrl = process.env.VITE_SUPABASE_URL || "";
-      const vKey = process.env.VITE_SUPABASE_ANON_KEY || "";
-      if (vUrl && vKey) {
+      const supabase = getServerSupabase();
+      if (supabase) {
         try {
-          const { createClient } = require("@supabase/supabase-js");
-          const supabase = createClient(vUrl, vKey);
           await supabase.from("email_otps").insert([
             {
               email: searchEmail,
@@ -977,7 +974,18 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
         }
       }
 
-      const resendKey = process.env.RESEND_API_KEY;
+      let resendKey = process.env.RESEND_API_KEY || "";
+      let resendFromEmail = process.env.RESEND_FROM_EMAIL || "otp@cleverly.co.in";
+
+      // Self-healing guard: If the API key was pasted into RESEND_FROM_EMAIL, swap them.
+      if (resendFromEmail.trim().startsWith("re_")) {
+        const tempKey = resendFromEmail.trim();
+        const tempEmail = (resendKey && !resendKey.trim().startsWith("re_")) ? resendKey.trim() : "otp@cleverly.co.in";
+        resendKey = tempKey;
+        resendFromEmail = tempEmail;
+        console.log(`[Email OTP Store] Swapped configuration auto-corrected. API Key: ${resendKey.substring(0, 10)}... | Sender: ${resendFromEmail}`);
+      }
+
       if (!resendKey || resendKey.trim() === "" || resendKey === "YOUR_RESEND_API_KEY") {
         console.warn("[Email OTP Store] RESEND_API_KEY is not defined inside environment settings.");
         return res.json({
@@ -988,7 +996,11 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
         });
       }
 
-      // Dispatch real email via Resend API
+      let formattedFromEmail = resendFromEmail.includes("<")
+        ? resendFromEmail
+        : `Cleverly <${resendFromEmail}>`;
+
+      // Dispatch real email via Resend API with Cleverly branding only (No Kootmate)
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -996,17 +1008,17 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "onboarding@resend.dev",
+          from: formattedFromEmail,
           to: searchEmail,
-          subject: "Kootmate Verification OTP",
+          subject: "Cleverly Verification OTP",
           html: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 32px; background-color: #fcfbfe; color: #1f1f1f; border-radius: 20px; border: 1px solid #e9e5f9; max-width: 500px; margin: 0 auto;">
               <div style="text-align: center; margin-bottom: 24px;">
-                <span style="background-color: #f3f0ff; color: #5c3beb; padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px;">KOOTMATE VERIFICATION</span>
+                <span style="background-color: #f3f0ff; color: #5c3beb; padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px;">CLEVERLY VERIFICATION</span>
               </div>
               <h2 style="color: #5c3beb; text-align: center; font-size: 24px; font-weight: 800; margin-top: 10px;">Verification Code</h2>
               <p style="font-size: 14px; line-height: 1.5; color: #4e4e4e;">Hello Student,</p>
-              <p style="font-size: 14px; line-height: 1.5; color: #4e4e4e;">To login or finish setting up your Kootmate profile, please enter this secure verification code:</p>
+              <p style="font-size: 14px; line-height: 1.5; color: #4e4e4e;">To login or finish setting up your Cleverly profile, please enter this secure verification code:</p>
               
               <div style="background-color: #f5f3ff; border: 2px dashed #c0b2fc; padding: 20px; border-radius: 16px; font-size: 32px; font-weight: 900; text-align: center; color: #5c3beb; margin: 24px 0; letter-spacing: 6px; font-family: monospace;">
                 ${generatedOtp}
@@ -1017,7 +1029,7 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
               <br/>
               <hr style="border: none; border-top: 1px solid #e9e5f9;" />
               <div style="text-align: center; padding-top: 16px; font-size: 11px; color: #aeaeae;">
-                © 2026 Kootmate Syllabus Companion. Powered by Resend.
+                © 2026 Cleverly Syllabus Companion. Powered by Resend.
               </div>
             </div>
           `
@@ -1075,13 +1087,9 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
       let profileUser: any = null;
       let isNewAccount = false;
 
-      const vUrl = process.env.VITE_SUPABASE_URL || "";
-      const vKey = process.env.VITE_SUPABASE_ANON_KEY || "";
-      if (vUrl && vKey) {
+      const supabase = getServerSupabase();
+      if (supabase) {
         try {
-          const { createClient } = require("@supabase/supabase-js");
-          const supabase = createClient(vUrl, vKey);
-
           const { data: userRecord, error: findError } = await supabase
              .from("users")
              .select("*")
@@ -1135,29 +1143,43 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
                 avatarUrl: "",
               };
             } else {
-              let updatedBoard = userRecord.selected_board || "cbse";
-              if (selected_board && selected_board !== userRecord.selected_board) {
-                updatedBoard = selected_board;
-                const { error: updateError } = await supabase
+              // Existing account but we want to update empty or newly submitted profile details (e.g. from SignupPage)
+              const updates: any = {};
+              if (name && name !== userRecord.name) updates.name = name;
+              if (password && password !== userRecord.password) updates.password = password;
+              if (referral_code && referral_code !== userRecord.referral_code) updates.referral_code = referral_code;
+              if (selected_board && selected_board !== userRecord.selected_board) updates.selected_board = selected_board;
+              if (phone_number && phone_number !== userRecord.phone_number) updates.phone_number = phone_number;
+              if (role && role !== userRecord.role) updates.role = role;
+              if (school_name && school_name !== userRecord.school_name) updates.school_name = school_name;
+              if (dob && dob !== userRecord.dob) updates.dob = dob;
+
+              let updatedRecord = userRecord;
+              if (Object.keys(updates).length > 0) {
+                const { data: updated, error: updateError } = await supabase
                   .from("users")
-                  .update({ selected_board: selected_board })
-                  .eq("email", searchEmail);
+                  .update(updates)
+                  .eq("email", searchEmail)
+                  .select()
+                  .maybeSingle();
                 if (updateError) {
-                  console.error("[Email OTP Store] Supabase board update error:", updateError.message);
+                  console.error("[Email OTP Store] Supabase user record update error:", updateError.message);
+                } else if (updated) {
+                  updatedRecord = updated;
                 }
               }
 
               profileUser = {
-                name: userRecord.name,
-                email: userRecord.email,
-                couponCode: userRecord.referral_code || "",
-                selectedBoard: updatedBoard,
-                role: userRecord.role || "student",
-                schoolName: userRecord.school_name || "",
-                phoneNumber: userRecord.phone_number || "",
-                dob: userRecord.dob || "",
-                googleId: userRecord.google_id || "",
-                avatarUrl: userRecord.avatar_url || "",
+                name: updatedRecord.name,
+                email: updatedRecord.email,
+                couponCode: updatedRecord.referral_code || "",
+                selectedBoard: updatedRecord.selected_board || "cbse",
+                role: updatedRecord.role || "student",
+                schoolName: updatedRecord.school_name || "",
+                phoneNumber: updatedRecord.phone_number || "",
+                dob: updatedRecord.dob || "",
+                googleId: updatedRecord.google_id || "",
+                avatarUrl: updatedRecord.avatar_url || "",
               };
             }
           } else {
