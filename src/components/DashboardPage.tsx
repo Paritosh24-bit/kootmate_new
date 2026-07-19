@@ -27,6 +27,83 @@ export function normalizeSubjectName(rawName: string): string {
   return clean;
 }
 
+export function getSSCGameUrl(subSubject: string, lessonName: string): string | null {
+  const normalizedSub = (subSubject || '').toLowerCase().trim();
+  const normalizedLesson = (lessonName || '').toLowerCase().trim();
+
+  if (normalizedSub === 'geography') {
+    const geoGames: Record<string, string> = {
+      "field visit": "https://audio-palette-paint.lovable.app",
+      "location and extent": "https://ssc-game-geo-chp-2.lovable.app",
+      "physiography and drainage": "https://neon-trivia-spark.lovable.app",
+      "climate": "https://glint-game-quest.lovable.app/",
+      "natural vegetation and wildlife": "https://ssc-game-geography-ch5.lovable.app",
+      "population": "https://ssc-geography-chp6.lovable.app",
+      "human settlements": "https://ssc-geography-chp7.lovable.app",
+      "economy and occupations": "https://ssc-geography-chp8.lovable.app"
+    };
+    return geoGames[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'civics') {
+    const civicsGames: Record<string, string> = {
+      "social and political movements": "https://glow-duel-quest.lovable.app",
+      "challenges faced by indian democracy": "https://glow-game-gauntlet.lovable.app"
+    };
+    return civicsGames[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'history') {
+    const historyGames: Record<string, string> = {
+      "mass media and history": "https://glass-spark-showdown.lovable.app",
+      "entertainment and history": "https://ssc-history-chp6.lovable.app"
+    };
+    return historyGames[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'science1') {
+    const science1Games: Record<string, string> = {
+      "gravitation": "https://ssc10th-science-chp1.lovable.app/",
+      "periodic classification of elements": "https://ssc10th-science-chp2.lovable.app",
+      "chemical reactions and equations": "https://cbse10th-science-chp3.lovable.app",
+      "effects of electric current": "https://ssc10th-science-chp4.lovable.app",
+      "heat": "https://ssc10th-science-chp5.lovable.app",
+      "refraction of light": "https://ssc10th-science-chp6.lovable.app",
+      "lenses": "https://ssc10th-science-chp7.lovable.app",
+      "metallurgy": "https://ssc10th-science-chp8.lovable.app"
+    };
+    return science1Games[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'science2') {
+    const science2Games: Record<string, string> = {
+      "heredity and evolution": "https://ssc-science2-chp1.lovable.app",
+      "life processes in living organisms - part i": "https://ssc10th-science2-chp2.lovable.app",
+      "life processes in living organisms - part ii": "https://ssc-science2-ch3.lovable.app",
+      "environmental management": "https://glow-contest-zone.lovable.app",
+      "towards green energy": "https://ssc-science2-chp5.lovable.app",
+      "animal classification": "https://ssc-science2-ch6.lovable.app",
+      "introduction to microbiology": "https://bright-brain-battle.lovable.app",
+      "cell biology and biotechnology": "https://radiant-rivals.lovable.app",
+      "social health": "https://glass-sparkle-game.lovable.app",
+      "disaster management": "https://glassify-game-show.lovable.app"
+    };
+    return science2Games[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'math1') {
+    const math1Games: Record<string, string> = {
+      "arithmetic progression": "https://ssc-maths1-chp3.lovable.app",
+      "statistics": "https://ssc-maths1-chp6.lovable.app"
+    };
+    return math1Games[normalizedLesson] || null;
+  }
+  if (normalizedSub === 'math2') {
+    const math2Games: Record<string, string> = {
+      "pythagoras theorem": "https://ssc-maths2-chp2.lovable.app",
+      "coordinate geometry": "https://ssc-maths2-chp5.lovable.app",
+      "trigonometry": "https://ssc-game-math2-ch6.lovable.app"
+    };
+    return math2Games[normalizedLesson] || null;
+  }
+  return null;
+}
+
 interface User {
   name: string;
   email: string;
@@ -2029,7 +2106,7 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     <p className="text-sm font-black text-black">Scanning Syllabus database for live files...</p>
                   </div>
                 ) : (() => {
-                  const tabFilteredItems = contentItems.filter(item => {
+                  let tabFilteredItems = contentItems.filter(item => {
                     const type = item.content_type?.toLowerCase() || '';
                     if (activeCategoryTab === 'mind_maps') {
                       return type === 'mindmap' || type === 'mind_maps' || type === 'mind_map';
@@ -2048,6 +2125,25 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     }
                     return false;
                   });
+
+                  if (activeCategoryTab === 'games' && selectedSubject?.board === 'ssc') {
+                    const sscGameUrl = getSSCGameUrl(selectedSubSubject, selectedLesson);
+                    if (sscGameUrl) {
+                      tabFilteredItems = [{
+                        id: `ssc-game-static-${selectedSubSubject}-${selectedLesson}`,
+                        board: "SSC",
+                        subject: selectedSubSubject === 'science1' ? 'Science 1' : selectedSubSubject === 'science2' ? 'Science 2' : selectedSubSubject === 'math1' ? 'Math 1 (Algebra)' : selectedSubSubject === 'math2' ? 'Math 2 (Geometry)' : selectedSubSubject.toUpperCase(),
+                        chapter: selectedLesson,
+                        title: "Back and Forth Game",
+                        description: `Play the Back and Forth interactive revision formula/concept game for ${selectedLesson}.`,
+                        content_type: "game",
+                        resource_url: sscGameUrl,
+                        thumbnail_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop"
+                      }];
+                    } else {
+                      tabFilteredItems = [];
+                    }
+                  }
 
                   if (activeCategoryTab === 'question_bank') {
                     let subName = normalizeSubjectName(selectedSubject!.name);

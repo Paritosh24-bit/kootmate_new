@@ -363,6 +363,39 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
         return res.status(401).json({ success: false, error: "Invalid email or password combination." });
       }
 
+      // Ensure that hardcoded/override users (like Admin with ID 99999) exist in the Supabase users table
+      // so active_sessions foreign key constraint won't fail and persistent session storage is used.
+      if (supabase && matchedUser) {
+        try {
+          const { data: extUser, error: findUserErr } = await supabase
+            .from("users")
+            .select("id")
+            .eq("email", matchedUser.email)
+            .maybeSingle();
+
+          if (!extUser) {
+            console.log(`[AUTH] Hardcoded user ${matchedUser.email} (id: ${matchedUser.id}) not found in DB. Auto-provisioning in database.`);
+            const { error: insUserErr } = await supabase
+              .from("users")
+              .insert({
+                id: matchedUser.id,
+                name: matchedUser.name,
+                email: matchedUser.email,
+                password: password,
+                role: matchedUser.role,
+                selected_board: matchedUser.selected_board
+              });
+            if (insUserErr) {
+              console.error("[AUTH] Failed to auto-provision user in DB:", insUserErr.message);
+            } else {
+              console.log(`[AUTH] Successfully auto-provisioned user ${matchedUser.email} in DB.`);
+            }
+          }
+        } catch (provisionErr: any) {
+          console.warn("[AUTH] Auto-provision check exception:", provisionErr.message);
+        }
+      }
+
       // Generate secure cryptographically strong random token
       const sessionToken = crypto.randomBytes(32).toString("hex");
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day session duration
