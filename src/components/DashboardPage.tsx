@@ -104,6 +104,193 @@ export function getSSCGameUrl(subSubject: string, lessonName: string): string | 
   return null;
 }
 
+export function getCBSEGameUrl(subjectName: string, lessonName: string, subSubject?: string): string | null {
+  const normSubject = (subjectName || '').toLowerCase().trim();
+  const normLesson = (lessonName || '').toLowerCase().trim();
+  const normSub = (subSubject || '').toLowerCase().trim();
+
+  // If the main subject is Social Studies or SST, use the sub-subject (history, geography, civics, economics)
+  if (normSubject.includes('social') || normSubject.includes('sst')) {
+    if (normSub === 'history') {
+      const historyGames: Record<string, string> = {
+        "the rise of nationalism in europe": "https://radiant-quiz-duel.lovable.app",
+        "nationalism in india": "https://cbse-history-chp7.lovable.app",
+        "the making of a global world": "https://history-chp3-cbse.lovable.app",
+        "the age of industrialisation": "https://history-chp4-cbse.lovable.app",
+        "print culture and the modern world": "https://cbsegame-history-chp5.lovable.app"
+      };
+      return historyGames[normLesson] || "https://radiant-quiz-duel.lovable.app";
+    }
+    if (normSub === 'civics') {
+      const civicsGames: Record<string, string> = {
+        "power sharing": "https://civics-chp1-cbse.lovable.app",
+        "federalism": "https://civics-chp2-cbse.lovable.app",
+        "gender, religion and caste": "https://cbse-civics-chp4.lovable.app",
+        "political parties": "https://cbse-civics-chp6.lovable.app",
+        "outcomes of democracy": "https://cbse-civics-chp8.lovable.app"
+      };
+      return civicsGames[normLesson] || "https://civics-chp1-cbse.lovable.app";
+    }
+    if (normSub === 'geography') {
+      const geographyGames: Record<string, string> = {
+        "resources and development": "https://cbse-geography-game-chp1.lovable.app",
+        "forest and wildlife resources": "https://holo-brain-quiz.lovable.app",
+        "water resources": "https://cbse-geography-game-chp3.lovable.app",
+        "agriculture": "https://cbse-geography-chp4.lovable.app",
+        "minerals and energy resources": "https://miniro.lovable.app",
+        "manufacturing industries": "https://cbse-geography-game-chp6.lovable.app",
+        "lifelines of national economy": "https://cbse-geography-chp7.lovable.app"
+      };
+      return geographyGames[normLesson] || "https://cbse-geography-game-chp1.lovable.app";
+    }
+    if (normSub === 'economics') {
+      const economicsGames: Record<string, string> = {
+        "development": "https://cbse-game-economics-chp1.lovable.app",
+        "sectors of the indian economy": "https://cbse-game-economics-chp2.lovable.app",
+        "money and credit": "https://cbse-economics-ch3-game.lovable.app",
+        "globalisation and the indian economy": "https://cbse-game-economics-chp4.lovable.app",
+        "consumer rights": "https://cbse-game-economics-chp5.lovable.app"
+      };
+      return economicsGames[normLesson] || "https://cbse-game-economics-chp1.lovable.app";
+    }
+    return "https://www.coolmathgames.com";
+  }
+
+  if (normSubject.includes('science')) {
+    const scienceGames: Record<string, string> = {
+      "chemical reactions and equations": "https://cbse-science-chp1.lovable.app",
+      "acids, bases and salts": "https://cbse-science-chapter2.lovable.app",
+      "metals and non-metals": "https://cbse-science-chp3.lovable.app",
+      "carbon and its compounds": "https://electrofield.lovable.app",
+      "life processes": "https://cbse-science-chp-6.lovable.app",
+      "control and coordination": "https://cbse-science-chp7.lovable.app",
+      "how do organisms reproduce?": "https://cbse-science-chp-8.lovable.app",
+      "heredity": "https://cbse-science-chp9-cbse.lovable.app",
+      "light - reflection and refraction": "https://glass-duel-quest.lovable.app",
+      "the human eye and the colourful world": "https://lumin-quiz-quest.lovable.app",
+      "electricity": "https://electro-quiz-spark.lovable.app",
+      "magnetic effects of electric current": "https://science-cbse-chp13.lovable.app",
+      "our environment": "https://quizglow-spark.lovable.app"
+    };
+    return scienceGames[normLesson] || "https://cbse-science-chp1.lovable.app";
+  }
+
+  if (normSubject.includes('math')) {
+    const mathGames: Record<string, string> = {
+      "real numbers": "https://cbse-game-math-chp1.lovable.app",
+      "polynomials": "https://cbse-maths-game-chp2.lovable.app",
+      "pair of linear equations in two variables": "https://cbsegame-maths-chp3.lovable.app",
+      "quadratic equations": "https://cbsegame-maths-chp4.lovable.app",
+      "arithmetic progressions": "https://cbse-maths-chp5.lovable.app",
+      "triangles": "https://cbse-game-maths-chp6.lovable.app",
+      "coordinate geometry": "https://cbse-game-maths-chp7.lovable.app",
+      "introduction to trigonometry": "https://cbse-game-maths-chp8.lovable.app",
+      "some applications of trigonometry": "https://cbse-maths-chp9.lovable.app",
+      "circles": "https://glass-challenge-quest.lovable.app",
+      "areas related to circles": "https://glow-quiz-battle.lovable.app",
+      "surface areas and volumes": "https://glass-spark-challenge.lovable.app",
+      "statistics": "https://glassy-quiz-whiz.lovable.app",
+      "probability": "https://cbse-game-maths-chp14.lovable.app"
+    };
+    return mathGames[normLesson] || "https://cbse-game-math-chp1.lovable.app";
+  }
+
+  return null;
+}
+
+export function getCBSEMindmapUrl(subjectName: string, lessonName: string, subSubject?: string): string | null {
+  const normSubject = (subjectName || '').toLowerCase().trim();
+  const normLesson = (lessonName || '').toLowerCase().trim();
+  const normSub = (subSubject || '').toLowerCase().trim();
+
+  if (normSubject.includes('social') || normSubject.includes('sst')) {
+    if (normSub === 'history') {
+      const historyMaps: Record<string, string> = {
+        "the rise of nationalism in europe": "https://wave-map.lovable.app",
+        "nationalism in india": "https://aqua-branch-view.lovable.app",
+        "the making of a global world": "https://flow-wave-map.lovable.app",
+        "the age of industrialisation": "https://pastel-branch-tree.lovable.app",
+        "print culture and the modern world": "https://pastel-brancher.lovable.app"
+      };
+      return historyMaps[normLesson] || null;
+    }
+    if (normSub === 'civics') {
+      const civicsMaps: Record<string, string> = {
+        "power sharing": "https://wise-wave-map.lovable.app",
+        "federalism": "https://pastel-branch.lovable.app",
+        "gender, religion and caste": "https://aqua-learn-map.lovable.app",
+        "political parties": "https://seafoam-tree.lovable.app",
+        "outcomes of democracy": "https://coral-tree-map.lovable.app"
+      };
+      return civicsMaps[normLesson] || null;
+    }
+    if (normSub === 'geography') {
+      const geographyMaps: Record<string, string> = {
+        "resources and development": "https://hydro-tree.lovable.app",
+        "forest and wildlife resources": "https://thought-wave-flow.lovable.app",
+        "water resources": "https://geog-chp3-view.lovable.app",
+        "agriculture": "https://wave-map-builder.lovable.app",
+        "minerals and energy resources": "https://aqua-tree.lovable.app",
+        "manufacturing industries": "https://wave-mind-grow.lovable.app",
+        "lifelines of national economy": "https://wave-branch.lovable.app"
+      };
+      return geographyMaps[normLesson] || null;
+    }
+    if (normSub === 'economics') {
+      const economicsMaps: Record<string, string> = {
+        "development": "https://cbse-economics-chp1.lovable.app",
+        "sectors of the indian economy": "https://cbse-economics-chp2.lovable.app",
+        "money and credit": "https://cbse-economics-chp3.lovable.app",
+        "globalisation and the indian economy": "https://cbse-economics-chp4.lovable.app",
+        "consumer rights": "https://cbse-economic-chp5.lovable.app"
+      };
+      return economicsMaps[normLesson] || null;
+    }
+    return null;
+  }
+
+  if (normSubject.includes('science')) {
+    const scienceMaps: Record<string, string> = {
+      "chemical reactions and equations": "https://chem-map-bloom.lovable.app",
+      "acids, bases and salts": "https://acid-base-flow.lovable.app",
+      "metals and non-metals": "https://mind-bloom-react.lovable.app",
+      "carbon and its compounds": "https://ocean-mind-bloom.lovable.app",
+      "life processes": "https://science-chp6-view.lovable.app",
+      "control and coordination": "https://science-chp7-view.lovable.app",
+      "how do organisms reproduce?": "https://science-chp8-view.lovable.app",
+      "heredity": "https://sciene-chp9-cbse.lovable.app",
+      "light - reflection and refraction": "https://science-chp10-cbse.lovable.app",
+      "the human eye and the colourful world": "https://science-chp11-cbse.lovable.app",
+      "electricity": "https://science-chp12-cbse.lovable.app",
+      "magnetic effects of electric current": "https://science-chp13-cbse.lovable.app",
+      "our environment": "https://science-chp15-cbse.lovable.app"
+    };
+    return scienceMaps[normLesson] || null;
+  }
+
+  if (normSubject.includes('math')) {
+    const mathMaps: Record<string, string> = {
+      "real numbers": "https://serene-nodes.lovable.app",
+      "polynomials": "https://aqua-branch-flow.lovable.app",
+      "pair of linear equations in two variables": "https://oceanmind-expand.lovable.app",
+      "quadratic equations": "https://aqua-node-flow.lovable.app",
+      "arithmetic progressions": "https://aqua-nodes.lovable.app",
+      "triangles": "https://ripple-tree-map.lovable.app",
+      "coordinate geometry": "https://bloomflow-mind.lovable.app",
+      "introduction to trigonometry": "https://edu-tree.lovable.app",
+      "some applications of trigonometry": "https://wave-mapper.lovable.app",
+      "circles": "https://maths-10-cbse.lovable.app",
+      "areas related to circles": "https://maths-chp11-cbse.lovable.app",
+      "surface areas and volumes": "https://oceanweave-mind.lovable.app",
+      "statistics": "https://wise-branch-map.lovable.app",
+      "probability": "https://nodehaven-map.lovable.app"
+    };
+    return mathMaps[normLesson] || null;
+  }
+
+  return null;
+}
+
 interface User {
   name: string;
   email: string;
@@ -2138,6 +2325,44 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                         description: `Play the Back and Forth interactive revision formula/concept game for ${selectedLesson}.`,
                         content_type: "game",
                         resource_url: sscGameUrl,
+                        thumbnail_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop"
+                      }];
+                    } else {
+                      tabFilteredItems = [];
+                    }
+                  }
+
+                  if (activeCategoryTab === 'mind_maps' && selectedSubject?.board === 'cbse') {
+                    if (tabFilteredItems.length === 0) {
+                      const cbseMindmapUrl = getCBSEMindmapUrl(selectedSubject.name, selectedLesson, selectedSubSubject);
+                      if (cbseMindmapUrl) {
+                        tabFilteredItems = [{
+                          id: `cbse-mindmap-static-${selectedSubject.name}-${selectedLesson}`,
+                          board: "CBSE",
+                          subject: selectedSubject.name,
+                          chapter: selectedLesson,
+                          title: "Visual Concept Tree",
+                          description: `Study the high-retention concept mindmap for ${selectedLesson}.`,
+                          content_type: "mindmap",
+                          resource_url: cbseMindmapUrl,
+                          thumbnail_url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=400&auto=format&fit=crop"
+                        }];
+                      }
+                    }
+                  }
+
+                  if (activeCategoryTab === 'games' && selectedSubject?.board === 'cbse') {
+                    const cbseGameUrl = getCBSEGameUrl(selectedSubject.name, selectedLesson, selectedSubSubject);
+                    if (cbseGameUrl) {
+                      tabFilteredItems = [{
+                        id: `cbse-game-static-${selectedSubject.name}-${selectedLesson}`,
+                        board: "CBSE",
+                        subject: selectedSubject.name,
+                        chapter: selectedLesson,
+                        title: "Back and Forth Game",
+                        description: `Play the Back and Forth interactive revision game for ${selectedLesson}.`,
+                        content_type: "game",
+                        resource_url: cbseGameUrl,
                         thumbnail_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop"
                       }];
                     } else {
