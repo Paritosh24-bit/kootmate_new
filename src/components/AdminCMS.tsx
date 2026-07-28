@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FolderPlus, Plus, Edit, Trash2, Search, ArrowLeft, Upload, 
-  Check, Trash, Loader2, BookOpen, Layers, Info, Trash2 as TrashIcon, ShieldAlert, Sparkles, CheckCircle, AlertCircle, PlusCircle
+  Check, Trash, Loader2, BookOpen, Layers, Info, Trash2 as TrashIcon, ShieldAlert, Sparkles, CheckCircle, AlertCircle, PlusCircle, Key, FileSpreadsheet, UploadCloud, Ticket
 } from 'lucide-react';
 import { 
   dbGetClasses, dbCreateClass, dbDeleteClass,
@@ -13,7 +13,7 @@ import { ContentItem } from '../types';
 import { AdminContentForm, ContentGrid, ContentFilter, PDFViewer, AudioPlayer } from './CMSComponents';
 import { removeChapterNumber } from '../lib/utils';
 
-type AdminTab = 'materials' | 'curriculum';
+type AdminTab = 'materials' | 'curriculum' | 'referrals';
 
 export default function AdminCMS() {
   const [activeTab, setActiveTab] = useState<AdminTab>('materials');
@@ -27,6 +27,24 @@ export default function AdminCMS() {
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
   const [chapters, setChapters] = useState<ChapterItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Referral Coupon management states
+  const [couponsList, setCouponsList] = useState<any[]>([]);
+  const [couponSummary, setCouponSummary] = useState({ total: 0, redeemed: 0, available: 0 });
+  const [couponsLoading, setCouponsLoading] = useState(false);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [uploadingExcel, setUploadingExcel] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{
+    totalRows: number;
+    inserted: number;
+    skippedDuplicates: number;
+    failedRows: number;
+  } | null>(null);
+
+  // Manual Coupon Creation states
+  const [manualCode, setManualCode] = useState('');
+  const [manualSubjectKey, setManualSubjectKey] = useState('all');
+  const [creatingManual, setCreatingManual] = useState(false);
 
   // Content items states (Supabase content_items table)
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
@@ -124,9 +142,129 @@ export default function AdminCMS() {
     }
   };
 
+  // Fetch Supabase Referral Coupons
+  const loadCoupons = async () => {
+    try {
+      setCouponsLoading(true);
+      const res = await fetch('/api/admin/referral/list');
+      const data = await res.json();
+      if (data.success) {
+        setCouponsList(data.data || []);
+        if (data.summary) setCouponSummary(data.summary);
+      }
+    } catch (err) {
+      console.error("Failed to fetch referral coupons list:", err);
+    } finally {
+      setCouponsLoading(false);
+    }
+  };
+
+  const handleExcelUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!excelFile) {
+      showBannerError('Please choose an Excel (.xlsx) file to upload.');
+      return;
+    }
+
+    setUploadingExcel(true);
+    setUploadResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', excelFile);
+
+      const res = await fetch('/api/admin/referral/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showBannerSuccess(data.message || 'Excel spreadsheet processed successfully!');
+        if (data.summary) setUploadResult(data.summary);
+        setExcelFile(null);
+        loadCoupons();
+      } else {
+        showBannerError(data.error || 'Failed to process uploaded Excel file.');
+      }
+    } catch (err: any) {
+      showBannerError(err.message || 'Error occurred while uploading Excel file.');
+    } finally {
+      setUploadingExcel(false);
+    }
+  };
+
+  const handleManualCreateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualCode.trim()) {
+      showBannerError('Please enter a valid coupon code.');
+      return;
+    }
+
+    setCreatingManual(true);
+    try {
+      const res = await fetch('/api/admin/referral/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: manualCode.trim(),
+          subjectKey: manualSubjectKey
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showBannerSuccess(data.message || 'Coupon code created and stored in Supabase!');
+        setManualCode('');
+        setManualSubjectKey('all');
+        loadCoupons();
+      } else {
+        showBannerError(data.error || 'Failed to create coupon code.');
+      }
+    } catch (err: any) {
+      showBannerError(err.message || 'Network error while creating coupon.');
+    } finally {
+      setCreatingManual(false);
+    }
+  };
+
+  const handleDeleteCoupon = async (id: string, codeStr: string) => {
+    if (!confirm(`Are you sure you want to delete coupon code '${codeStr}' from Supabase?`)) return;
+    try {
+      const res = await fetch(`/api/admin/referral/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showBannerSuccess(`Coupon '${codeStr}' deleted.`);
+        loadCoupons();
+      } else {
+        showBannerError(data.error || 'Failed to delete coupon.');
+      }
+    } catch (err: any) {
+      showBannerError(err.message || 'Error deleting coupon.');
+    }
+  };
+
+  const handleClearAllCoupons = async () => {
+    if (!confirm("Are you SURE you want to delete ALL existing coupon codes from Supabase? This action cannot be undone.")) return;
+    try {
+      const res = await fetch('/api/admin/referral/clear-all', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showBannerSuccess(data.message || "All existing coupons deleted from Supabase.");
+        setUploadResult(null);
+        loadCoupons();
+      } else {
+        showBannerError(data.error || "Failed to clear coupons.");
+      }
+    } catch (err: any) {
+      showBannerError(err.message || "Error clearing coupons.");
+    }
+  };
+
   useEffect(() => {
     loadAllData();
     loadContentItems();
+    loadCoupons();
   }, []);
 
   const showBannerError = (msg: string) => {
@@ -457,6 +595,16 @@ export default function AdminCMS() {
           >
             🗂️ Curriculum Folders
           </button>
+          <button
+            onClick={() => setActiveTab('referrals')}
+            className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
+              activeTab === 'referrals'
+                ? 'bg-white text-[#5c3beb] shadow-md'
+                : 'text-violet-100 hover:bg-white/10'
+            }`}
+          >
+            🎟️ Referral Coupons
+          </button>
         </div>
 
         {/* Dynamic feedback messages */}
@@ -748,6 +896,284 @@ export default function AdminCMS() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ==========================================
+          TAB CONTENT SPACE: C. REFERRAL COUPONS
+          ========================================== */}
+      {activeTab === 'referrals' && (
+        <div className="p-6 space-y-6 text-left animate-in fade-in duration-200">
+          
+          {/* Header & Section grid: Manual Create + Excel Upload */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Manual Single Coupon Creation Form */}
+            <div className="bg-white border border-neutral-250 p-6 rounded-3xl space-y-4 shadow-sm">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-100 text-[#5c3beb] text-[10px] font-black rounded-full uppercase tracking-wider">
+                  <Key className="w-3.5 h-3.5" />
+                  Manual Entry
+                </div>
+                <h3 className="text-lg font-black text-neutral-900">Add Coupon Manually</h3>
+                <p className="text-xs text-neutral-500 font-medium">
+                  Create an individual coupon code and directly save it into Supabase.
+                </p>
+              </div>
+
+              <form onSubmit={handleManualCreateCoupon} className="space-y-3.5">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-neutral-700 uppercase tracking-wider">
+                    Coupon Code
+                  </label>
+                  <input
+                    type="text"
+                    value={manualCode}
+                    onChange={(e) => setManualCode(e.target.value)}
+                    placeholder="e.g. Si-koVsCWA or SCIENCE2026"
+                    className="w-full px-3.5 py-2.5 border-2 border-neutral-200 focus:border-[#5c3beb] rounded-xl text-xs font-mono font-black text-neutral-900 outline-none transition-all placeholder:normal-case placeholder:font-normal"
+                    disabled={creatingManual}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-neutral-700 uppercase tracking-wider">
+                    Target Subject Lock
+                  </label>
+                  <select
+                    value={manualSubjectKey}
+                    onChange={(e) => setManualSubjectKey(e.target.value)}
+                    className="w-full px-3.5 py-2.5 border-2 border-neutral-200 focus:border-[#5c3beb] rounded-xl text-xs font-bold text-neutral-800 outline-none bg-white cursor-pointer"
+                    disabled={creatingManual}
+                  >
+                    <option value="all">All Protected Subjects (Universal)</option>
+                    <option value="science">Science</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="history_pol_sc">History & Political Science</option>
+                    <option value="geo_eco">Geography & Economics</option>
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={creatingManual || !manualCode.trim()}
+                  className="w-full py-3 bg-[#5c3beb] hover:bg-[#4a2ed1] disabled:bg-neutral-300 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                >
+                  {creatingManual ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving to Supabase...</span>
+                    </>
+                  ) : (
+                    <>
+                      <PlusCircle className="w-4 h-4" />
+                      <span>Save to Supabase</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {/* Upload Box for Excel (.xlsx) */}
+            <div className="bg-gradient-to-br from-slate-50 to-indigo-50/30 border border-neutral-250 p-6 rounded-3xl space-y-4 shadow-sm">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-indigo-100 text-[#5c3beb] text-[10px] font-black rounded-full uppercase tracking-wider">
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  Excel Bulk Upload
+                </div>
+                <h3 className="text-lg font-black text-neutral-900">Upload Excel Spreadsheet (.xlsx)</h3>
+                <p className="text-xs text-neutral-500 font-medium">
+                  Upload single or multi-sheet Excel files (SSC, CBSE, or subject-wise). Automatically imports all sheets into Supabase.
+                </p>
+              </div>
+
+              <form onSubmit={handleExcelUpload} className="space-y-3">
+                <div className="border-2 border-dashed border-indigo-200 hover:border-[#5c3beb] bg-white p-4 rounded-2xl transition-all text-center space-y-1">
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={(e) => setExcelFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                    id="excel-coupon-file-input"
+                  />
+                  <label htmlFor="excel-coupon-file-input" className="cursor-pointer space-y-1 block">
+                    <UploadCloud className="w-6 h-6 text-[#5c3beb] mx-auto animate-bounce" />
+                    {excelFile ? (
+                      <p className="text-xs font-black text-indigo-950">{excelFile.name} ({(excelFile.size / 1024).toFixed(1)} KB)</p>
+                    ) : (
+                      <>
+                        <p className="text-xs font-black text-neutral-800">Select Excel file (.xlsx)</p>
+                        <p className="text-[10px] text-neutral-400">Supports multi-sheet & subject-wise sheets</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={uploadingExcel || !excelFile}
+                    className="w-full py-2.5 bg-[#5c3beb] hover:bg-[#4a2ed1] disabled:bg-neutral-300 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                  >
+                    {uploadingExcel ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Processing Excel...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload & Import</span>
+                      </>
+                    )}
+                  </button>
+
+                  {excelFile && (
+                    <button
+                      type="button"
+                      onClick={() => setExcelFile(null)}
+                      className="px-3 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-black text-xs rounded-xl"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              {/* Upload Result Summary Banner */}
+              {uploadResult && (
+                <div className="p-3 bg-white border border-indigo-150 rounded-2xl space-y-1.5 text-xs animate-in fade-in">
+                  <p className="font-black text-indigo-950 uppercase tracking-wider text-[9px]">Excel Processing Summary:</p>
+                  <div className="grid grid-cols-4 gap-1 text-center">
+                    <div className="p-1.5 bg-neutral-50 rounded-lg border border-neutral-200">
+                      <span className="text-neutral-400 block text-[8px] font-bold uppercase">Total</span>
+                      <span className="font-black text-xs text-neutral-900">{uploadResult.totalRows}</span>
+                    </div>
+                    <div className="p-1.5 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <span className="text-emerald-600 block text-[8px] font-bold uppercase">Added</span>
+                      <span className="font-black text-xs text-emerald-700">+{uploadResult.inserted}</span>
+                    </div>
+                    <div className="p-1.5 bg-amber-50 rounded-lg border border-amber-200">
+                      <span className="text-amber-600 block text-[8px] font-bold uppercase">Skipped</span>
+                      <span className="font-black text-xs text-amber-700">{uploadResult.skippedDuplicates}</span>
+                    </div>
+                    <div className="p-1.5 bg-red-50 rounded-lg border border-red-200">
+                      <span className="text-red-500 block text-[8px] font-bold uppercase">Failed</span>
+                      <span className="font-black text-xs text-red-700">{uploadResult.failedRows}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Metrics Sidebar */}
+            <div className="space-y-4">
+              <div className="bg-white border border-neutral-200 p-5 rounded-3xl space-y-3 shadow-xs">
+                <h4 className="text-xs font-black text-neutral-400 uppercase tracking-wider">Coupon Database Overview</h4>
+                
+                <div className="space-y-2">
+                  <div className="p-3 bg-neutral-50 rounded-2xl flex justify-between items-center">
+                    <span className="text-xs font-bold text-neutral-600">Total Database Codes</span>
+                    <span className="font-black text-base text-neutral-900">{couponSummary.total}</span>
+                  </div>
+
+                  <div className="p-3 bg-emerald-50/60 rounded-2xl flex justify-between items-center border border-emerald-100">
+                    <span className="text-xs font-bold text-emerald-800">Available / Unused</span>
+                    <span className="font-black text-base text-emerald-700">{couponSummary.available}</span>
+                  </div>
+
+                  <div className="p-3 bg-violet-50/60 rounded-2xl flex justify-between items-center border border-violet-100">
+                    <span className="text-xs font-bold text-violet-800">Redeemed</span>
+                    <span className="font-black text-base text-violet-700">{couponSummary.redeemed}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Database Table of Coupons */}
+          <div className="space-y-3 pt-2">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Ticket className="w-4 h-4 text-[#5c3beb]" />
+                Supabase Referral Codes ({couponsList.length})
+              </h3>
+              <div className="flex items-center gap-2">
+                {couponsList.length > 0 && (
+                  <button
+                    onClick={handleClearAllCoupons}
+                    className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-black rounded-lg cursor-pointer transition-colors flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Clear All Coupons
+                  </button>
+                )}
+                <button
+                  onClick={loadCoupons}
+                  className="px-3 py-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-black rounded-lg cursor-pointer transition-colors"
+                >
+                  Refresh List
+                </button>
+              </div>
+            </div>
+
+            {couponsLoading ? (
+              <div className="py-12 text-center text-xs text-neutral-400 font-extrabold flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-[#5c3beb]" />
+                <span>Downloading coupon list from Supabase...</span>
+              </div>
+            ) : couponsList.length === 0 ? (
+              <div className="py-12 text-center border border-dashed border-neutral-200 rounded-3xl max-w-md mx-auto text-neutral-400 font-bold text-xs">
+                No coupon codes found in Supabase. Enter a coupon manually or upload an Excel file above.
+              </div>
+            ) : (
+              <div className="border border-neutral-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+                <div className="max-h-96 overflow-y-auto divide-y divide-neutral-100">
+                  <div className="bg-neutral-50 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-neutral-500 grid grid-cols-12 sticky top-0 border-b border-neutral-200">
+                    <span className="col-span-3">Coupon Code</span>
+                    <span className="col-span-3">Target Subject</span>
+                    <span className="col-span-3">Status</span>
+                    <span className="col-span-2 text-right">Created</span>
+                    <span className="col-span-1 text-right">Action</span>
+                  </div>
+
+                  {couponsList.map((c) => (
+                    <div key={c.id} className="px-4 py-3 text-xs grid grid-cols-12 items-center hover:bg-neutral-50/80 transition-colors">
+                      <span className="col-span-3 font-mono font-black text-neutral-900">{c.code}</span>
+                      <span className="col-span-3 font-bold text-neutral-600">
+                        {c.subject_key ? c.subject_key : 'All Protected Subjects'}
+                      </span>
+                      <span className="col-span-3">
+                        {c.is_used ? (
+                          <span className="px-2 py-0.5 bg-violet-100 text-violet-700 font-black text-[10px] rounded-full uppercase tracking-wider">
+                            Redeemed
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 font-black text-[10px] rounded-full uppercase tracking-wider">
+                            Available
+                          </span>
+                        )}
+                      </span>
+                      <span className="col-span-2 text-right text-[10px] text-neutral-400 font-medium">
+                        {c.created_at ? new Date(c.created_at).toLocaleDateString() : 'Active'}
+                      </span>
+                      <span className="col-span-1 text-right">
+                        <button
+                          onClick={() => handleDeleteCoupon(c.id, c.code)}
+                          className="p-1 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          title="Delete Coupon"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
         </div>
       )}
 

@@ -7,6 +7,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client
 import { createClient } from "@supabase/supabase-js";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
+import * as XLSX from "xlsx";
 
 dotenv.config();
 
@@ -1806,6 +1807,609 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
       return res.json({ success: true, data: returnedData });
     } catch (err: any) {
       console.error("[CLICK_API_ERROR]:", err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Helper function to normalize subject keys for protection checks
+  function normalizeSubjectKey(key: string): string {
+    if (!key) return "";
+    const lower = key.toLowerCase().trim();
+    if (lower.includes("science") && !lower.includes("history") && !lower.includes("social")) return "science";
+    if (lower.includes("math") || lower.includes("algebra") || lower.includes("geometry")) return "mathematics";
+    if (lower.includes("history") || lower.includes("civic") || lower.includes("pol") || lower.includes("political")) return "history_pol_sc";
+    if (lower.includes("geo") || lower.includes("eco") || lower.includes("geography") || lower.includes("economic")) return "geo_eco";
+    return lower;
+  }
+
+  // Helper to extract authenticated user profile from incoming express request
+  async function getUserFromReq(req: any) {
+    let sessionToken = req.cookies?.session_token;
+    if (!sessionToken && req.headers.authorization) {
+      const parts = req.headers.authorization.split(" ");
+      if (parts[0] === "Bearer" && parts[1]) {
+        sessionToken = parts[1];
+      }
+    }
+
+    const emailHeader = (req.headers["x-user-email"] || req.body?.userEmail || req.query?.userEmail || "").toString().toLowerCase().trim();
+
+    const supabase = getServerSupabase();
+
+    // Strategy 1: Active sessions in Supabase
+    if (sessionToken && supabase) {
+      try {
+        const { data: session } = await supabase
+          .from("active_sessions")
+          .select("user_id, is_active")
+          .eq("session_token", sessionToken)
+          .maybeSingle();
+
+        if (session) {
+          const { data: dbUser } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", session.user_id)
+            .maybeSingle();
+
+          if (dbUser) return dbUser;
+        }
+      } catch (e) {
+        console.warn("[GET_USER_FROM_REQ_SUPABASE_WARN]:", e);
+      }
+    }
+
+    // Strategy 2: In-memory simulatedSessions fallback
+    if (sessionToken && simulatedSessions.has(sessionToken)) {
+      const simSession = simulatedSessions.get(sessionToken);
+      if (simSession) {
+        if (supabase) {
+          try {
+            const { data: dbUser } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", simSession.user_id)
+              .maybeSingle();
+            if (dbUser) return dbUser;
+          } catch (e) {}
+        }
+        const simUser = simulatedUsers.get(simSession.user_id);
+        if (simUser) {
+          if (supabase && simUser.email) {
+            try {
+              const { data: existing } = await supabase
+                .from("users")
+                .select("*")
+                .eq("email", simUser.email.toLowerCase())
+                .maybeSingle();
+              if (existing) return existing;
+
+              const { data: inserted } = await supabase
+                .from("users")
+                .insert({
+                  name: simUser.name || "Student",
+                  email: simUser.email.toLowerCase(),
+                  selected_board: simUser.selected_board || "cbse",
+                  role: simUser.role || "student"
+                })
+                .select()
+                .single();
+              if (inserted) return inserted;
+            } catch (e) {}
+          }
+          return simUser;
+        }
+      }
+    }
+
+    // Strategy 3: Lookup by user email if passed in headers or body
+    if (emailHeader) {
+      if (supabase) {
+        try {
+          const { data: dbUser } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", emailHeader)
+            .maybeSingle();
+
+          if (dbUser) return dbUser;
+
+          // Auto-insert user into users table if absent
+          const { data: newUser } = await supabase
+            .from("users")
+            .insert({
+              name: emailHeader.split("@")[0] || "Student",
+              email: emailHeader,
+              selected_board: "cbse",
+              role: emailHeader.includes("admin") ? "admin" : "student"
+            })
+            .select()
+            .single();
+
+          if (newUser) return newUser;
+        } catch (e) {}
+      }
+      return { id: 1, email: emailHeader, role: emailHeader.includes("admin") ? "admin" : "student" };
+    }
+
+    // Strategy 4: Fallback to single user in database if present
+    if (supabase) {
+      try {
+        const { data: recentUsers } = await supabase
+          .from("users")
+          .select("*")
+          .order("id", { ascending: false })
+          .limit(1);
+
+        if (recentUsers && recentUsers.length > 0) {
+          return recentUsers[0];
+        }
+      } catch (e) {}
+    }
+
+    return null;
+  }
+
+  // GET /api/access/:subjectKey - Check whether the current user has access to a protected subject
+  app.get("/api/access/:subjectKey", async (req: any, res) => {
+    try {
+      const { subjectKey } = req.params;
+      if (!subjectKey) {
+        return res.status(400).json({ success: false, error: "Subject key parameter is required." });
+      }
+
+      const normKey = normalizeSubjectKey(subjectKey);
+      const protectedList = ["science", "mathematics", "history_pol_sc", "geo_eco"];
+      const isProtected = protectedList.includes(normKey);
+
+      if (!isProtected) {
+        return res.json({
+          success: true,
+          hasAccess: true,
+          isProtected: false,
+          message: "Unprotected subject area."
+        });
+      }
+
+      const currentUser = await getUserFromReq(req);
+
+      if (currentUser) {
+        // Check admin role
+        const adminEmails = ["admin@company.com"];
+        if (currentUser.role === 'admin' || adminEmails.includes(currentUser.email?.toLowerCase())) {
+          return res.json({
+            success: true,
+            hasAccess: true,
+            isProtected: true,
+            accessType: "admin"
+          });
+        }
+
+        // Query user_subject_access table in Supabase
+        const supabase = getServerSupabase();
+        if (supabase) {
+          const { data: accessRecord } = await supabase
+            .from("user_subject_access")
+            .select("*")
+            .eq("user_id", currentUser.id)
+            .in("subject_key", [normKey, "all", subjectKey])
+            .maybeSingle();
+
+          if (accessRecord) {
+            return res.json({
+              success: true,
+              hasAccess: true,
+              isProtected: true,
+              accessType: accessRecord.access_type
+            });
+          }
+        }
+      }
+
+      return res.json({
+        success: true,
+        hasAccess: false,
+        isProtected: true,
+        subjectKey: normKey
+      });
+    } catch (err: any) {
+      console.error("[GET_API_ACCESS_ERROR]:", err);
+      return res.status(500).json({ success: false, error: err.message || "Failed to check subject access status." });
+    }
+  });
+
+  // Helper to detect subject key from code string or column header string
+  function detectSubjectFromText(text: string): string | null {
+    if (!text) return null;
+    const str = text.trim();
+    const lower = str.toLowerCase();
+
+    // 1. Check code prefixes (e.g. Si-koVsCWA, MA-HXtq8yE, HC-L2XBCNx, GE-hc22jZB, GH-WkDEtPF)
+    if (str.startsWith("Si-") || str.startsWith("SI-") || str.startsWith("si-") || str.startsWith("SCI-") || str.startsWith("Sci-")) return "science";
+    if (str.startsWith("MA-") || str.startsWith("Ma-") || str.startsWith("ma-") || str.startsWith("MTH-") || str.startsWith("Mth-")) return "mathematics";
+    if (str.startsWith("HC-") || str.startsWith("Hc-") || str.startsWith("hc-") || str.startsWith("HST-") || str.startsWith("Hst-")) return "history_pol_sc";
+    if (str.startsWith("GE-") || str.startsWith("Ge-") || str.startsWith("ge-") || str.startsWith("GH-") || str.startsWith("Gh-") || str.startsWith("gh-") || str.startsWith("GEO-") || str.startsWith("Geo-")) return "geo_eco";
+
+    // 2. Check full text keywords
+    if (lower.includes("science")) return "science";
+    if (lower.includes("math") || lower.includes("maths") || lower.includes("mathematics")) return "mathematics";
+    if (lower.includes("history") || lower.includes("civic") || lower.includes("pol sc") || lower.includes("political")) return "history_pol_sc";
+    if (lower.includes("geo") || lower.includes("eco") || lower.includes("geography") || lower.includes("economics")) return "geo_eco";
+
+    return null;
+  }
+
+  const IGNORED_EXCEL_CELLS = new Set([
+    "cbse:", "ssc:", "cbse", "ssc", "board:",
+    "science", "maths", "math", "mathematics",
+    "history & civics", "history", "civics", "history & political science",
+    "geo & eco", "geo", "eco", "geography", "geography & economics",
+    "code", "coupon", "coupon code", "coupon_code", "referral code", "referral_code", "code number",
+    "sl no", "s.no", "sr no", "sr.no", "no", "subject", "subject key", "status", "target subject"
+  ]);
+
+  // POST /api/referral/redeem - Redeem a referral/coupon code to unlock a protected subject
+  app.post("/api/referral/redeem", async (req: any, res) => {
+    try {
+      const { code, subjectKey } = req.body || {};
+
+      if (!code || typeof code !== "string" || !code.trim()) {
+        return res.status(400).json({ success: false, error: "Please enter a valid coupon code." });
+      }
+      if (!subjectKey || typeof subjectKey !== "string" || !subjectKey.trim()) {
+        return res.status(400).json({ success: false, error: "Subject key is required." });
+      }
+
+      const cleanCode = code.trim();
+      const normKey = normalizeSubjectKey(subjectKey);
+
+      const currentUser = await getUserFromReq(req);
+      if (!currentUser) {
+        return res.status(401).json({ success: false, error: "Authentication required. Please log in to redeem coupons." });
+      }
+
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Database connection unavailable. Please check Supabase credentials." });
+      }
+
+      // 1. Query coupon code from referral_codes
+      const { data: coupon, error: couponErr } = await supabase
+        .from("referral_codes")
+        .select("*")
+        .ilike("code", cleanCode)
+        .maybeSingle();
+
+      if (couponErr || !coupon) {
+        return res.status(400).json({ success: false, error: "Invalid coupon code." });
+      }
+
+      // 2. Check if already used
+      if (coupon.is_used) {
+        return res.status(400).json({ success: false, error: "This coupon code has already been redeemed." });
+      }
+
+      // 3. Check expiration date if set
+      if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+        return res.status(400).json({ success: false, error: "This coupon code has expired." });
+      }
+
+      // 4. Check subject restriction if coupon is bound to a specific subject
+      if (coupon.subject_key && coupon.subject_key.trim() !== '' && coupon.subject_key.toLowerCase() !== 'all') {
+        const couponSubjectNorm = normalizeSubjectKey(coupon.subject_key);
+        if (couponSubjectNorm !== normKey) {
+          return res.status(400).json({
+            success: false,
+            error: `This coupon code is valid for ${coupon.subject_key}, not for the selected subject.`
+          });
+        }
+      }
+
+      // 5. Safe atomic redemption update
+      const { data: updatedCoupons, error: updateErr } = await supabase
+        .from("referral_codes")
+        .update({
+          is_used: true,
+          used_by: currentUser.id,
+          used_at: new Date().toISOString()
+        })
+        .eq("id", coupon.id)
+        .eq("is_used", false)
+        .select();
+
+      if (updateErr || !updatedCoupons || updatedCoupons.length === 0) {
+        return res.status(400).json({ success: false, error: "This coupon code was just redeemed by another user." });
+      }
+
+      // 6. Grant access in user_subject_access
+      const { error: accessErr } = await supabase
+        .from("user_subject_access")
+        .upsert({
+          user_id: currentUser.id,
+          subject_key: normKey,
+          access_type: "referral",
+          referral_code_id: coupon.id,
+          granted_at: new Date().toISOString()
+        }, { onConflict: "user_id,subject_key" });
+
+      if (accessErr) {
+        console.error("[REDEEM_ACCESS_UPSERT_ERROR]:", accessErr);
+      }
+
+      return res.json({
+        success: true,
+        message: "Coupon redeemed successfully! Access granted.",
+        subjectKey: normKey
+      });
+
+    } catch (err: any) {
+      console.error("[POST_API_REFERRAL_REDEEM_ERROR]:", err);
+      return res.status(500).json({ success: false, error: err.message || "Failed to redeem coupon code." });
+    }
+  });
+
+  // POST /api/admin/referral/create - Manually create a single referral coupon code
+  app.post("/api/admin/referral/create", async (req: any, res) => {
+    try {
+      const { code, subjectKey } = req.body || {};
+      if (!code || typeof code !== "string" || !code.trim()) {
+        return res.status(400).json({ success: false, error: "Coupon code is required." });
+      }
+
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+      }
+
+      const cleanCode = code.trim();
+      const normKey = subjectKey && subjectKey.trim() && subjectKey.toLowerCase() !== "all" 
+        ? normalizeSubjectKey(subjectKey) 
+        : null;
+
+      const { data, error } = await supabase
+        .from("referral_codes")
+        .insert({
+          code: cleanCode,
+          subject_key: normKey,
+          is_used: false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === "23505" || error.message?.includes("duplicate") || error.message?.includes("unique")) {
+          return res.status(400).json({ success: false, error: `Coupon code '${cleanCode}' already exists in database.` });
+        }
+        return res.status(400).json({ success: false, error: error.message });
+      }
+
+      return res.json({
+        success: true,
+        message: `Coupon code '${cleanCode}' successfully created and saved in Supabase!`,
+        data
+      });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || "Failed to create coupon code." });
+    }
+  });
+
+  // DELETE /api/admin/referral/clear-all - Clear ALL referral coupon codes from Supabase
+  app.delete("/api/admin/referral/clear-all", async (req: any, res) => {
+    try {
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+      }
+
+      // Delete all records from referral_codes
+      const { error, count } = await supabase
+        .from("referral_codes")
+        .delete({ count: "exact" })
+        .gt("id", -1); // deletes all rows
+
+      if (error) {
+        return res.status(500).json({ success: false, error: error.message });
+      }
+
+      return res.json({
+        success: true,
+        message: `Successfully cleared all existing coupon codes from Supabase (${count ?? 0} deleted).`
+      });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || "Failed to clear coupon codes." });
+    }
+  });
+
+  // DELETE /api/admin/referral/:id - Delete a referral coupon code
+  app.delete("/api/admin/referral/:id", async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const supabase = getServerSupabase();
+      if (!supabase) return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+
+      const { error } = await supabase.from("referral_codes").delete().eq("id", id);
+      if (error) return res.status(400).json({ success: false, error: error.message });
+
+      return res.json({ success: true, message: "Coupon code deleted." });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // POST /api/admin/referral/upload - Upload Excel (.xlsx) file containing coupon codes (supports multi-column grid / multi-sheet)
+  app.post("/api/admin/referral/upload", upload.single("file"), async (req: any, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ success: false, error: "No Excel file uploaded." });
+      }
+
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+      }
+
+      // Parse Excel file buffer
+      const workbook = XLSX.read(file.buffer, { type: "buffer" });
+      if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+        return res.status(400).json({ success: false, error: "Excel spreadsheet contains no sheets." });
+      }
+
+      let totalScannedCells = 0;
+      let inserted = 0;
+      let skippedDuplicates = 0;
+      let failedRows = 0;
+
+      const itemsToInsert: { code: string; subject_key: string | null }[] = [];
+
+      // Iterate over ALL sheets in the workbook
+      for (const sName of workbook.SheetNames) {
+        const sheet = workbook.Sheets[sName];
+        if (!sheet) continue;
+
+        // Matrix mode (2D array) scans EVERY cell across ALL columns without dropping duplicate headers
+        const matrix = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1, defval: "" });
+        if (!matrix || matrix.length === 0) continue;
+
+        const sheetSubjectNorm = normalizeSubjectKey(sName);
+        const sheetHasKnownSubject = ['science', 'mathematics', 'history_pol_sc', 'geo_eco'].includes(sheetSubjectNorm);
+
+        // Build column subject map from top 5 rows
+        const colSubjects = new Map<number, string>();
+        for (let r = 0; r < Math.min(5, matrix.length); r++) {
+          const rowArr = matrix[r];
+          if (!Array.isArray(rowArr)) continue;
+          for (let c = 0; c < rowArr.length; c++) {
+            const valStr = String(rowArr[c] || "").trim();
+            if (valStr) {
+              const detected = detectSubjectFromText(valStr);
+              if (detected && !colSubjects.has(c)) {
+                colSubjects.set(c, detected);
+              }
+            }
+          }
+        }
+
+        // Iterate through all rows and all columns
+        for (let r = 0; r < matrix.length; r++) {
+          const rowArr = matrix[r];
+          if (!Array.isArray(rowArr)) continue;
+
+          for (let c = 0; c < rowArr.length; c++) {
+            const rawCellVal = String(rowArr[c] || "").trim();
+            if (!rawCellVal) continue;
+
+            const lowerVal = rawCellVal.toLowerCase();
+
+            // Skip label headers and section titles
+            if (IGNORED_EXCEL_CELLS.has(lowerVal) || rawCellVal.endsWith(":")) {
+              continue;
+            }
+
+            // Cell is a candidate coupon code! DO NOT alter case (.toUpperCase() removed!)
+            totalScannedCells++;
+
+            // Determine subject key
+            let codeSubject = detectSubjectFromText(rawCellVal);
+            if (!codeSubject) {
+              codeSubject = colSubjects.get(c) || null;
+            }
+            if (!codeSubject && sheetHasKnownSubject) {
+              codeSubject = sheetSubjectNorm;
+            }
+
+            itemsToInsert.push({
+              code: rawCellVal,
+              subject_key: codeSubject ? normalizeSubjectKey(codeSubject) : null
+            });
+          }
+        }
+      }
+
+      if (itemsToInsert.length === 0) {
+        return res.status(400).json({ success: false, error: "No valid coupon codes found in Excel spreadsheet." });
+      }
+
+      // Deduplicate in batch (case-sensitive)
+      const uniqueBatch = new Map<string, string | null>();
+      for (const item of itemsToInsert) {
+        if (!uniqueBatch.has(item.code)) {
+          uniqueBatch.set(item.code, item.subject_key);
+        }
+      }
+
+      // Insert into Supabase referral_codes
+      for (const [code, subject_key] of uniqueBatch.entries()) {
+        const { data, error } = await supabase
+          .from("referral_codes")
+          .insert({
+            code,
+            subject_key,
+            is_used: false
+          })
+          .select();
+
+        if (error) {
+          if (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique')) {
+            skippedDuplicates++;
+          } else {
+            console.warn(`[COUPON_UPLOAD_ROW_ERROR] Code ${code}:`, error.message);
+            failedRows++;
+          }
+        } else if (data && data.length > 0) {
+          inserted++;
+        }
+      }
+
+      return res.json({
+        success: true,
+        message: `Excel spreadsheet (${workbook.SheetNames.length} sheet(s)) scanned successfully. Scanned ${itemsToInsert.length} code(s) across all columns.`,
+        summary: {
+          totalRows: totalScannedCells,
+          inserted,
+          skippedDuplicates,
+          failedRows
+        }
+      });
+
+    } catch (err: any) {
+      console.error("[POST_ADMIN_REFERRAL_UPLOAD_ERROR]:", err);
+      return res.status(500).json({ success: false, error: err.message || "Failed to process Excel file." });
+    }
+  });
+
+  // GET /api/admin/referral/list - Fetch referral codes and upload statistics for Admin CMS
+  app.get("/api/admin/referral/list", async (req, res) => {
+    try {
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+      }
+
+      const { data, error, count } = await supabase
+        .from("referral_codes")
+        .select("*", { count: "exact" })
+        .order("created_at", { ascending: false })
+        .limit(300);
+
+      if (error) {
+        return res.status(500).json({ success: false, error: error.message });
+      }
+
+      const total = count || (data ? data.length : 0);
+      const redeemed = data ? data.filter(d => d.is_used).length : 0;
+      const available = total - redeemed;
+
+      return res.json({
+        success: true,
+        data: data || [],
+        summary: {
+          total,
+          redeemed,
+          available
+        }
+      });
+    } catch (err: any) {
       return res.status(500).json({ success: false, error: err.message });
     }
   });

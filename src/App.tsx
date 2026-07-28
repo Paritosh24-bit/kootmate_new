@@ -113,6 +113,9 @@ export default function App() {
     schoolName?: string;
     dob?: string;
   }) => {
+    if (profile.email) {
+      localStorage.setItem('user_email', profile.email.toLowerCase().trim());
+    }
     setUser({
       name: profile.name,
       email: profile.email,

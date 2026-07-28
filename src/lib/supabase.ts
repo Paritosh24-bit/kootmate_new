@@ -94,9 +94,14 @@ export async function dbLoginUser(email: string, password: string): Promise<{ su
     if (!res.ok) {
       return { success: false, message: data.error || "Login failed." };
     }
-    // Store token in localStorage as fallback (cookies are HttpOnly and set automatically)
+    // Store token and email in localStorage as fallback
     if (data.session_token) {
       localStorage.setItem("session_token", data.session_token);
+    }
+    if (data.user?.email) {
+      localStorage.setItem("user_email", data.user.email);
+    } else if (email) {
+      localStorage.setItem("user_email", email.toLowerCase().trim());
     }
     return { success: true, user: data.user, message: data.message };
   } catch (err: any) {

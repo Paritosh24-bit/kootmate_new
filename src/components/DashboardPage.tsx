@@ -8,6 +8,8 @@ import {
 import Logo from './Logo';
 import StudentCMS from './StudentCMS';
 import AdminCMS from './AdminCMS';
+import AccessGateModal from './AccessGateModal';
+import { isProtectedSubject, normalizeSubjectKey } from '../lib/accessUtils';
 import { ContentGrid, PDFViewer, AudioPlayer } from './CMSComponents';
 import { cbseQuestionsDb } from '../lib/questionsDb';
 
@@ -435,6 +437,61 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
   const [selectedLesson, setSelectedLesson] = useState<string>('');
   const [selectedSubSubject, setSelectedSubSubject] = useState<'history' | 'geography' | 'civics' | 'economics' | 'science1' | 'science2' | 'math1' | 'math2' | ''>('');
   const [selectedSstGroup, setSelectedSstGroup] = useState<'history_civics' | 'geo_eco' | 'geography_only' | ''>('');
+
+  // Referral Access Gate states
+  const [unlockedSubjects, setUnlockedSubjects] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('kootmate_unlocked_subjects') || '[]');
+    } catch {
+      return [];
+    }
+  });
+  const [gateModalOpen, setGateModalOpen] = useState(false);
+  const [pendingGateSubject, setPendingGateSubject] = useState<{ key: string; name: string; action?: () => void } | null>(null);
+
+  const checkAccessAndProceed = async (subjectKey: string, subjectName: string, proceedAction: () => void) => {
+    const normKey = normalizeSubjectKey(subjectKey);
+
+    if (!isProtectedSubject(normKey)) {
+      proceedAction();
+      return;
+    }
+
+    if (isUserAdmin) {
+      proceedAction();
+      return;
+    }
+
+    if (unlockedSubjects.includes(normKey)) {
+      proceedAction();
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('session_token');
+      const email = localStorage.getItem('user_email') || user?.email;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (email) headers['X-User-Email'] = email;
+
+      const res = await fetch(`/api/access/${normKey}`, { headers });
+      const data = await res.json();
+      if (data.success && data.hasAccess) {
+        setUnlockedSubjects(prev => {
+          const next = Array.from(new Set([...prev, normKey]));
+          localStorage.setItem('kootmate_unlocked_subjects', JSON.stringify(next));
+          return next;
+        });
+        proceedAction();
+        return;
+      }
+    } catch (err) {
+      console.warn('Access check API error:', err);
+    }
+
+    setPendingGateSubject({ key: normKey, name: subjectName, action: proceedAction });
+    setGateModalOpen(true);
+  };
 
   const selectSubjectAndResetLesson = (sub: any) => {
     setSelectedSubject(sub);
@@ -1223,7 +1280,19 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     .map((sub) => (
                       <div
                         key={sub.id}
-                        onClick={() => selectSubjectAndResetLesson(sub)}
+                        onClick={() => {
+                          let subKey = sub.name;
+                          if (sub.id.includes('science')) subKey = 'science';
+                          else if (sub.id.includes('maths') || sub.id.includes('math')) subKey = 'mathematics';
+
+                          if (subKey === 'science' || subKey === 'mathematics') {
+                            checkAccessAndProceed(subKey, sub.name, () => {
+                              selectSubjectAndResetLesson(sub);
+                            });
+                          } else {
+                            selectSubjectAndResetLesson(sub);
+                          }
+                        }}
                         className={`p-6 rounded-3xl border text-left cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 hover:scale-[1.01] group relative overflow-hidden ${
                           isDarkMode 
                             ? 'bg-neutral-950 border-neutral-850 hover:bg-neutral-900' 
@@ -1321,7 +1390,19 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     .map((sub) => (
                       <div
                         key={sub.id}
-                        onClick={() => selectSubjectAndResetLesson(sub)}
+                        onClick={() => {
+                          let subKey = sub.name;
+                          if (sub.id.includes('science')) subKey = 'science';
+                          else if (sub.id.includes('maths') || sub.id.includes('math')) subKey = 'mathematics';
+
+                          if (subKey === 'science' || subKey === 'mathematics') {
+                            checkAccessAndProceed(subKey, sub.name, () => {
+                              selectSubjectAndResetLesson(sub);
+                            });
+                          } else {
+                            selectSubjectAndResetLesson(sub);
+                          }
+                        }}
                         className={`p-6 rounded-3xl border text-left cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 hover:scale-[1.01] group relative overflow-hidden ${
                           isDarkMode 
                             ? 'bg-neutral-950 border-neutral-850 hover:bg-neutral-900' 
@@ -1618,11 +1699,13 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                   <button
                     type="button"
                     onClick={() => {
-                      setSelectedSstGroup('history_civics');
-                      setSelectedSubSubject('history');
-                      const dynamicL = sstDynamicLessons[selectedSubject!.board]['history'];
-                      setSelectedLesson(dynamicL[0] || '');
-                      setNotifyFormSubmitted(false);
+                      checkAccessAndProceed('history_pol_sc', 'History and Political Science', () => {
+                        setSelectedSstGroup('history_civics');
+                        setSelectedSubSubject('history');
+                        const dynamicL = sstDynamicLessons[selectedSubject!.board]['history'];
+                        setSelectedLesson(dynamicL[0] || '');
+                        setNotifyFormSubmitted(false);
+                      });
                     }}
                     className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
                       selectedSstGroup === 'history_civics'
@@ -1646,11 +1729,13 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedSstGroup('geo_eco');
-                        setSelectedSubSubject('geography');
-                        const dynamicL = sstDynamicLessons['cbse']['geography'];
-                        setSelectedLesson(dynamicL[0] || '');
-                        setNotifyFormSubmitted(false);
+                        checkAccessAndProceed('geo_eco', 'Geography and Economics', () => {
+                          setSelectedSstGroup('geo_eco');
+                          setSelectedSubSubject('geography');
+                          const dynamicL = sstDynamicLessons['cbse']['geography'];
+                          setSelectedLesson(dynamicL[0] || '');
+                          setNotifyFormSubmitted(false);
+                        });
                       }}
                       className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
                         selectedSstGroup === 'geo_eco'
@@ -1670,11 +1755,13 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedSstGroup('geography_only');
-                        setSelectedSubSubject('geography');
-                        const dynamicL = sstDynamicLessons['ssc']['geography'];
-                        setSelectedLesson(dynamicL[0] || '');
-                        setNotifyFormSubmitted(false);
+                        checkAccessAndProceed('geo_eco', 'Geography', () => {
+                          setSelectedSstGroup('geography_only');
+                          setSelectedSubSubject('geography');
+                          const dynamicL = sstDynamicLessons['ssc']['geography'];
+                          setSelectedLesson(dynamicL[0] || '');
+                          setNotifyFormSubmitted(false);
+                        });
                       }}
                       className={`p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
                         selectedSstGroup === 'geography_only'
@@ -2634,6 +2721,23 @@ CREATE POLICY "Allow public delete email_otps" ON email_otps FOR DELETE USING (t
           onClose={() => setActivePDF(null)}
         />
       )}
+
+      <AccessGateModal
+        isOpen={gateModalOpen}
+        subjectKey={pendingGateSubject?.key || ''}
+        subjectName={pendingGateSubject?.name}
+        onClose={() => setGateModalOpen(false)}
+        onAccessGranted={(normKey) => {
+          setUnlockedSubjects(prev => {
+            const next = Array.from(new Set([...prev, normKey]));
+            localStorage.setItem('kootmate_unlocked_subjects', JSON.stringify(next));
+            return next;
+          });
+          if (pendingGateSubject?.action) {
+            pendingGateSubject.action();
+          }
+        }}
+      />
     </div>
   );
 }
