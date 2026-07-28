@@ -133,7 +133,7 @@ export default function AccessGateModal({
                   setCouponCode(e.target.value);
                   setErrorMessage('');
                 }}
-                placeholder="e.g. Si-koVsCWA or CLEVERLY100"
+                placeholder="Coupon Code"
                 className="w-full px-4 py-3 border-2 border-neutral-250 focus:border-[#5c3beb] focus:ring-2 focus:ring-[#5c3beb]/20 rounded-2xl text-sm font-mono tracking-wider font-extrabold text-neutral-900 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-neutral-400 outline-none transition-all"
                 disabled={isSubmitting}
                 id="referral-code-input"
