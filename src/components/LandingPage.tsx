@@ -394,7 +394,7 @@ export default function LandingPage({ onNavigate, isDarkMode }: LandingPageProps
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
             <span className="px-3 py-1 bg-violet-100 text-[#5c3beb] text-xs font-black rounded-lg uppercase tracking-wider">The Revision "PUNCH"</span>
             <h3 className="text-3xl sm:text-4xl font-black text-neutral-950 tracking-tight">
-              A 4-in-1 Complete Revision Toolkit
+              A 5-in-1 Complete Revision Toolkit
             </h3>
             <p className="text-sm sm:text-base font-bold text-neutral-600 leading-relaxed">
               Cleverly is giving you a complete revision toolkit for the whole year covering the full syllabus of the key subjects! Click "Free preview" on any service block to sample CBSE Science Lesson 1.
