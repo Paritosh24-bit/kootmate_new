@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FolderPlus, Plus, Edit, Trash2, Search, ArrowLeft, Upload, 
-  Check, Trash, Loader2, BookOpen, Layers, Info, Trash2 as TrashIcon, ShieldAlert, Sparkles, CheckCircle, AlertCircle, PlusCircle, Key, FileSpreadsheet, UploadCloud, Ticket
+  Check, Trash, Loader2, BookOpen, Layers, Info, Trash2 as TrashIcon, ShieldAlert, Sparkles, CheckCircle, AlertCircle, PlusCircle, Key, FileSpreadsheet, UploadCloud, Ticket, RefreshCw
 } from 'lucide-react';
 import { 
   dbGetClasses, dbCreateClass, dbDeleteClass,
@@ -244,10 +244,35 @@ export default function AdminCMS() {
     }
   };
 
-  const handleClearAllCoupons = async () => {
-    if (!confirm("Are you SURE you want to delete ALL existing coupon codes from Supabase? This action cannot be undone.")) return;
+  const handleRestoreBackup = async () => {
     try {
-      const res = await fetch('/api/admin/referral/clear-all', { method: 'DELETE' });
+      const res = await fetch('/api/admin/referral/restore-backup', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showBannerSuccess(data.message || `Restored ${data.restored} codes from backup!`);
+        loadCoupons();
+      } else {
+        showBannerError(data.error || 'No backup found or restore failed.');
+      }
+    } catch (err: any) {
+      showBannerError(err.message || 'Failed to restore backup.');
+    }
+  };
+
+  const handleClearAllCoupons = async () => {
+    const input = prompt("DANGER: To permanently delete all coupon codes from Supabase, type 'PERMANENT_DELETE_ALL_COUPONS' below:");
+    if (input !== "PERMANENT_DELETE_ALL_COUPONS") {
+      if (input !== null) {
+        showBannerError("Deletion cancelled: confirmation phrase did not match.");
+      }
+      return;
+    }
+    try {
+      const res = await fetch('/api/admin/referral/clear-all', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmPhrase: "PERMANENT_DELETE_ALL_COUPONS" })
+      });
       const data = await res.json();
       if (data.success) {
         showBannerSuccess(data.message || "All existing coupons deleted from Supabase.");
@@ -1100,13 +1125,21 @@ export default function AdminCMS() {
                 Supabase Referral Codes ({couponsList.length})
               </h3>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={handleRestoreBackup}
+                  className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-black rounded-lg cursor-pointer transition-colors flex items-center gap-1"
+                  title="Restore codes from automatic disk backup"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Restore Backup
+                </button>
                 {couponsList.length > 0 && (
                   <button
                     onClick={handleClearAllCoupons}
                     className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-black rounded-lg cursor-pointer transition-colors flex items-center gap-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    Clear All Coupons
+                    Clear All
                   </button>
                 )}
                 <button
@@ -1124,8 +1157,17 @@ export default function AdminCMS() {
                 <span>Downloading coupon list from Supabase...</span>
               </div>
             ) : couponsList.length === 0 ? (
-              <div className="py-12 text-center border border-dashed border-neutral-200 rounded-3xl max-w-md mx-auto text-neutral-400 font-bold text-xs">
-                No coupon codes found in Supabase. Enter a coupon manually or upload an Excel file above.
+              <div className="py-12 text-center border border-dashed border-neutral-200 rounded-3xl max-w-md mx-auto text-neutral-400 font-bold text-xs space-y-3">
+                <p>No coupon codes currently found in Supabase.</p>
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={handleRestoreBackup}
+                    className="px-4 py-2 bg-[#5c3beb] hover:bg-[#4a2ec7] text-white text-xs font-black rounded-xl cursor-pointer transition-all shadow-sm flex items-center gap-1.5"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Restore From Backup
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="border border-neutral-200 rounded-2xl overflow-hidden bg-white shadow-xs">

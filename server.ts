@@ -2193,9 +2193,77 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
     }
   });
 
-  // DELETE /api/admin/referral/clear-all - Clear ALL referral coupon codes from Supabase
+  // Local disk backup file for coupon codes to prevent data loss
+  const localReferralBackupFile = path.join(uploadsDir, "referral_codes_backup.json");
+
+  // Helper to save coupon backup to local disk
+  const saveCouponBackup = (items: { code: string; subject_key: string | null; is_used?: boolean }[]) => {
+    try {
+      let existing: any[] = [];
+      if (fs.existsSync(localReferralBackupFile)) {
+        existing = JSON.parse(fs.readFileSync(localReferralBackupFile, "utf-8"));
+      }
+      const map = new Map<string, any>();
+      for (const it of existing) map.set(it.code, it);
+      for (const it of items) map.set(it.code, { ...it, is_used: it.is_used || false });
+      fs.writeFileSync(localReferralBackupFile, JSON.stringify(Array.from(map.values()), null, 2), "utf-8");
+    } catch (e) {
+      console.warn("[COUPON_BACKUP_ERROR]:", e);
+    }
+  };
+
+  // POST /api/admin/referral/restore-backup - Restore coupon codes from local disk backup into Supabase
+  app.post("/api/admin/referral/restore-backup", async (req: any, res) => {
+    try {
+      if (!fs.existsSync(localReferralBackupFile)) {
+        return res.status(404).json({ success: false, error: "No local backup file found." });
+      }
+      const raw = fs.readFileSync(localReferralBackupFile, "utf-8");
+      const backupItems: { code: string; subject_key: string | null }[] = JSON.parse(raw);
+      if (!Array.isArray(backupItems) || backupItems.length === 0) {
+        return res.status(400).json({ success: false, error: "Backup file is empty." });
+      }
+
+      const supabase = getServerSupabase();
+      if (!supabase) {
+        return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
+      }
+
+      let restored = 0;
+      const CHUNK_SIZE = 200;
+      const formatted = backupItems.map(it => ({ code: it.code, subject_key: it.subject_key, is_used: false }));
+      
+      for (let i = 0; i < formatted.length; i += CHUNK_SIZE) {
+        const chunk = formatted.slice(i, i + CHUNK_SIZE);
+        const { data, error } = await supabase
+          .from("referral_codes")
+          .upsert(chunk, { onConflict: "code", ignoreDuplicates: true })
+          .select();
+        if (data) restored += data.length;
+      }
+
+      return res.json({
+        success: true,
+        message: `Successfully restored ${restored} coupon codes from backup into Supabase.`,
+        totalInBackup: backupItems.length,
+        restored
+      });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || "Failed to restore backup." });
+    }
+  });
+
+  // DELETE /api/admin/referral/clear-all - Clear ALL referral coupon codes from Supabase (Strictly Guarded)
   app.delete("/api/admin/referral/clear-all", async (req: any, res) => {
     try {
+      const confirmPhrase = req.body?.confirmPhrase || req.query?.confirmPhrase || req.headers["x-confirm-phrase"];
+      if (confirmPhrase !== "PERMANENT_DELETE_ALL_COUPONS") {
+        return res.status(403).json({
+          success: false,
+          error: "Action blocked: Confirmation phrase 'PERMANENT_DELETE_ALL_COUPONS' is required to prevent accidental deletion."
+        });
+      }
+
       const supabase = getServerSupabase();
       if (!supabase) {
         return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
@@ -2338,32 +2406,53 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
         }
       }
 
-      // Insert into Supabase referral_codes
+      const batchList: { code: string; subject_key: string | null; is_used: boolean }[] = [];
       for (const [code, subject_key] of uniqueBatch.entries()) {
+        batchList.push({ code, subject_key, is_used: false });
+      }
+
+      // Fast batch insert in chunks of 200 records to handle 2000+ records in seconds
+      const CHUNK_SIZE = 200;
+      for (let i = 0; i < batchList.length; i += CHUNK_SIZE) {
+        const chunk = batchList.slice(i, i + CHUNK_SIZE);
         const { data, error } = await supabase
           .from("referral_codes")
-          .insert({
-            code,
-            subject_key,
-            is_used: false
-          })
+          .upsert(chunk, { onConflict: "code", ignoreDuplicates: true })
           .select();
 
         if (error) {
-          if (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique')) {
-            skippedDuplicates++;
-          } else {
-            console.warn(`[COUPON_UPLOAD_ROW_ERROR] Code ${code}:`, error.message);
-            failedRows++;
+          console.warn(`[COUPON_UPLOAD_BATCH_ERROR] Chunk ${i}-${i + chunk.length}:`, error.message);
+          // Fallback to row-by-row for this chunk if schema/constraint conflicts occur
+          for (const item of chunk) {
+            const { data: singleData, error: singleErr } = await supabase
+              .from("referral_codes")
+              .insert(item)
+              .select();
+            if (singleErr) {
+              if (singleErr.code === '23505' || singleErr.message?.includes('duplicate') || singleErr.message?.includes('unique')) {
+                skippedDuplicates++;
+              } else {
+                failedRows++;
+              }
+            } else if (singleData && singleData.length > 0) {
+              inserted++;
+            }
           }
-        } else if (data && data.length > 0) {
-          inserted++;
+        } else if (data) {
+          inserted += data.length;
+          // Count difference as skipped duplicates
+          if (data.length < chunk.length) {
+            skippedDuplicates += (chunk.length - data.length);
+          }
         }
       }
 
+      // Persist backup to local disk so coupon data is never lost even if database is altered
+      saveCouponBackup(batchList);
+
       return res.json({
         success: true,
-        message: `Excel spreadsheet (${workbook.SheetNames.length} sheet(s)) scanned successfully. Scanned ${itemsToInsert.length} code(s) across all columns.`,
+        message: `Excel spreadsheet (${workbook.SheetNames.length} sheet(s)) scanned successfully. Scanned ${itemsToInsert.length} code(s) across all columns. Inserted ${inserted} new records into Supabase.`,
         summary: {
           totalRows: totalScannedCells,
           inserted,
@@ -2386,11 +2475,12 @@ const requireActiveSession = async (req: any, res: any, next: any) => {
         return res.status(500).json({ success: false, error: "Supabase connection is unconfigured." });
       }
 
+      // Get count of total and redeemed codes
       const { data, error, count } = await supabase
         .from("referral_codes")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
-        .limit(300);
+        .limit(2000);
 
       if (error) {
         return res.status(500).json({ success: false, error: error.message });
